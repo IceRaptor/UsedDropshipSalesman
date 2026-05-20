@@ -11,12 +11,29 @@
     "DLLEntryPoint" : "UsedDropshipSalesman.Mod.Init",
     "DependsOn" : [ "IRBTModUtils", "Custom Ammo Categories" ],
     "Manifest" : [
-        { "Type": "WeaponDef", "Path": "weapon", "AddToDB": true }
+        { "Type": "AssetBundle", "Path": "assetbundles" }
     ],
     "Settings": {
         "Debug" : true,
-        "Trace" : false,
-
+        "Trace" : true,
+        "Dropships" : {
+            "leopard": {
+                "prefab" : "chrprfvhcl_leopard",
+                "purchase_cost": 100000.0,
+                "upkeep_cost" : 10000.0,
+                "drop_cost" : 10000.0,
+                "innate_upgrades" : [],
+                "optional_upgrades" : []
+            },
+            "union": {
+                "prefab" : "chrprfvhcl_union",
+                "purchase_cost": 300000.0,
+                "upkeep_cost" : 30000.0,
+                "drop_cost" : 30000.0,
+                "innate_upgrades" : [],
+                "optional_upgrades" : []
+            }
+        },
         "LocalizedText" : {
             "FT_IED_DEFAULT" : "Explosive IED",
             "FT_IED_HE" : "High Explosive IED",
