@@ -1,0 +1,28 @@
+{
+    "Name": "UsedDropshipSalesman",
+    "Enabled": true,
+	"Hidden": true,
+    "Version": "0.1.0",
+    "Description": "Allows for a progression of dropship types.",
+    "Author": "IceRaptor",
+    "Website": "https://github.com/IceRaptor/UsedDropshipSalesman",
+    "Contact": "",
+    "DLL": "UsedDropshipSalesman.dll",
+    "DLLEntryPoint" : "UsedDropshipSalesman.Mod.Init",
+    "DependsOn" : [ "IRBTModUtils", "Custom Ammo Categories" ],
+    "Manifest" : [
+        { "Type": "WeaponDef", "Path": "weapon", "AddToDB": true }
+    ],
+    "Settings": {
+        "Debug" : true,
+        "Trace" : false,
+
+        "LocalizedText" : {
+            "FT_IED_DEFAULT" : "Explosive IED",
+            "FT_IED_HE" : "High Explosive IED",
+            "FT_IED_INFERNO" : "Inferno IED",
+            "FT_IED_VBIED" : "Vibration IED",
+            "TURRET_DEATH" : "{0} DESTROYED"
+        }
+    }
+}
