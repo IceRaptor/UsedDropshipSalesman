@@ -12,7 +12,7 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         static void Postfix(SGEngineeringScreen __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo upgrade");
+            Mod.Log.Trace?.Write("==== SimGameState_PopulateUpgradeDictionary - entered.");
         }
     }
 }

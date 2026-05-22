@@ -4,16 +4,18 @@ using UnityEngine;
 namespace UsedDropshipSalesman
 {
 
-    public static class ModState
+    internal static class ModState
     {
 
-        // -- General spawn state        
-     
+        // -- Travel State for alignment purposes
+        internal static SimGameTravelStatus CurrentTravelStatus = new SimGameTravelStatus();
+        internal static GameObject DropshipGO = null;
 
-        public static void Reset()
+        internal static void Reset()
         {
             // Reinitialize state
-
+            CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
+            DropshipGO = null;
         }
 
     }

@@ -107,7 +107,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helper\" />
     <Folder Include="Objects\" />
     <Folder Include="Sequence\" />
     <Folder Include="UI\" />

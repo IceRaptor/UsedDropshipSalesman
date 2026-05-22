@@ -13,7 +13,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(DropshipType dropship, SimGameState __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo upgrade");
+            Mod.Log.Trace?.Write("==== SimGameState_SetSimShip - entered.");
         }
     }
 
@@ -22,7 +22,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SimGameState __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo updates");
+            Mod.Log.Trace?.Write("==== SimGameState_ApplyArgoUpgrades - entered.");
         }
     }
 
@@ -31,7 +31,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(ShipModuleUpgrade upgrade, SimGameState __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo upgrade");
+            Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade - entered");
         }
     }
 
@@ -40,7 +40,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(ShipModuleUpgrade requestedUpgrade, SimGameState __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo upgrade");
+            Mod.Log.Trace?.Write("==== SimGameState_QueueArgoUpgrade - entered");
         }
     }
 
@@ -49,7 +49,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(bool passDay, SimGameState __instance)
         {
-            Mod.Log.Info?.Write("Aligning Argo upgrade");
+            Mod.Log.Trace?.Write("==== SimGameState_UpdateArgoUpgrades - entered");
         }
     }
 
@@ -60,7 +60,7 @@ namespace UsedDropshipSalesman.Patches
         {
             if (!__runOriginal) return;
 
-            Mod.Log.Info?.Write("Togging dropship type");
+            Mod.Log.Trace?.Write("==== SimGameState_Debug_SimDebug_ToggleCurrentShipType - entered");
         }
     }
 
