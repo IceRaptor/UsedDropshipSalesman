@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using IRBTModUtils;
+using System.Collections.Generic;
 using UnityEngine;
+using UsedDropshipSalesman.Helper;
 
 namespace UsedDropshipSalesman
 {
@@ -10,13 +12,18 @@ namespace UsedDropshipSalesman
         // -- Travel State for alignment purposes
         internal static SimGameTravelStatus CurrentTravelStatus = new SimGameTravelStatus();
         internal static GameObject DropshipGO = null;
+        internal static SimGameLeopardState SGLeopardState = null;
+        internal static SimGameSpaceController SimGameSpaceController = null;
+        internal static Dictionary<string, GameObject> DropshipPrefabs = new Dictionary<string, GameObject>();
 
         internal static void Reset()
         {
+            
             // Reinitialize state
             CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
             DropshipGO = null;
         }
+
 
     }
 

@@ -34,7 +34,7 @@ namespace UsedDropshipSalesman.Patches
 
             Mod.Log.Info?.Write($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
             ModState.CurrentTravelStatus = __instance.PostTransitionState;
-            AlignmentHelper.AlignSpheriod(ModState.DropshipGO);
+            DropshipHelper.AlignSpheriod(ModState.DropshipGO);
         }
     }
 

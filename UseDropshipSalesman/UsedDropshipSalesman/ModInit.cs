@@ -60,5 +60,10 @@ namespace UsedDropshipSalesman
             // Initialize modules
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);
         }
+
+        public static void FinishedLoading()
+        {
+            Mod.Log.Trace?.Write("==== ModInit::FinishedLoading invoked.");
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BattleTech.Save;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,44 @@ using us.frostraptor.modUtils;
 
 namespace UsedDropshipSalesman.Patches
 {
+    [HarmonyPatch(typeof(SimGameState), "InitCompanyStats")]
+    static class SimGameState_InitCompanyStats
+    {
+        static void Postfix(SimGameState __instance)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_InitCompanyStats - entered.");
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
+
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameState), "Rehydrate")]
+    static class SimGameState_Rehydrate
+    {
+        static void Postfix(GameInstanceSave gameInstanceSave)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_Rehydrate - entered.");
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameState), "InitFromSave")]
+    static class SimGameState_InitFromSave
+    {
+        static void Postfix(GameInstance game, GameInstanceSave gameInstanceSave, SimGameState __instance)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_InitFromSave - entered.");
+            if (! __instance.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP))
+            {
+                Mod.Log.Debug?.Write($"Game without UDS stats loaded, initializing to default: {Mod.Config.DefaultDropship}");
+                __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
+                __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
+
+                Mod.Log.Debug?.Write($"Current dropship value is: {__instance.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP)}");
+            }
+
+        }
+    }
+
     [HarmonyPatch(typeof(SimGameState), "SetSimShip")]
     static class SimGameState_SetSimShip
     {
