@@ -1,4 +1,5 @@
 ﻿using BattleTech.Save;
+using BattleTech.Save.SaveGameStructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,19 +24,10 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(SimGameState), "Rehydrate")]
     static class SimGameState_Rehydrate
     {
-        static void Postfix(GameInstanceSave gameInstanceSave)
+        static void Postfix(GameInstanceSave gameInstanceSave, SimGameState __instance)
         {
             Mod.Log.Trace?.Write("==== SimGameState_Rehydrate - entered.");
-        }
-    }
-
-    [HarmonyPatch(typeof(SimGameState), "InitFromSave")]
-    static class SimGameState_InitFromSave
-    {
-        static void Postfix(GameInstance game, GameInstanceSave gameInstanceSave, SimGameState __instance)
-        {
-            Mod.Log.Trace?.Write("==== SimGameState_InitFromSave - entered.");
-            if (! __instance.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP))
+            if (!__instance.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP))
             {
                 Mod.Log.Debug?.Write($"Game without UDS stats loaded, initializing to default: {Mod.Config.DefaultDropship}");
                 __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
@@ -43,7 +35,6 @@ namespace UsedDropshipSalesman.Patches
 
                 Mod.Log.Debug?.Write($"Current dropship value is: {__instance.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             }
-
         }
     }
 
@@ -95,11 +86,34 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(SimGameState_Debug), "SimDebug_ToggleCurrentShipType")]
     static class SimGameState_Debug_SimDebug_ToggleCurrentShipType
     {
-        static void Prefix(bool __runOriginal)
+        static void Prefix(ref bool __runOriginal)
         {
             if (!__runOriginal) return;
 
             Mod.Log.Trace?.Write("==== SimGameState_Debug_SimDebug_ToggleCurrentShipType - entered");
+
+            var currentDropshipId = SimGameState_Debug.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}'.");
+
+            int nextDropshipIdx = -1;
+            var dropshipIds = Mod.Config.Dropships.Keys.ToArray();
+            for (int i = 0; i < dropshipIds.Length; i++)
+            {
+                string dropshipId = dropshipIds[i];
+                Mod.Log.Trace?.Write($"Evaluating dropshipId: {dropshipId} with idx: {i}");
+                if (currentDropshipId.Equals(dropshipId, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    nextDropshipIdx = i+1;
+                }
+            }
+            if (nextDropshipIdx == dropshipIds.Length) { nextDropshipIdx = 0; }
+            string nextDropshipId = dropshipIds[nextDropshipIdx];
+
+            Mod.Log.Info?.Write($"Next dropship is: '{nextDropshipId}' with idx: {nextDropshipIdx}.");
+            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId);
+            SimGameState_Debug.sim.SpaceController.SetShip(DropshipType.Leopard);
+
+            __runOriginal = false;
         }
     }
 

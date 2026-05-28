@@ -42,7 +42,6 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
-
             if (ModState.CurrentTravelStatus == SimGameTravelStatus.WARMING_ENGINES)
             {
                 Mod.Log.Info?.Write("Aligning spheriod dropship docked to jumpship");
@@ -65,28 +64,35 @@ namespace UsedDropshipSalesman.Helper
 
         // Mutates the HBS SimGame Leopard heirarchy to host the instantiated prefab. Skips creation if 
         //  the target GO already exists
-        public static void OverlayDropshipMeshes(GameObject dropshipPrefab, DropshipConfig config)
+        public static void OverlayDropshipMeshes(string dropshipId, DropshipConfig config)
         {
             // Check for an existing instance of the prefab already attached to the HBS leopard 
-            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + dropshipPrefab.name;
-            Mod.Log.Debug?.Write($"Looking for child with name: {dropshipRootName}");
-            var lepDSChild = ModState.SGLeopardState.RootGO.FindFirstChildNamed(dropshipRootName);
-            if (lepDSChild != null)
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + dropshipId;
+
+            bool alreadyCreated = ModState.DropshipInstances.TryGetValue(dropshipId, out GameObject cachedDropshipRootGO);
+            if (alreadyCreated)
             {
-                Mod.Log.Debug?.Write($"Root node {dropshipRootName} already exists under HBS leopard, skipping.");
+                Mod.Log.Debug?.Write($"Dropship {dropshipRootName} GO already created, setting active.");
+                cachedDropshipRootGO.SetActive(true);
                 return;
             }
+
+            Mod.Log.Info?.Write($"Overlaying prefab: {config.prefab.PrefabPath} onto the leopard");
+            ModState.DropshipPrefabs.TryGetValue(dropshipId, out GameObject dropshipPrefab);
 
             Mod.Log.Debug?.Write($"Instantiating prefab: {config.prefab.PrefabPath}");
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
             dropshipRootGO.transform.parent = ModState.SGLeopardState.RootGO.transform;
-            var dropship_go = UnityEngine.Object.Instantiate(dropshipPrefab, dropshipRootGO.transform);
+            dropshipRootGO.transform.position = ModState.SGLeopardState.RootGO.transform.position;
+            dropshipRootGO.transform.rotation = ModState.SGLeopardState.RootGO.transform.rotation;
+            dropshipRootGO.transform.localScale = Vector3.one;
+            var dropshipGO = UnityEngine.Object.Instantiate(dropshipPrefab, dropshipRootGO.transform);
 
             // HBS scenes expect layer = 20 for these to be visible. Force the issue.
             // TODO: Note in docs you should set layer = 20 for visibility
             Mod.Log.Debug?.Write("Setting layer = 20 for all GameObjects");
-            dropship_go.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
-            var children = dropship_go.GetComponentsInChildren<GameObject>();
+            dropshipGO.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
+            var children = dropshipGO.GetComponentsInChildren<GameObject>();
             foreach (GameObject child in children)
             {
                 child.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER; ;
@@ -94,7 +100,7 @@ namespace UsedDropshipSalesman.Helper
 
             // Update the mesh to use the battletech shader
             Mod.Log.Debug?.Write("Updating shader for materials to BTS shader");
-            var dropship_mats = dropship_go.GetComponentsInChildren<MeshRenderer>();
+            var dropship_mats = dropshipGO.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer childMeshRenderer in dropship_mats)
             {
                 Mod.Log.Trace?.Write($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
@@ -111,7 +117,7 @@ namespace UsedDropshipSalesman.Helper
             // TODO: Rename prefab attaches to engine_points?
             foreach (String ap_name in config.prefab.Attaches_Engines)
             {
-                var attach_point = dropship_go.FindFirstChildNamed(ap_name);
+                var attach_point = dropshipGO.FindFirstChildNamed(ap_name);
                 if (attach_point == null)
                 {
                     Mod.Log.Warn?.Write($"Configuration error - engine_jet attach_point: {ap_name} could not be found in the prefab!");
@@ -160,7 +166,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the engine glow
-            var ap_engineGlow = dropship_go.FindFirstChildNamed(config.prefab.Attach_EngineGlow);
+            var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.prefab.Attach_EngineGlow);
             if (ap_engineGlow != null)
             {
                 var newGlow = UnityEngine.Object.Instantiate(ModState.SGLeopardState.EngineGlowGO);
@@ -179,7 +185,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the decal
-            var ap_decal = dropship_go.FindFirstChildNamed(config.prefab.Attach_Decal);
+            var ap_decal = dropshipGO.FindFirstChildNamed(config.prefab.Attach_Decal);
             if (ap_decal != null)
             {
                 var newDecal = UnityEngine.Object.Instantiate(ModState.SGLeopardState.DecalGO);
@@ -196,8 +202,9 @@ namespace UsedDropshipSalesman.Helper
                 Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.prefab.Attach_Decal} could not be found in the prefab!");
             }
 
-
-            dropship_go.SetActive(true);
+            // Finally set the dropship active and record it as an active instance
+            ModState.DropshipInstances.Add(dropshipRootName, dropshipRootGO);
+            dropshipRootGO.SetActive(true);
         }
 
         public static void ToggleLeopardVisibility(bool show = false)
@@ -211,8 +218,10 @@ namespace UsedDropshipSalesman.Helper
                 Mod.Log.Error?.Write("Unable to ref SimGameLeopardState, this should never happen!");
             }
 
+            Mod.Log.Debug?.Write($"Updating HBS Leopard mesh to be visible: {show}");
+
             // Hide the body
-            ModState.SGLeopardState.BodyMRComp.gameObject.SetActive(show);
+            ModState.SGLeopardState.BodyMRComp.enabled = show;
             // TODO: Why am I disabling the singular glow?
             ModState.SGLeopardState.EngineGlowGO.SetActive(show);
             ModState.SGLeopardState.EngineFlareGO.SetActive(show);

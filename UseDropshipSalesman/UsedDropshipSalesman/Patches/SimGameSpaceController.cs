@@ -90,37 +90,47 @@ namespace UsedDropshipSalesman.Patches
 
             ModState.SimGameSpaceController ??= __instance;
 
-            var dropship_id = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-
-            var companyStats = __instance.sim.CompanyStats;
-            foreach (KeyValuePair<string, string> kvp in companyStats.GetStatKeyValues())
-            {
-                Mod.Log.Debug?.Write($" ---- found key: {kvp.Key} == {kvp.Value}");
-            }
-
-            Mod.Log.Info?.Write($"Current dropship is: '{dropship_id}', overlaying meshes.");
-            Mod.Config.Dropships.TryGetValue(dropship_id, out DropshipConfig config);
+            // TODO: Need to handle a call to set the argo
+            // TODO: Need to handle a default new career by disabling argo
+            var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}', overlaying meshes.");
+            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)
             {
-                Mod.Log.Error?.Write($"Cannot find dropship with id: {dropship_id} - this should not happen!");
+                Mod.Log.Error?.Write($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
 
            if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
                 DropshipHelper.ToggleLeopardVisibility(true);
-           }
-           else if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
+                __instance.argo.gameObject.SetActive(false);
+                __instance.leopard.gameObject.SetActive(true);
+                __instance.argoAnimator.SetTrigger("setleopard");
+                __instance.argoAnimator.SetBool("argo", value: false);
+
+                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+            }
+            else if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
                 DropshipHelper.ToggleLeopardVisibility(true);
-                // TODO: Fix the argo selection here
+                __instance.argo.gameObject.SetActive(true);
+                __instance.leopard.gameObject.SetActive(false);
+                __instance.argoAnimator.SetTrigger("setArgo");
+                __instance.argoAnimator.SetBool("argo", value: true);
+
+                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
             }
-           else
+            else
             {
-                DropshipHelper.ToggleLeopardVisibility(true);
-                Mod.Log.Info?.Write($"Overlaying prefab: {config.prefab.PrefabPath} onto the leopard");
-                ModState.DropshipPrefabs.TryGetValue(dropship_id, out GameObject dropshipPrefab);
-                DropshipHelper.OverlayDropshipMeshes(dropshipPrefab, config);
+                DropshipHelper.ToggleLeopardVisibility(false);
+                __instance.argo.gameObject.SetActive(false);
+                __instance.leopard.gameObject.SetActive(true);
+                __instance.argoAnimator.SetTrigger("setleopard");
+                __instance.argoAnimator.SetBool("argo", value: false);
+
+                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+                DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
             }
         }
 

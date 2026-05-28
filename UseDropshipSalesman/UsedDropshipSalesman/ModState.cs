@@ -11,17 +11,16 @@ namespace UsedDropshipSalesman
 
         // -- Travel State for alignment purposes
         internal static SimGameTravelStatus CurrentTravelStatus = new SimGameTravelStatus();
-        internal static GameObject DropshipGO = null;
         internal static SimGameLeopardState SGLeopardState = null;
         internal static SimGameSpaceController SimGameSpaceController = null;
         internal static Dictionary<string, GameObject> DropshipPrefabs = new Dictionary<string, GameObject>();
+        internal static Dictionary<string, GameObject> DropshipInstances = new Dictionary<string, GameObject>();
 
         internal static void Reset()
         {
             
             // Reinitialize state
             CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
-            DropshipGO = null;
         }
 
 
