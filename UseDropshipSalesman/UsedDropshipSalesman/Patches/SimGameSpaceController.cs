@@ -26,7 +26,8 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Info?.Write("  Caching HBS Leopard GOs");
             ModState.SGLeopardState = DropshipHelper.BuildSGLeopardState(__instance);
 
-            Mod.Log.Info?.Write("Attempting to load all AssetBundles and prefabs");
+            Mod.Log.Info?.Write("Identifying prefabs to load");
+            var prefabsToLoad = new Dictionary<string, string>();
             foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
             {
                 DropshipPrefabConfig prefabConfig = kvp.Value.prefab;
@@ -40,31 +41,41 @@ namespace UsedDropshipSalesman.Patches
                     continue;
                 }
 
-                var abm = simGame.DataManager.AssetBundleManager;
-                abm.RequestBundle(prefabConfig.AssetBundleId, delegate
+                if (!prefabsToLoad.ContainsKey(prefabConfig.AssetBundleId))
                 {
-                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {prefabConfig.AssetBundleId}");
+                    prefabsToLoad.Add(prefabConfig.AssetBundleId, prefabConfig.PrefabPath);
+                }
 
-                    var assetBundle = abm.GetLoadedAssetBundle(prefabConfig.AssetBundleId);
-                    Mod.Log.Trace?.Write($" -- All assets in bundle: {prefabConfig.AssetBundleId}");
+            }
+
+            foreach (KeyValuePair<string, string> kvp in prefabsToLoad)
+            {
+                var abm = simGame.DataManager.AssetBundleManager;
+                abm.RequestBundle(kvp.Key, delegate
+                {
+                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {kvp.Key}");
+
+                    var assetBundle = abm.GetLoadedAssetBundle(kvp.Key);
+                    Mod.Log.Trace?.Write($" -- All assets in bundle: {kvp.Key}");
                     foreach (string n in assetBundle.GetAllAssetNames())
                     {
                         Mod.Log.Trace?.Write($"  ---- {n}");
                     }
 
-                    var prefabGO = abm.GetAssetFromBundle<GameObject>(prefabConfig.PrefabPath, prefabConfig.AssetBundleId);
+                var prefabGO = abm.GetAssetFromBundle<GameObject>(kvp.Value, kvp.Key);
                     Mod.Log.Debug?.Write($"  Prefab is not null? {prefabGO != null}");
 
                     if (prefabGO != null)
                     {
-                        if (! ModState.DropshipPrefabs.ContainsKey(kvp.Key))
+                        if (!ModState.DropshipPrefabs.ContainsKey(kvp.Key))
                         {
                             ModState.DropshipPrefabs.Add(kvp.Key, prefabGO);
                             Mod.Log.Debug?.Write($"  Loaded prefab for dropship? {prefabGO != null}");
                         }
-                        
+
                     }
                 });
+
             }
         }
     }
@@ -77,7 +88,7 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Write("==== SimGameSpaceController_Dock - entered");
 
             Mod.Log.Trace?.Write($"Entry speed is: {__instance.argoAnimator.speed}");
-            __instance.argoAnimator.speed = 0.5f;
+            //__instance.argoAnimator.speed = 0.5f;
         }
     }
 
@@ -132,6 +143,12 @@ namespace UsedDropshipSalesman.Patches
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
                 DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
             }
+
+           // Always force the argo to make the upgrades visible
+            __instance.currentShip = DropshipType.Argo;
+            __instance.sim.RoomManager.RefreshDisplay();
+            __instance.sim.CurDropship = DropshipType.Argo;
+            __instance.sim.HasSimShipBeenSet = true;
         }
 
         //static void RewriteMeshesOntoArgo(GameObject dropshipPrefab)

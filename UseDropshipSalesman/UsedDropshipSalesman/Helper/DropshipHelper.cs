@@ -16,7 +16,8 @@ namespace UsedDropshipSalesman.Helper
         // Non-mutated references 
         public GameObject RootGO;
         public GameObject EngineGlowGO;
-        public GameObject EngineFlareGO;
+        public GameObject EngineFlare1GO;
+        public GameObject EngineFlare2GO;
         public GameObject EngineJet1GO;
         public GameObject EngineJet2GO;
         public GameObject RunningLightsRootGO;
@@ -34,42 +35,42 @@ namespace UsedDropshipSalesman.Helper
 
     public static class DropshipHelper
     {
-        public static void AlignSpheriod(GameObject dropshipGO)
-        {
-            if (dropshipGO == null)
-            {
-                Mod.Log.Warn?.Write("Invoked without a gameobject!");
-                return;
-            }
+        //public static void AlignSpheriod(GameObject dropshipGO)
+        //{
+        //    if (dropshipGO == null)
+        //    {
+        //        Mod.Log.Warn?.Write("Invoked without a gameobject!");
+        //        return;
+        //    }
 
-            if (ModState.CurrentTravelStatus == SimGameTravelStatus.WARMING_ENGINES)
-            {
-                Mod.Log.Info?.Write("Aligning spheriod dropship docked to jumpship");
-                // Align docked downward
-                // Align towards direction of travel
-                dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
-                dropshipGO.gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-                dropshipGO.gameObject.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
-            }
-            else
-            {
-                Mod.Log.Info?.Write("Aligning spheriod dropship for travel");
-                // Align towards direction of travel
-                dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
-                dropshipGO.gameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                dropshipGO.gameObject.transform.localEulerAngles = new Vector3(90.0f, 0.0f, 0.0f);
-            }
+        //    if (ModState.CurrentTravelStatus == SimGameTravelStatus.WARMING_ENGINES)
+        //    {
+        //        Mod.Log.Info?.Write("Aligning spheriod dropship docked to jumpship");
+        //        // Align docked downward
+        //        // Align towards direction of travel
+        //        dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
+        //        dropshipGO.gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        //        dropshipGO.gameObject.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+        //    }
+        //    else
+        //    {
+        //        Mod.Log.Info?.Write("Aligning spheriod dropship for travel");
+        //        // Align towards direction of travel
+        //        dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
+        //        dropshipGO.gameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //        dropshipGO.gameObject.transform.localEulerAngles = new Vector3(90.0f, 0.0f, 0.0f);
+        //    }
 
-        }
+        //}
 
         // Mutates the HBS SimGame Leopard heirarchy to host the instantiated prefab. Skips creation if 
         //  the target GO already exists
         public static void OverlayDropshipMeshes(string dropshipId, DropshipConfig config)
         {
             // Check for an existing instance of the prefab already attached to the HBS leopard 
-            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + dropshipId;
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.prefab.AssetBundleId;
 
-            bool alreadyCreated = ModState.DropshipInstances.TryGetValue(dropshipId, out GameObject cachedDropshipRootGO);
+            bool alreadyCreated = ModState.DropshipInstances.TryGetValue(dropshipRootName, out GameObject cachedDropshipRootGO);
             if (alreadyCreated)
             {
                 Mod.Log.Debug?.Write($"Dropship {dropshipRootName} GO already created, setting active.");
@@ -78,7 +79,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             Mod.Log.Info?.Write($"Overlaying prefab: {config.prefab.PrefabPath} onto the leopard");
-            ModState.DropshipPrefabs.TryGetValue(dropshipId, out GameObject dropshipPrefab);
+            ModState.DropshipPrefabs.TryGetValue(config.prefab.AssetBundleId, out GameObject dropshipPrefab);
 
             Mod.Log.Debug?.Write($"Instantiating prefab: {config.prefab.PrefabPath}");
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
@@ -136,11 +137,11 @@ namespace UsedDropshipSalesman.Helper
                 ModState.SGLeopardState.ArgoEngineComp.engineCores.AddItem<ParticleSystem>(newEngineJet.GetComponent<ParticleSystem>());
 
                 // Create a new point flare
-                var newEngineFlare = UnityEngine.Object.Instantiate(ModState.SGLeopardState.EngineFlareGO);
+                var newEngineFlare = UnityEngine.Object.Instantiate(ModState.SGLeopardState.EngineFlare1GO);
                 newEngineFlare.name = $"engine_flare_{ap_name}";
                 newEngineFlare.transform.parent = attach_point.transform;
                 newEngineFlare.transform.position = attach_point.transform.position;
-                newEngineFlare.transform.rotation = ModState.SGLeopardState.EngineFlareGO.transform.rotation;
+                newEngineFlare.transform.rotation = ModState.SGLeopardState.EngineFlare1GO.transform.rotation;
                 newEngineFlare.transform.localPosition = Vector3.zero;
                 newEngineFlare.transform.localScale = Vector3.one;
                 newEngineFlare.SetActive(true);
@@ -224,7 +225,8 @@ namespace UsedDropshipSalesman.Helper
             ModState.SGLeopardState.BodyMRComp.enabled = show;
             // TODO: Why am I disabling the singular glow?
             ModState.SGLeopardState.EngineGlowGO.SetActive(show);
-            ModState.SGLeopardState.EngineFlareGO.SetActive(show);
+            ModState.SGLeopardState.EngineFlare1GO.SetActive(show);
+            ModState.SGLeopardState.EngineFlare2GO.SetActive(show);
             ModState.SGLeopardState.EngineJet1GO.SetActive(show);
             ModState.SGLeopardState.EngineJet2GO.SetActive(show);
             ModState.SGLeopardState.RunningLightsRootGO.SetActive(show);
@@ -277,7 +279,8 @@ namespace UsedDropshipSalesman.Helper
                 else if (childT.name.StartsWith("Point Light", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Lights for the engine
-                    state.EngineFlareGO ??= childT.gameObject;
+                    state.EngineFlare1GO ??= childT.gameObject;
+                    state.EngineFlare2GO ??= childT.gameObject;
                     childT.gameObject.SetActive(false);
                 }
                 else if (childT.name.StartsWith("jetFlames", StringComparison.InvariantCultureIgnoreCase))
