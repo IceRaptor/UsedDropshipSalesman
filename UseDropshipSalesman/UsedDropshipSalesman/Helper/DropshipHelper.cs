@@ -116,7 +116,7 @@ namespace UsedDropshipSalesman.Helper
             // Instance the engine jets and flares 
             // TODO: Get this from configuration
             // TODO: Rename prefab attaches to engine_points?
-            foreach (String ap_name in config.prefab.Attaches_Engines)
+            foreach (String ap_name in config.prefab.AttachesEngines)
             {
                 var attach_point = dropshipGO.FindFirstChildNamed(ap_name);
                 if (attach_point == null)
@@ -152,14 +152,14 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // For spot lights, instantiate them
-            foreach (String attach_name in config.prefab.Attaches_SpotLights)
+            foreach (String attach_name in config.prefab.AttachesSpotLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
                 Mod.Log.Debug?.Write($"I should be instantiating a spotlight at attach: {attach_name} with GO != null? {attach_GO != null}");
             }
 
             // For running lights, instantiate them
-            foreach (String attach_name in config.prefab.Attaches_RunningLights)
+            foreach (String attach_name in config.prefab.AttachesRunningLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
                 Mod.Log.Debug?.Write($"I should be instantiating a running light at attach: {attach_name} with GO != null? {attach_GO != null}");
@@ -167,11 +167,11 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the engine glow
-            var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.prefab.Attach_EngineGlow);
+            var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.prefab.AttachEngineGlow);
             if (ap_engineGlow != null)
             {
                 var newGlow = UnityEngine.Object.Instantiate(ModState.SGLeopardState.EngineGlowGO);
-                newGlow.name = $"engine_glow_{config.prefab.Attach_EngineGlow}";
+                newGlow.name = $"engine_glow_{config.prefab.AttachEngineGlow}";
                 newGlow.transform.parent = ap_engineGlow.transform;
                 newGlow.transform.position = ap_engineGlow.transform.position;
                 newGlow.transform.rotation = ModState.SGLeopardState.EngineGlowGO.transform.rotation;
@@ -182,15 +182,15 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - engine_glow attach_point: {config.prefab.Attach_EngineGlow} could not be found in the prefab!");
+                Mod.Log.Warn?.Write($"Configuration error - engine_glow attach_point: {config.prefab.AttachEngineGlow} could not be found in the prefab!");
             }
 
             // Move the decal
-            var ap_decal = dropshipGO.FindFirstChildNamed(config.prefab.Attach_Decal);
+            var ap_decal = dropshipGO.FindFirstChildNamed(config.prefab.AttachDecal);
             if (ap_decal != null)
             {
                 var newDecal = UnityEngine.Object.Instantiate(ModState.SGLeopardState.DecalGO);
-                newDecal.name = $"decal_{config.prefab.Attach_Decal}";
+                newDecal.name = $"decal_{config.prefab.AttachDecal}";
                 newDecal.transform.parent = ap_decal.transform;
                 newDecal.transform.position = ap_decal.transform.position;
                 newDecal.transform.rotation = ModState.SGLeopardState.DecalGO.transform.rotation;
@@ -200,7 +200,7 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.prefab.Attach_Decal} could not be found in the prefab!");
+                Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.prefab.AttachDecal} could not be found in the prefab!");
             }
 
             // Finally set the dropship active and record it as an active instance
