@@ -59,9 +59,18 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(SimGameState), "AddArgoUpgrade")]
     static class SimGameState_AddArgoUpgrade
     {
-        static void Postfix(ShipModuleUpgrade upgrade, SimGameState __instance)
+        static void Prefix(bool __runOriginal, ShipModuleUpgrade upgrade, SimGameState __instance, out DropshipType __state)
         {
-            Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade - entered");
+            Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade-PREFIX- entered");
+            // Force the type so all upgrade logic applies
+            __state = __instance.CurDropship;
+            __instance.CurDropship = DropshipType.Argo;
+        }
+
+        static void Postfix(ShipModuleUpgrade upgrade, SimGameState __instance, DropshipType __state)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade-POSTFIX - entered");
+            __instance.CurDropship = __state;
         }
     }
 

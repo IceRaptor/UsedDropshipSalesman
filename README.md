@@ -30,11 +30,16 @@ These options are available under the `Settings.Dropships`:
 
 ### Todo
 
-* Integrate dropship replacement for space
 * Integrate dropship replacement for in-mission
 * Create item -> dropship loop
 * Add jump costs for additional dropships?
 * Add upkeep costs for additional dropships
+* Implement upgrade logic
+* Implement listener for dropship upgrade from event
+* Implement mechbay handling for changed dropships w/ less bay sizes
+* Implement dropship change only at planets
+* Implement zoom out for camera
+* 
 
 ### Ideas
 
@@ -42,7 +47,7 @@ These options are available under the `Settings.Dropships`:
 * Create argo + 1 dropship where drop-bays are tied to the dropship, not argo
 * Create option to auto-magically grant airsrike beacons for dropships that have bays
 * Create option for mechtech, medtech multiplers on units (cramped conditions)
-* 
+* Create main + child dropship approach (for Shade)
 
 ### Interesting methods
   

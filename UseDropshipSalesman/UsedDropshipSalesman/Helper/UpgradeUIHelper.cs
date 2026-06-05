@@ -2,7 +2,9 @@
 using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using BattleTech.UI.TMProWrapper;
+using DG.Tweening;
 using HBS.Extensions;
+using IRBTModUtils;
 using SVGImporter;
 using System;
 using System.Collections.Generic;
@@ -79,8 +81,95 @@ namespace UsedDropshipSalesman.Helper
     {
         private const int CATEGORY_Y_PADDING = 140;
 
-        public static void ResetArgoUpgradePanel()
+        public static void ResetUpgradePanel(SGEngineeringScreen engineeringScreen)
         {
+            // enable the argo hologram
+            Mod.Log.Trace?.Write("Disabling Argo hologram");
+            var imageShipHoloGO = engineeringScreen.gameObject.FindFirstChildNamed("image_shipHologram");
+            imageShipHoloGO.SetActive(false);
+
+            // Iterate OBJ_upgradePanels children; disabling any UDS ones
+            Mod.Log.Trace?.Write("Disabling UDS panels, enabling defaults");
+            var upgradePanelRootGO = engineeringScreen.gameObject.FindFirstChildNamed("OBJ_upgradePanels");
+            foreach (Transform childT in upgradePanelRootGO.transform)
+            {
+                if (childT.gameObject.name.StartsWith(ModConsts.UPGRADE_PANEL_CATEGORY_PREFIX))
+                {
+                    childT.gameObject.SetActive(false);
+                }
+                else
+                {
+                    childT.gameObject.SetActive(true);
+                }
+            }
+        }
+
+        public static void RefreshUpgradeIcons(SGEngineeringScreen engineeringScreen)
+        {
+            // Iterate OBJ_upgradePanels children; disabling any UDS ones
+            var upgradePanelRootGO = engineeringScreen.gameObject.FindFirstChildNamed("OBJ_upgradePanels");
+            List<GameObject> customCategoryGO = new List<GameObject>();
+            foreach (Transform childT in upgradePanelRootGO.transform)
+            {
+                if (childT.gameObject.name.StartsWith(ModConsts.UPGRADE_PANEL_CATEGORY_PREFIX))
+                {
+                    customCategoryGO.Add(childT.gameObject);
+                }
+            }
+
+            foreach (GameObject categoryGO in customCategoryGO)
+            {
+                Mod.Log.Debug?.Write($"Processing icons for category: {categoryGO.name}");
+                
+                SGEngineeringShipUpgradePip[] upgradePipComps = categoryGO.transform.GetComponentsInChildren<SGEngineeringShipUpgradePip>();
+                foreach (SGEngineeringShipUpgradePip pip in upgradePipComps)
+                {
+                    Mod.Log.Debug?.Write($" Refreshing pip for module.name: {pip.name}  desc.Name {pip.UpgradeModule?.Description?.Name}  desc.Id: {pip.UpgradeModule?.Description?.Id}");
+                    if (engineeringScreen.PurchasedUpgrades.Contains(pip.UpgradeModule))
+                    {
+                        Mod.Log.Debug?.Write($" -- Module has been purchased");
+                        // TODO: Find innate upgrades
+                    }
+                    else if (engineeringScreen.AvailableUpgrades.Contains(pip.UpgradeModule))
+                    {
+                        Mod.Log.Debug?.Write($" -- Module is available");
+                    }
+                    else
+                    {
+                        Mod.Log.Debug?.Write($" -- Module is unavailable");
+                    }
+
+                    // TODO: Innate upgrades should be automatically purchased - where to do?
+
+                    // Find the actual pip
+                    GameObject iconGO = pip.gameObject.FindFirstChildNamed("pip_ICON");
+                    // Set the initial color
+                    SVGImage icon = iconGO.GetComponent<SVGImage>();
+                    icon.color = Color.green;
+
+                    DOTweenAnimation[] anims = iconGO.GetComponents<DOTweenAnimation>();
+                    anims[0].endValueColor = Color.yellow;
+                    anims[1].endValueColor = Color.green;
+                    anims[2].endValueColor = Color.green;
+
+                }
+
+                /*
+            //  systemId = "uixPrfIndc_SIM_argoUpgradePipUnavailable-element";
+            //  systemId = "uixPrfIndc_SIM_argoUpgradePipAvailable-element";
+            //  systemId = "uixPrfIndc_SIM_argoUpgradePip-element";
+            // TODO: Handle 'innate' states
+            string systemToCloneId = "uixPrfIndc_SIM_argoUpgradePipAvailable-element";
+            //if (item.isPurchased) { systemToCloneId = "uixPrfIndc_SIM_argoUpgradePip-element";  }
+            //else if (!item.isAvailable) { systemToCloneId = "uixPrfIndc_SIM_argoUpgradePipUnavailable-element"; }
+
+            SGEngineeringScreen engineeringScreen = ModState.SimGameSpaceController.sim.RoomManager.EngineeringRoom.engineeringScreen;
+            DataManager dm = engineeringScreen.uiManager.dataManager;
+            GameObject newUpgradeItemGO = dm.PooledInstantiate(systemToCloneId, BattleTechResourceType.UIModulePrefabs, null, null, upgradePipSlotsGO.transform);
+            newUpgradeItemGO.name = ModConsts.UPGRADE_PANEL_ITEM_PREFIX + upgradeDef.Description.Id;
+                 */
+            }
+
 
         }
 
@@ -147,6 +236,7 @@ namespace UsedDropshipSalesman.Helper
                 else if (childT.gameObject.name.Equals("PowerSystem", StringComparison.InvariantCulture))
                 {
                     systemReferenceGO = childT.gameObject;
+                    childT.gameObject.SetActive(false);
                 }
                 else if (childT.gameObject.name.Equals("bg-and-deco", StringComparison.InvariantCulture))
                 {
@@ -266,17 +356,18 @@ namespace UsedDropshipSalesman.Helper
             //if (item.isPurchased) { systemToCloneId = "uixPrfIndc_SIM_argoUpgradePip-element";  }
             //else if (!item.isAvailable) { systemToCloneId = "uixPrfIndc_SIM_argoUpgradePipUnavailable-element"; }
 
-            DataManager dm = ModState.SimGameSpaceController.sim.RoomManager.EngineeringRoom.engineeringScreen.uiManager.dataManager;
-            SGEngineeringShipUpgradePip component = 
-                dm.PooledInstantiate(systemToCloneId, BattleTechResourceType.UIModulePrefabs, null, null, upgradePipSlotsGO.transform)
-                .GetComponent<SGEngineeringShipUpgradePip>();
+            SGEngineeringScreen engineeringScreen = ModState.SimGameSpaceController.sim.RoomManager.EngineeringRoom.engineeringScreen;
+            DataManager dm = engineeringScreen.uiManager.dataManager;
+            GameObject newUpgradeItemGO = dm.PooledInstantiate(systemToCloneId, BattleTechResourceType.UIModulePrefabs, null, null, upgradePipSlotsGO.transform);
+            newUpgradeItemGO.name = ModConsts.UPGRADE_PANEL_ITEM_PREFIX + upgradeDef.Description.Id;
+            
+            SGEngineeringShipUpgradePip component = newUpgradeItemGO.GetComponent<SGEngineeringShipUpgradePip>();
             component.transform.localScale = Vector3.one;
             component.SetUpgadeModule(upgradeDef);
             ModState.SimGameSpaceController.sim.RequestItem<SVGAsset>(upgradeDef.Description.Icon, component.SetIcon, BattleTechResourceType.SVGAsset);
 
-            // TODO: Add upgrade listeners
-            //component.OnModuleSelected.RemoveAllListeners();
-            //component.OnModuleSelected.AddListener(OnUpgradeSelected);
+            component.OnModuleSelected.RemoveAllListeners();
+            component.OnModuleSelected.AddListener(engineeringScreen.OnUpgradeSelected);
         }
 
     }

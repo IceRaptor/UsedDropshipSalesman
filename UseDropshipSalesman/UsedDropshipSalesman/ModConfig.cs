@@ -15,6 +15,7 @@ namespace UsedDropshipSalesman
         public DropshipCosts costs;
         public DropshipRequirements requirements;
         public DropshipBays bays;
+        public ColorConfig colors;
         public List<DropshipUpgradeCategory> upgrades;
     }
 
@@ -50,6 +51,18 @@ namespace UsedDropshipSalesman
         public int MechBays = 4;
         public int VehicleBays = 0;
         public int BattleArmorBays = 0;
+    }
+
+    public record ColorConfig
+    {
+        public String UpgradePurchased;
+        public String UpgradePurchasedHovered;
+        public String UpgradeAvailable;
+        public String UpgradeAvailableHovered;
+        public String UpgradeUnavailable;
+        public String UpgradeUnavailableHovered;
+        public String UpgradeInnate;
+        public String UpgradeInnateHovered;
     }
 
     public class ModConfig
@@ -88,6 +101,10 @@ namespace UsedDropshipSalesman
                 Mod.Log.Info?.Write($" planetTags       : {String.Join(",", kvp.Value.requirements.PlanetTags)}");
                 Mod.Log.Info?.Write("  ---- BAYS");
                 Mod.Log.Info?.Write($" mech: {kvp.Value.bays.MechBays}  vehicle: {kvp.Value.bays.VehicleBays}  battleArmor: {kvp.Value.bays.BattleArmorBays}");
+                Mod.Log.Info?.Write("  ---- COLORS");
+                Mod.Log.Info?.Write($" purchased: {kvp.Value?.colors?.UpgradePurchased}  onHover: {kvp.Value?.colors?.UpgradePurchasedHovered}");
+                Mod.Log.Info?.Write($" available: {kvp.Value?.colors?.UpgradeAvailable}  onHover: {kvp.Value?.colors?.UpgradeAvailableHovered}");
+                Mod.Log.Info?.Write($" unavailable: {kvp.Value?.colors?.UpgradeUnavailable}  onHover: {kvp.Value?.colors?.UpgradeUnavailableHovered}");
                 Mod.Log.Info?.Write("  ---- UPGRADES");
                 foreach (var category in kvp.Value.upgrades)
                 {

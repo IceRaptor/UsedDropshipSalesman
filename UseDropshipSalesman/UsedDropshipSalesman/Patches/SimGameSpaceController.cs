@@ -122,6 +122,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetBool("argo", value: false);
 
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+                UpgradeUIHelper.OverlayCustomUpgrades(config.upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
@@ -133,6 +134,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetBool("argo", value: true);
 
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+                UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
             {
@@ -146,6 +148,7 @@ namespace UsedDropshipSalesman.Patches
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
                 DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
                 UpgradeUIHelper.OverlayCustomUpgrades(config.upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                UpgradeUIHelper.RefreshUpgradeIcons(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
            // Always force the argo to make the upgrades visible

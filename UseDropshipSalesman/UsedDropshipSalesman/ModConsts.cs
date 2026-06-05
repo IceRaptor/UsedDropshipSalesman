@@ -14,6 +14,7 @@ namespace UsedDropshipSalesman
         public const string DROPSHIP_GO_PREFIX = "UDS_DROPSHIP_ROOT_";
         public const string UPGRADE_PANEL_CATEGORY_PREFIX = "UDS_UPGRADE_PANEL_CATEGORY_";
         public const string UPGRADE_PANEL_SYSTEM_PREFIX = "UDS_UPGRADE_PANEL_SYSTEM_";
+        public const string UPGRADE_PANEL_ITEM_PREFIX = "UDS_UPGRADE_PANEL_ITEM_";
 
         public const int HBS_SIMGAME_DROPSHIP_LAYER = 20;
     }
