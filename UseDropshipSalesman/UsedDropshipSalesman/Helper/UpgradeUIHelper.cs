@@ -72,8 +72,6 @@ namespace UsedDropshipSalesman.Helper
         public string Name;
         public string Description;
         public string Icon;
-        public bool isPurchased = false;
-        public bool isAvailable = true;
     }
 
 
@@ -104,7 +102,7 @@ namespace UsedDropshipSalesman.Helper
             }
         }
 
-        public static void RefreshUpgradeIcons(SGEngineeringScreen engineeringScreen)
+        public static void RefreshUpgradeIcons(SGEngineeringScreen engineeringScreen, DropshipConfig config)
         {
             // Iterate OBJ_upgradePanels children; disabling any UDS ones
             var upgradePanelRootGO = engineeringScreen.gameObject.FindFirstChildNamed("OBJ_upgradePanels");
@@ -124,19 +122,37 @@ namespace UsedDropshipSalesman.Helper
                 SGEngineeringShipUpgradePip[] upgradePipComps = categoryGO.transform.GetComponentsInChildren<SGEngineeringShipUpgradePip>();
                 foreach (SGEngineeringShipUpgradePip pip in upgradePipComps)
                 {
+                    Color hovered = Color.white;
+                    Color unHovered = Color.gray;
                     Mod.Log.Debug?.Write($" Refreshing pip for module.name: {pip.name}  desc.Name {pip.UpgradeModule?.Description?.Name}  desc.Id: {pip.UpgradeModule?.Description?.Id}");
                     if (engineeringScreen.PurchasedUpgrades.Contains(pip.UpgradeModule))
                     {
-                        Mod.Log.Debug?.Write($" -- Module has been purchased");
-                        // TODO: Find innate upgrades
+                        if (config.InnateUpgradeIds.Contains(pip.UpgradeModule?.Description?.Id))
+                        {
+                            Mod.Log.Debug?.Write($" -- Module is innate");
+                            unHovered = config.colors.UpgradeInnate;
+                            hovered = config.colors.UpgradeInnateHovered;
+                        }
+                        else
+                        {
+                            Mod.Log.Debug?.Write($" -- Module has been purchased");
+                            unHovered = config.colors.UpgradePurchased;
+                            hovered = config.colors.UpgradePurchasedHovered;
+                        }
                     }
                     else if (engineeringScreen.AvailableUpgrades.Contains(pip.UpgradeModule))
                     {
                         Mod.Log.Debug?.Write($" -- Module is available");
+                        unHovered = config.colors.UpgradeAvailable;
+                        hovered = config.colors.UpgradeAvailableHovered;
+
                     }
                     else
                     {
                         Mod.Log.Debug?.Write($" -- Module is unavailable");
+                        unHovered = config.colors.UpgradeUnavailable;
+                        hovered = config.colors.UpgradeUnavailableHovered;
+
                     }
 
                     // TODO: Innate upgrades should be automatically purchased - where to do?
@@ -145,12 +161,12 @@ namespace UsedDropshipSalesman.Helper
                     GameObject iconGO = pip.gameObject.FindFirstChildNamed("pip_ICON");
                     // Set the initial color
                     SVGImage icon = iconGO.GetComponent<SVGImage>();
-                    icon.color = Color.green;
+                    icon.color = unHovered;
 
                     DOTweenAnimation[] anims = iconGO.GetComponents<DOTweenAnimation>();
-                    anims[0].endValueColor = Color.yellow;
-                    anims[1].endValueColor = Color.green;
-                    anims[2].endValueColor = Color.green;
+                    anims[0].endValueColor = unHovered; // unhover
+                    anims[1].endValueColor = hovered; // hover
+                    anims[2].endValueColor = hovered; // ???
 
                 }
 

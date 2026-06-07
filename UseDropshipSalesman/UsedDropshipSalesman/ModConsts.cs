@@ -17,6 +17,19 @@ namespace UsedDropshipSalesman
         public const string UPGRADE_PANEL_ITEM_PREFIX = "UDS_UPGRADE_PANEL_ITEM_";
 
         public const int HBS_SIMGAME_DROPSHIP_LAYER = 20;
+
+        public static Color UPGRADE_COLOR_DEFAULT_PURCHASED = new Color(0.253f, 1.0f, 0.0f, 0.5f);
+        public static Color UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER = new Color(0.253f, 1.0f, 0.0f, 1.0f);
+
+        public static Color UPGRADE_COLOR_DEFAULT_AVAILABLE = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        public static Color UPGRADE_COLOR_DEFAULT_AVAILABLE_HOVER = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+        public static Color UPGRADE_COLOR_DEFAULT_UNAVAILABLE = new Color(1.0f, 0.235f, 0.0f, 0.196f);
+        public static Color UPGRADE_COLOR_DEFAULT_UNAVAILABLE_HOVER = new Color(1.0f, 0.235f, 0.0f, 0.5f);
+
+        public static Color UPGRADE_COLOR_DEFAULT_INNATE = new Color(0.0f, 0.65f, 1.0f, 0.5f);
+        public static Color UPGRADE_COLOR_DEFAULT_INNATE_HOVER = new Color(0.0f, 0.65f, 1.0f, 1.0f);
+
     }
 }
 

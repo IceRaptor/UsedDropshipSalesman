@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BattleTech.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,43 +9,30 @@ using UsedDropshipSalesman.Helper;
 namespace UsedDropshipSalesman.Patches
 {
 
-    [HarmonyPatch(typeof(SGTravelManager), MethodType.Constructor, new Type[] { typeof(SimGameTravelStatus) })]
-    static class SGTravelManager_Ctor_SimGameTravelStatus
+
+
+    [HarmonyPatch(typeof(SGNavigationList), "RefreshButtonStates")]
+    static class SGNavigationList_RefreshButtonStates
     {
-        static void Postfix(SimGameTravelStatus startState, SGTravelManager __instance)
+        static void Postfix(SimGameState simState, SGNavigationList __instance)
         {
-            Mod.Log.Trace?.Write("==== SGTravelManager_Ctor_SimGameTravelStatus - entered.");
+            Mod.Log.Trace?.Write("==== SGNavigationList_RefreshButtonStates - entered.");
 
-            Mod.Log.Info?.Write($"Starting state is: {startState}");
-            ModState.CurrentTravelStatus = startState;
+            if (simState == null || __instance.argoButton == null) return;
 
-            // Force the travel scenes to pause on transitions
-            __instance.pauseAtTravelSteps = true;
+            var currentDropshipId = simState.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            Mod.Log.Debug?.Write($"Current dropship is: '{currentDropshipId}'");
+            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
+            if (config == null)
+            {
+                Mod.Log.Error?.Write($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+                return;
+            }
 
-            // Do not align from here, too early in the initiation chain
+            Mod.Log.Debug?.Write($"Argo button currently set to: {__instance.argoButton?.Text?.text}, setting label to: {config.Label}");
+            __instance.argoButton.text.SetText(config.Label);
+
         }
     }
 
-    [HarmonyPatch(typeof(SGTravelManager), "TransitionAnimating_OnEnter")]
-    static class SGTravelManager_TransitionAnimating_OnEnter
-    {
-        static void Postfix(SGTravelManager __instance)
-        {
-            Mod.Log.Trace?.Write("==== SGTravelManager_TransitionAnimating_OnEnter - entered.");
-
-            Mod.Log.Info?.Write($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
-            ModState.CurrentTravelStatus = __instance.PostTransitionState;
-        }
-    }
-
-    [HarmonyPatch(typeof(SGTravelManager), "HandleNextTravelStep")]
-    static class SGTravelManager_HandleNextTravelStep
-    {
-        static void Postfix(SGTravelManager __instance)
-        {
-            Mod.Log.Trace?.Write("==== SGTravelManager_HandleNextTravelStep - entered.");
-
-            __instance.pauseAtTravelSteps = true;
-        }
-    }
 }
