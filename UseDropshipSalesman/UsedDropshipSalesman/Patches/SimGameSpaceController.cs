@@ -148,8 +148,9 @@ namespace UsedDropshipSalesman.Patches
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
                 DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
                 UpgradeUIHelper.OverlayCustomUpgrades(config.upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
-                UpgradeUIHelper.RefreshUpgradeIcons(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen, config);
             }
+            UpgradeUIHelper.RefreshUpgradeIcons(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen, config);
+            UpgradeHelper.UpdateDropConfig(config);
 
            // Always force the argo to make the upgrades visible
             __instance.currentShip = DropshipType.Argo;

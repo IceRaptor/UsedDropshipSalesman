@@ -39,6 +39,7 @@ These options are available under the `Settings.Dropships`:
 * Implement mechbay handling for changed dropships w/ less bay sizes
 * Implement dropship change only at planets
 * Implement zoom out for camera
+* ArgoBaysFix & BaysCountExternalControl
 * 
 
 ### Ideas

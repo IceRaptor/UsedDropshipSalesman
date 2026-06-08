@@ -64,6 +64,10 @@
       <HintPath>$(DeployedModPath)\..\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CustomAmmoCategories">
+      <HintPath>$(DeployedModPath)\..\CustomUnits\CustomUnits.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="IRBTModUtils">
       <HintPath>$(DeployedModPath)\..\IRBTModUtils\IRBTModUtils.dll</HintPath>
       <Private>False</Private>

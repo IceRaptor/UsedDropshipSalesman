@@ -130,28 +130,28 @@ namespace UsedDropshipSalesman.Helper
                         if (config.InnateUpgradeIds.Contains(pip.UpgradeModule?.Description?.Id))
                         {
                             Mod.Log.Debug?.Write($" -- Module is innate");
-                            unHovered = config.colors.UpgradeInnate;
-                            hovered = config.colors.UpgradeInnateHovered;
+                            unHovered = Mod.Config.Colors.Upgrades.InnateColor;
+                            hovered = Mod.Config.Colors.Upgrades.InnateHoverColor;
                         }
                         else
                         {
                             Mod.Log.Debug?.Write($" -- Module has been purchased");
-                            unHovered = config.colors.UpgradePurchased;
-                            hovered = config.colors.UpgradePurchasedHovered;
+                            unHovered = Mod.Config.Colors.Upgrades.PurchasedColor;
+                            hovered = Mod.Config.Colors.Upgrades.PurchasedHoverColor;
                         }
                     }
                     else if (engineeringScreen.AvailableUpgrades.Contains(pip.UpgradeModule))
                     {
                         Mod.Log.Debug?.Write($" -- Module is available");
-                        unHovered = config.colors.UpgradeAvailable;
-                        hovered = config.colors.UpgradeAvailableHovered;
+                        unHovered = Mod.Config.Colors.Upgrades.AvailableColor;
+                        hovered = Mod.Config.Colors.Upgrades.AvailableHoverColor;
 
                     }
                     else
                     {
                         Mod.Log.Debug?.Write($" -- Module is unavailable");
-                        unHovered = config.colors.UpgradeUnavailable;
-                        hovered = config.colors.UpgradeUnavailableHovered;
+                        unHovered = Mod.Config.Colors.Upgrades.UnavailableColor;
+                        hovered = Mod.Config.Colors.Upgrades.UnavailableHoverColor;
 
                     }
 

@@ -38,6 +38,15 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
+    [HarmonyPatch(typeof(SimGameState), "OnDayPassed")]
+    static class SimGameState_OnDayPassed
+    {
+        static void Postfix(int timeLapse, SimGameState __instance)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_OnDayPassed - entered.");
+        }
+    }
+
     [HarmonyPatch(typeof(SimGameState), "SetSimShip")]
     static class SimGameState_SetSimShip
     {

@@ -13,15 +13,14 @@ namespace UsedDropshipSalesman
     public record DropshipConfig
     {
         public String Label;
-
         public DropshipPrefabConfig prefab;
         public DropshipCosts costs;
         public DropshipRequirements requirements;
-        public DropshipBays bays;
-        public ColorConfig colors;
-
+        public DropshipDropBays DropBays;
+        public DropshipBays RepairBays;
         public List<DropshipUpgradeCategory> upgrades;
-                // Initialized during config
+        
+        // Initialized during config
         public List<String> AllUpgradeIds;
         public List<String> InnateUpgradeIds;
     }
@@ -61,31 +60,35 @@ namespace UsedDropshipSalesman
         public int BattleArmorBays = 0;
     }
 
+    public record DropshipDropBays
+    {
+        public String[] Labels;
+        public int MaxTonnage;
+        public String[][] Slots;
+    }
+
     public record ColorConfig
     {
-        public float[] UpgradePurchasedColor;
-        public Color UpgradePurchased;
+        public UpgradeColors Upgrades;
+    }
 
-        public float[] UpgradePurchasedHoveredColor;
-        public Color UpgradePurchasedHovered;
+    public record UpgradeColors
+    {
+        public float[][] Purchased;
+        public Color PurchasedColor;
+        public Color PurchasedHoverColor;
 
-        public float[] UpgradeAvailableColor;
-        public Color UpgradeAvailable;
+        public float[][] Available;
+        public Color AvailableColor;
+        public Color AvailableHoverColor;
 
-        public float[] UpgradeAvailableHoveredColor;
-        public Color UpgradeAvailableHovered;
+        public float[][] Unavailable;
+        public Color UnavailableColor;
+        public Color UnavailableHoverColor;
 
-        public float[] UpgradeUnavailableColor;
-        public Color UpgradeUnavailable;
-
-        public float[] UpgradeUnavailableHoveredColor;
-        public Color UpgradeUnavailableHovered;
-
-        public float[] UpgradeInnateColor;
-        public Color UpgradeInnate;
-
-        public float[] UpgradeInnateHoveredColor;
-        public Color UpgradeInnateHovered;
+        public float[][] Innate;
+        public Color InnateColor;
+        public Color InnateHoverColor;
     }
 
     public class ModConfig
@@ -97,6 +100,9 @@ namespace UsedDropshipSalesman
         public bool Trace = false;
 
         public string DefaultDropship;
+        public List<String> PersistentUpgrades; // TODO: Doc
+        public ColorConfig Colors;
+
         public Dictionary<String, DropshipConfig> Dropships = new Dictionary<String, DropshipConfig>();
 
         public void LogConfig()
@@ -104,6 +110,17 @@ namespace UsedDropshipSalesman
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  DEBUG:{this.Debug} Trace:{this.Trace}");
             Mod.Log.Info?.Write($"  DefaultDropshipID: {this.DefaultDropship}");
+
+            Mod.Log.Info?.Write("  ---- PERSISTENT UPGRADES");
+            foreach (String upgrade in this.PersistentUpgrades)
+            {
+                Mod.Log.Info?.Write($" id: {upgrade}");
+            }
+            
+            Mod.Log.Info?.Write("  ---- COLORS");
+            Mod.Log.Info?.Write($" purchased: {this.Colors?.Upgrades?.PurchasedColor}  onHover: {this.Colors?.Upgrades?.PurchasedHoverColor}");
+            Mod.Log.Info?.Write($" available: {this.Colors?.Upgrades?.AvailableColor}  onHover: {this.Colors?.Upgrades?.AvailableHoverColor}");
+            Mod.Log.Info?.Write($" unavailable: {this.Colors?.Upgrades?.UnavailableColor}  onHover: {this.Colors?.Upgrades?.UnavailableHoverColor}");
 
             Mod.Log.Info?.Write("\n  --- DROPSHIPS CONFIG ---");
             foreach (KeyValuePair<string, DropshipConfig> kvp in Dropships)
@@ -122,12 +139,15 @@ namespace UsedDropshipSalesman
                 Mod.Log.Info?.Write("  ---- REQUIREMENTS");
                 Mod.Log.Info?.Write($" factionRep: {kvp.Value.requirements.FactionReputation}  mustBeAllied: {kvp.Value.requirements.MustBeAllied}");
                 Mod.Log.Info?.Write($" planetTags       : {String.Join(",", kvp.Value.requirements.PlanetTags)}");
-                Mod.Log.Info?.Write("  ---- BAYS");
-                Mod.Log.Info?.Write($" mech: {kvp.Value.bays.MechBays}  vehicle: {kvp.Value.bays.VehicleBays}  battleArmor: {kvp.Value.bays.BattleArmorBays}");
-                Mod.Log.Info?.Write("  ---- COLORS");
-                Mod.Log.Info?.Write($" purchased: {kvp.Value?.colors?.UpgradePurchased}  onHover: {kvp.Value?.colors?.UpgradePurchasedHovered}");
-                Mod.Log.Info?.Write($" available: {kvp.Value?.colors?.UpgradeAvailable}  onHover: {kvp.Value?.colors?.UpgradeAvailableHovered}");
-                Mod.Log.Info?.Write($" unavailable: {kvp.Value?.colors?.UpgradeUnavailable}  onHover: {kvp.Value?.colors?.UpgradeUnavailableHovered}");
+                Mod.Log.Info?.Write("  ---- REPAIR BAYS");
+                Mod.Log.Info?.Write($" mech: {kvp.Value?.RepairBays?.MechBays}  vehicle: {kvp.Value?.RepairBays?.VehicleBays}  battleArmor: {kvp.Value?.RepairBays?.BattleArmorBays}");
+                Mod.Log.Info?.Write("  ---- DROP BAYS");
+                Mod.Log.Info?.Write($" maxTonnage: {kvp.Value?.DropBays?.MaxTonnage}");
+                for (int i = 0; i < kvp.Value?.DropBays?.Labels?.Length; i++)
+                {
+                    Mod.Log.Info?.Write($"Lance: '{kvp.Value?.DropBays?.Labels[i]}' => [{String.Join(",", kvp.Value?.DropBays?.Slots[i])}]");
+                }
+
                 Mod.Log.Info?.Write("  ---- UPGRADES");
                 foreach (var category in kvp.Value.upgrades)
                 {
@@ -147,16 +167,20 @@ namespace UsedDropshipSalesman
         public void Init()
         {
             Mod.Log.Debug?.Write(" == Initializing Configuration");
-
             
             foreach (KeyValuePair<String, DropshipConfig> kvp in this.Dropships)
             {
                 Mod.Log.Debug?.Write($"Processing dropship: {kvp.Key}");
-                ConvertColor(kvp.Value);
+
+                if (kvp.Value.DropBays != null &&
+                        kvp.Value.DropBays?.Labels.Length != kvp.Value.DropBays?.Slots.Length)
+                {
+                    Mod.Log.Error?.Write("Critical error - dropbay labels and slots don't match, cannot continue!");
+                }
+
+                ConvertColors();
                 PopulateUpgrades(kvp.Value);
             }
-
-
 
             Mod.Log.Debug?.Write(" == Configuration Initialized");
         }
@@ -180,163 +204,122 @@ namespace UsedDropshipSalesman
             Mod.Log.Debug?.Write($" Innate upgrades for dropship are: {String.Join(",", config.InnateUpgradeIds)}");
         }
 
-        private void ConvertColor(DropshipConfig config)
+        private void ConvertColors()
         {
             Mod.Log.Debug?.Write(" -- Converting colors.");
 
-            if (config.colors == null)
+            if (this.Colors == null)
             {
-                config.colors = new ColorConfig()
+                this.Colors = new ColorConfig()
                 {
-                    UpgradePurchased = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED,
-                    UpgradePurchasedHovered = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER,
-                    UpgradeAvailable = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE,
-                    UpgradeAvailableHovered = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE_HOVER,
-                    UpgradeUnavailable = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE,
-                    UpgradeUnavailableHovered = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE_HOVER,
-                    UpgradeInnate = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE,
-                    UpgradeInnateHovered = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE_HOVER
+                    Upgrades = new UpgradeColors
+                    {
+                        PurchasedColor = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED,
+                        PurchasedHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER,
+                        AvailableColor = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE,
+                        AvailableHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE_HOVER,
+                        UnavailableColor = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE,
+                        UnavailableHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE_HOVER,
+                        InnateColor = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE,
+                        InnateHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE_HOVER
+                    }
                 };
 
                 return;
             }
 
-            if (
-                config.colors.UpgradePurchasedColor != null && config.colors.UpgradePurchasedColor.Length == 4)
+            if (this.Colors.Upgrades.Purchased != null && this.Colors.Upgrades.Purchased.Length == 2)
             {
-                config.colors.UpgradePurchased = new Color(
-                    config.colors.UpgradePurchasedColor[0],
-                    config.colors.UpgradePurchasedColor[1],
-                    config.colors.UpgradePurchasedColor[2],
-                    config.colors.UpgradePurchasedColor[3]
+                this.Colors.Upgrades.PurchasedColor = new Color(
+                    this.Colors.Upgrades.Purchased[0][0],
+                    this.Colors.Upgrades.Purchased[0][1],
+                    this.Colors.Upgrades.Purchased[0][2],
+                    this.Colors.Upgrades.Purchased[0][3]
                     );
-                Mod.Log.Debug?.Write($" UpgradePurchased set to: {config.colors.UpgradePurchased}");
+                this.Colors.Upgrades.PurchasedHoverColor = new Color(
+                    this.Colors.Upgrades.Purchased[1][0],
+                    this.Colors.Upgrades.Purchased[1][1],
+                    this.Colors.Upgrades.Purchased[1][2],
+                    this.Colors.Upgrades.Purchased[1][3]
+                    );
+                Mod.Log.Debug?.Write($" Purchased set to: {this.Colors.Upgrades.Purchased} / {this.Colors.Upgrades.PurchasedHoverColor}");
             }
             else
             {
-                config.colors.UpgradePurchased = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED;
-                Mod.Log.Debug?.Write($" UpgradePurchased defaulted to: {config.colors.UpgradePurchased}");
+                this.Colors.Upgrades.PurchasedColor = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED;
+                this.Colors.Upgrades.PurchasedHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER;
+                Mod.Log.Debug?.Write($" Purchased defaulted to: {this.Colors.Upgrades.Purchased} / {this.Colors.Upgrades.PurchasedHoverColor}");
             }
 
-            if (config.colors != null && 
-                config.colors.UpgradePurchasedHoveredColor != null && config.colors.UpgradePurchasedHoveredColor.Length == 4)
+            if (this.Colors.Upgrades.Available != null && this.Colors.Upgrades.Available.Length == 2)
             {
-                config.colors.UpgradePurchasedHovered = new Color(
-                    config.colors.UpgradePurchasedHoveredColor[0],
-                    config.colors.UpgradePurchasedHoveredColor[1],
-                    config.colors.UpgradePurchasedHoveredColor[2],
-                    config.colors.UpgradePurchasedHoveredColor[3]
+                this.Colors.Upgrades.AvailableColor = new Color(
+                    this.Colors.Upgrades.Available[0][0],
+                    this.Colors.Upgrades.Available[0][1],
+                    this.Colors.Upgrades.Available[0][2],
+                    this.Colors.Upgrades.Available[0][3]
                     );
-                Mod.Log.Debug?.Write($" UpgradePurchasedHovered set to: {config.colors.UpgradePurchased}");
+                this.Colors.Upgrades.AvailableHoverColor = new Color(
+                    this.Colors.Upgrades.Available[1][0],
+                    this.Colors.Upgrades.Available[1][1],
+                    this.Colors.Upgrades.Available[1][2],
+                    this.Colors.Upgrades.Available[1][3]
+                    );
+                Mod.Log.Debug?.Write($" Available set to: {this.Colors.Upgrades.AvailableColor} / {this.Colors.Upgrades.AvailableHoverColor}");
             }
             else
             {
-                config.colors.UpgradePurchasedHovered = ModConsts.UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER;
-                Mod.Log.Debug?.Write($" UpgradePurchasedHovered defaulted to: {config.colors.UpgradePurchasedHovered}");
+                this.Colors.Upgrades.PurchasedColor = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE;
+                this.Colors.Upgrades.PurchasedHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE_HOVER;
+                Mod.Log.Debug?.Write($" Available defaulted to: {this.Colors.Upgrades.AvailableColor} / {this.Colors.Upgrades.AvailableHoverColor}");
             }
 
-            if (config.colors != null && 
-                config.colors.UpgradeAvailableColor != null && config.colors.UpgradeAvailableColor.Length == 4)
+            if (this.Colors.Upgrades.Unavailable != null && this.Colors.Upgrades.Unavailable.Length == 2)
             {
-                config.colors.UpgradeAvailable = new Color(
-                    config.colors.UpgradeAvailableColor[0],
-                    config.colors.UpgradeAvailableColor[1],
-                    config.colors.UpgradeAvailableColor[2],
-                    config.colors.UpgradeAvailableColor[3]
+                this.Colors.Upgrades.UnavailableColor = new Color(
+                    this.Colors.Upgrades.Unavailable[0][0],
+                    this.Colors.Upgrades.Unavailable[0][1],
+                    this.Colors.Upgrades.Unavailable[0][2],
+                    this.Colors.Upgrades.Unavailable[0][3]
                     );
-                Mod.Log.Debug?.Write($" UpgradeAvailable set to: {config.colors.UpgradePurchased}");
+                this.Colors.Upgrades.UnavailableHoverColor = new Color(
+                    this.Colors.Upgrades.Unavailable[1][0],
+                    this.Colors.Upgrades.Unavailable[1][1],
+                    this.Colors.Upgrades.Unavailable[1][2],
+                    this.Colors.Upgrades.Unavailable[1][3]
+                    );
+                Mod.Log.Debug?.Write($" Unavailable set to: {this.Colors.Upgrades.UnavailableColor} / {this.Colors.Upgrades.UnavailableHoverColor}");
             }
             else
             {
-                config.colors.UpgradeAvailable = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE;
-                Mod.Log.Debug?.Write($" UpgradeAvailable defaulted to: {config.colors.UpgradeAvailable}");
+                this.Colors.Upgrades.PurchasedColor = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE;
+                this.Colors.Upgrades.PurchasedHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE_HOVER;
+                Mod.Log.Debug?.Write($" Unavailable defaulted to: {this.Colors.Upgrades.UnavailableColor} / {this.Colors.Upgrades.UnavailableHoverColor}");
             }
 
-            if (config.colors != null && 
-                config.colors.UpgradeAvailableHoveredColor != null && config.colors.UpgradeAvailableHoveredColor.Length == 4)
+
+            if (this.Colors.Upgrades.Innate != null && this.Colors.Upgrades.Innate.Length == 2)
             {
-                config.colors.UpgradeAvailableHovered = new Color(
-                    config.colors.UpgradeAvailableHoveredColor[0],
-                    config.colors.UpgradeAvailableHoveredColor[1],
-                    config.colors.UpgradeAvailableHoveredColor[2],
-                    config.colors.UpgradeAvailableHoveredColor[3]
+                this.Colors.Upgrades.InnateColor = new Color(
+                    this.Colors.Upgrades.Innate[0][0],
+                    this.Colors.Upgrades.Innate[0][1],
+                    this.Colors.Upgrades.Innate[0][2],
+                    this.Colors.Upgrades.Innate[0][3]
                     );
-                Mod.Log.Debug?.Write($" UpgradeAvailableHovered set to: {config.colors.UpgradeAvailableHovered}");
+                this.Colors.Upgrades.InnateHoverColor = new Color(
+                    this.Colors.Upgrades.Innate[1][0],
+                    this.Colors.Upgrades.Innate[1][1],
+                    this.Colors.Upgrades.Innate[1][2],
+                    this.Colors.Upgrades.Innate[1][3]
+                    );
+                Mod.Log.Debug?.Write($" Innate set to: {this.Colors.Upgrades.Innate} / {this.Colors.Upgrades.InnateHoverColor}");
             }
             else
             {
-                config.colors.UpgradeAvailableHovered = ModConsts.UPGRADE_COLOR_DEFAULT_AVAILABLE_HOVER;
-                Mod.Log.Debug?.Write($" UpgradeAvailableHovered defaulted to: {config.colors.UpgradeAvailableHovered}");
+                this.Colors.Upgrades.PurchasedColor = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE;
+                this.Colors.Upgrades.PurchasedHoverColor = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE_HOVER;
+                Mod.Log.Debug?.Write($" Innate defaulted to: {this.Colors.Upgrades.Innate} / {this.Colors.Upgrades.InnateHoverColor}");
             }
-
-            if (config.colors != null && 
-                config.colors.UpgradeUnavailableColor != null && config.colors.UpgradeUnavailableColor.Length == 4)
-            {
-                config.colors.UpgradeUnavailable = new Color(
-                    config.colors.UpgradeUnavailableColor[0],
-                    config.colors.UpgradeUnavailableColor[1],
-                    config.colors.UpgradeUnavailableColor[2],
-                    config.colors.UpgradeUnavailableColor[3]
-                    );
-                Mod.Log.Debug?.Write($" UpgradeUnavailable set to: {config.colors.UpgradeUnavailable}");
-            }
-            else
-            {
-                config.colors.UpgradeUnavailable = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE;
-                Mod.Log.Debug?.Write($" UpgradeUnavailable defaulted to: {config.colors.UpgradeUnavailable}");
-            }
-
-            if (config.colors != null && 
-                config.colors.UpgradeUnavailableHoveredColor != null && config.colors.UpgradeUnavailableHoveredColor.Length == 4)
-            {
-                config.colors.UpgradeUnavailableHovered = new Color(
-                    config.colors.UpgradeUnavailableHoveredColor[0],
-                    config.colors.UpgradeUnavailableHoveredColor[1],
-                    config.colors.UpgradeUnavailableHoveredColor[2],
-                    config.colors.UpgradeUnavailableHoveredColor[3]
-                    );
-                Mod.Log.Debug?.Write($" UpgradeUnavailableHovered set to: {config.colors.UpgradeUnavailableHovered}");
-            }
-            else
-            {
-                config.colors.UpgradeUnavailableHovered = ModConsts.UPGRADE_COLOR_DEFAULT_UNAVAILABLE_HOVER;
-                Mod.Log.Debug?.Write($" UpgradeUnavailableHovered defaulted to: {config.colors.UpgradeUnavailableHovered}");
-            }
-
-            if (config.colors != null && 
-                config.colors.UpgradeInnateColor != null && config.colors.UpgradeInnateColor.Length == 4)
-            {
-                config.colors.UpgradeInnate = new Color(
-                    config.colors.UpgradeInnateColor[0],
-                    config.colors.UpgradeInnateColor[1],
-                    config.colors.UpgradeInnateColor[2],
-                    config.colors.UpgradeInnateColor[3]
-                    );
-                Mod.Log.Debug?.Write($" UpgradeInnate set to: {config.colors.UpgradeInnate}");
-            }
-            else
-            {
-                config.colors.UpgradeInnate = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE;
-                Mod.Log.Debug?.Write($" UpgradeInnate defaulted to: {config.colors.UpgradeInnate}");
-            }
-
-            if (config.colors != null && 
-                config.colors.UpgradeInnateColor != null && config.colors.UpgradeInnateColor.Length == 4)
-            {
-                config.colors.UpgradeInnateHovered = new Color(
-                    config.colors.UpgradeInnateHoveredColor[0],
-                    config.colors.UpgradeInnateHoveredColor[1],
-                    config.colors.UpgradeInnateHoveredColor[2],
-                    config.colors.UpgradeInnateHoveredColor[3]
-                    );
-                Mod.Log.Debug?.Write($" UpgradeInnateHovered set to: {config.colors.UpgradeInnateHovered}");
-            }
-            else
-            {
-                config.colors.UpgradeInnateHovered = ModConsts.UPGRADE_COLOR_DEFAULT_INNATE_HOVER;
-                Mod.Log.Debug?.Write($" UpgradeInnateHovered defaulted to: {config.colors.UpgradeInnateHovered}");
-            }
-
         }
 
     }
