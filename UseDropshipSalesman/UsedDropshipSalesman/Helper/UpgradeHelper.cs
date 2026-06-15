@@ -1,4 +1,7 @@
-﻿using CustomUnits;
+﻿using BattleTech.Save.SaveGameStructure;
+using BattleTech.UI;
+using CustomUnits;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,5 +28,12 @@ namespace UsedDropshipSalesman.Helper
             Mod.Log.Info?.Write($"Updating CU dropConfig to support {totalUnits} across {layout.Count} lances.");
             CustomLanceHelper.PushDropLayout(config.Label, layout, totalUnits, labels);
         }
+
+        public static void UpdateHangarConfig(DropshipConfig config)
+        {
+            // TODO: HACK FOR TESTING
+            ModState.SimGameSpaceController.sim.companyStats.Set<int>(ModState.SimGameSpaceController.sim.Constants.Story.MechBayPodsID, 3);
+        }
     }
+
 }

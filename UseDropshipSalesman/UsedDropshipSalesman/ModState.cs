@@ -15,7 +15,7 @@ namespace UsedDropshipSalesman
 
         // Visuals state
         internal static SimGameLeopardState SGLeopardState = null;
-        internal static Dictionary<string, GameObject> DropshipPrefabs = new Dictionary<string, GameObject>();
+        //internal static Dictionary<string, GameObject> DropshipPrefabs = new Dictionary<string, GameObject>();
         internal static Dictionary<string, GameObject> DropshipInstances = new Dictionary<string, GameObject>();
 
         // Upgrades state

@@ -1,5 +1,7 @@
 ﻿using BattleTech.Rendering;
+using BattleTech.Save.SaveGameStructure;
 using HBS.Extensions;
+using MonoMod.Core.Platforms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +81,15 @@ namespace UsedDropshipSalesman.Helper
             }
 
             Mod.Log.Info?.Write($"Overlaying prefab: {config.prefab.PrefabPath} onto the leopard");
-            ModState.DropshipPrefabs.TryGetValue(config.prefab.AssetBundleId, out GameObject dropshipPrefab);
+
+            // Fetch the prefab from the assetBundle that's already been loaded.
+            var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
+            var assetBundle = abm.GetLoadedAssetBundle(config.prefab.AssetBundleId);
+            if (assetBundle == null) { Mod.Log.Error?.Write("Critical failure, asset bundle was not loaded! Notify Frost!"); }
+
+            var prefabGO = abm.GetAssetFromBundle<GameObject>(config.prefab.PrefabPath, config.prefab.AssetBundleId);
+            Mod.Log.Debug?.Write($"  AssetBundleId: {config.prefab.AssetBundleId}  prefabPath: {config.prefab.PrefabPath}");
+            Mod.Log.Warn?.Write($"PREFAB_GO == null? {prefabGO == null}");
 
             Mod.Log.Debug?.Write($"Instantiating prefab: {config.prefab.PrefabPath}");
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
@@ -87,7 +97,7 @@ namespace UsedDropshipSalesman.Helper
             dropshipRootGO.transform.position = ModState.SGLeopardState.RootGO.transform.position;
             dropshipRootGO.transform.rotation = ModState.SGLeopardState.RootGO.transform.rotation;
             dropshipRootGO.transform.localScale = Vector3.one;
-            var dropshipGO = UnityEngine.Object.Instantiate(dropshipPrefab, dropshipRootGO.transform);
+            var dropshipGO = UnityEngine.Object.Instantiate(prefabGO, dropshipRootGO.transform);
 
             // HBS scenes expect layer = 20 for these to be visible. Force the issue.
             // TODO: Note in docs you should set layer = 20 for visibility
@@ -96,7 +106,7 @@ namespace UsedDropshipSalesman.Helper
             var children = dropshipGO.GetComponentsInChildren<GameObject>();
             foreach (GameObject child in children)
             {
-                child.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER; ;
+                child.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
             }
 
             // Update the mesh to use the battletech shader
@@ -106,6 +116,7 @@ namespace UsedDropshipSalesman.Helper
             {
                 Mod.Log.Trace?.Write($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
                 childMeshRenderer.material.shader = ModState.SGLeopardState.BodyMat.shader;
+                childMeshRenderer.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
             }
 
             // Empty the ArgoMainEngine controller values that we're going to mutate
@@ -213,6 +224,7 @@ namespace UsedDropshipSalesman.Helper
             if (ModState.SimGameSpaceController == null)
             {
                 Mod.Log.Error?.Write("Unable to ref SimGameSpaceController, this should never happen!");
+                return;
             }
             if (ModState.SGLeopardState == null)
             {

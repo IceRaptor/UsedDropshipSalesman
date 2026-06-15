@@ -1,5 +1,8 @@
 ﻿using BattleTech.Save;
 using BattleTech.Save.SaveGameStructure;
+using CustomUnits;
+using CustomUnits.CustomHangars;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,15 +74,27 @@ namespace UsedDropshipSalesman.Patches
         static void Prefix(bool __runOriginal, ShipModuleUpgrade upgrade, SimGameState __instance, out DropshipType __state)
         {
             Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade-PREFIX- entered");
+            // Skip processing if spacecontroller isn't valid; prevents event generated argoUpgrade error
+            if (__instance == null || __instance.SpaceController == null) {
+                __state = DropshipType.Argo;
+                return; 
+            }
+
             // Force the type so all upgrade logic applies
             __state = __instance.CurDropship;
             __instance.CurDropship = DropshipType.Argo;
+            Mod.Log.Trace?.Write($"state: {__state} sgs.currentDropship: {__instance.CurDropship}");
+
         }
 
         static void Postfix(ShipModuleUpgrade upgrade, SimGameState __instance, DropshipType __state)
         {
             Mod.Log.Trace?.Write("==== SimGameState_AddArgoUpgrade-POSTFIX - entered");
+            // Skip processing if spacecontroller isn't valid; prevents event generated argoUpgrade error
+            if (__instance == null || __instance.SpaceController == null) { return; }
+
             __instance.CurDropship = __state;
+            Mod.Log.Trace?.Write($"state: {__state} sgs.currentDropship: {__instance.CurDropship}");
         }
     }
 
@@ -135,4 +150,91 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
+    [HarmonyPatch(typeof(SimGameState), "GetMaxActiveMechs")]
+    static class SimGameState_GetMaxActiveMechs
+    {
+        static void Prefix(SimGameState __instance, ref bool __runOriginal, ref int __result)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_GetMaxActiveMechs - entered");
+
+           // Mod.Log.Info?.Write("Returning 3 bays");
+            //         return companyStats.GetValue<int>(Constants.Story.MechBayPodsID) * Constants.Story.MaxMechsPerPod;
+
+            //__instance.Constants.Story.MaxMechsPerPod = 3;
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameState), "AddMech")]
+    [HarmonyPatch(new Type[] { typeof(int), typeof(MechDef), typeof(bool), typeof(bool), typeof(bool), typeof(string) })]
+    [HarmonyBefore("io.mission.customunits")]
+    static class SimGameState_AddMech
+    {
+        static void Prefix(MechDef mech, SimGameState __instance, ref bool __runOriginal)
+        {
+            if (!__runOriginal) { return; }
+            Mod.Log.Trace?.Write("==== SimGameState_AddMech - entered");
+
+            int hangerStartIdx = CustomHangarHelper.GetHangarShift(mech);
+            Mod.Log.Trace?.Write($"Hangar start idx: {hangerStartIdx}");
+            // 0 == mech
+            // 6 = veh
+            // 12 = ba? 
+            // Bet we need to query the CustomHangarDef to find out, I bet its 0-5, 0-11, 0-17 if 3 bays with mechs
+            
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameState), "AttachUX")]
+    static class SimGameState_AttachUX
+    {
+        static void Postfix(SimGameState __instance)
+        {
+            Mod.Log.Trace?.Write("==== SimGameState_AttachUX - entered");
+
+            Mod.Log.Info?.Write("Identifying prefabs to load");
+            var prefabsToLoad = new Dictionary<string, string>();
+            foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
+            {
+                DropshipPrefabConfig prefabConfig = kvp.Value.prefab;
+                Mod.Log.Info?.Write($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
+                    $"prefabPath:{prefabConfig.PrefabPath}");
+
+                if (prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_LEOPARD, StringComparison.InvariantCultureIgnoreCase) ||
+                    prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_ARGO, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Mod.Log.Info?.Write($"  Dropship configured to use HBS assets, skipping load.");
+                    continue;
+                }
+
+                if (!prefabsToLoad.ContainsKey(prefabConfig.AssetBundleId))
+                {
+                    prefabsToLoad.Add(prefabConfig.AssetBundleId, prefabConfig.PrefabPath);
+                }
+            }
+
+            foreach (KeyValuePair<string, string> kvp in prefabsToLoad)
+            {
+                var abm = __instance.DataManager.AssetBundleManager;
+                abm.RequestBundle(kvp.Key, delegate
+                {
+                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {kvp.Key}");
+
+                    var assetBundle = abm.GetLoadedAssetBundle(kvp.Key);
+                    Mod.Log.Trace?.Write($" -- All assets in bundle: {kvp.Key}");
+                    foreach (string n in assetBundle.GetAllAssetNames())
+                    {
+                        Mod.Log.Trace?.Write($"  ---- {n}");
+                    }
+                });
+            }
+
+            Mod.Log.Info?.Write("Printing loaded SVGIcons");
+            var allImages = __instance.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.SVGAsset, false);
+            foreach (VersionManifestEntry vme in allImages)
+            {
+                Mod.Log.Trace?.Write($" --- vme: {vme.id}  name: {vme.Name}  path {vme.path}");
+            }
+
+        }
+    }
 }

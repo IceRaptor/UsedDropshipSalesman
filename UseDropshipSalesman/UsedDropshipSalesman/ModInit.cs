@@ -1,8 +1,12 @@
-﻿using IRBTModUtils.Logging;
+﻿using CustomUnits;
+using CustomUnits.CustomHangars;
+using IRBTModUtils.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman
 {
@@ -64,6 +68,16 @@ namespace UsedDropshipSalesman
         public static void FinishedLoading()
         {
             Mod.Log.Trace?.Write("==== ModInit::FinishedLoading invoked.");
+
+            // Setup the dropship size constraints in CU
+            Dictionary<string, CustomHangarConstraint> constraints = new Dictionary<string, CustomHangarConstraint>();
+            constraints[CustomHangarHelper.HANGAR_ID_BASE] = new CustomHangarConstraint() { MaxUnitsPerPod = 8 };
+            constraints["vehicle_bays"] = new CustomHangarConstraint() { MaxUnitsPerPod = 3 };
+            constraints["battle_armor_bays"] = new CustomHangarConstraint() { MaxUnitsPerPod = 14 };
+
+            CustomHangarHelper.SetConstraints(constraints, Mod.LogLabel);
+
+           
         }
     }
 }

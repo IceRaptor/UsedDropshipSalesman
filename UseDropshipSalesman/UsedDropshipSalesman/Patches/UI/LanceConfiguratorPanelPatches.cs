@@ -14,14 +14,13 @@ namespace UsedDropshipSalesman.Patches.UI
         {
             Mod.Log.Trace?.Write("==== LanceConfiguratorPanel_SetData::Prefix - entered.");
 
-            Mod.Log.Debug?.Write($" MAX_UNITS = {maxUnits}");
-
+            Mod.Log.Debug?.Write($" maxUnits set to: {maxUnits}");
         }
         static void Postfix(LanceConfiguratorPanel __instance, ref int maxUnits)
         {
             Mod.Log.Trace?.Write("==== LanceConfiguratorPanel_SetData::Postfix- entered.");
 
-            Mod.Log.Debug?.Write($" MAX_UNITS = {maxUnits}");
+            Mod.Log.Debug?.Write($" maxUnits set to: {maxUnits}");
 
             Mod.Log.Debug?.Write($"  Contract: {__instance.activeContract.Name}  " +
                 $"contract_id: {__instance.activeContract.internalName}" +

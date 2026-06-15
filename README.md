@@ -30,25 +30,40 @@ These options are available under the `Settings.Dropships`:
 
 ### Todo
 
+* Integrate dropship replacement for drop screen
 * Integrate dropship replacement for in-mission
-* Create item -> dropship loop
 * Add jump costs for additional dropships?
-* Add upkeep costs for additional dropships
-* Implement upgrade logic
-* Implement listener for dropship upgrade from event
-* Implement mechbay handling for changed dropships w/ less bay sizes
 * Implement dropship change only at planets
 * Implement zoom out for camera
-* ArgoBaysFix & BaysCountExternalControl
 * 
+* HangerBays fix - adjust size by dropship
+* Check build from storage for hanger limits
+*
+* OnCareerStart - allow defaultDropship by startID, fix dropship
+
+* Implement listener for dropship upgrade from event
+* 
+* Implement mechbay handling for changed dropships w/ less bay sizes
+* OnChange - dialog prompting for storing mechs, stopping argo upgrades, etc
+* Implement upgrade logic XX - need cleanup logic, persistence logic handled
+
+* Allow granting items / itemCoillections on receiving dropship (StratOps integration)
+
+* Replace event text that relies upon argo
+* Implement chassis specific tag at change time
+* Implement tag-based restrictions for events
+
 
 ### Ideas
 
 * Create 'select dropship' option in command center
 * Create argo + 1 dropship where drop-bays are tied to the dropship, not argo
+* Add upkeep costs for additional dropships
 * Create option to auto-magically grant airsrike beacons for dropships that have bays
 * Create option for mechtech, medtech multiplers on units (cramped conditions)
+* Create option to limit pilots size by dropship
 * Create main + child dropship approach (for Shade)
-
+* Add upgrade stats for mechbays?
+* 
 ### Interesting methods
   
