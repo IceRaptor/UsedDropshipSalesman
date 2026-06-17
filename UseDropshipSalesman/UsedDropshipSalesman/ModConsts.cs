@@ -6,6 +6,8 @@ namespace UsedDropshipSalesman
 
     internal static class ModConsts
     {
+        public const string CUSTOM_RESOURCE_DROPSHIP_CONFIG = "CustomDropshipDef";
+
         public const string STAT_CURRENT_DROPSHIP = "UDS_CURRENT_DROPSHIP";
 
         public const string HBS_PREFAB_LEOPARD = "HBS_LEOPARD";

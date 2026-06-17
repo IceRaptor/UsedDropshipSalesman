@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using us.frostraptor.modUtils;
+using UsedDropshipSalesman.Defs;
 
 namespace UsedDropshipSalesman.Patches
 {
@@ -150,40 +151,6 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SimGameState), "GetMaxActiveMechs")]
-    static class SimGameState_GetMaxActiveMechs
-    {
-        static void Prefix(SimGameState __instance, ref bool __runOriginal, ref int __result)
-        {
-            Mod.Log.Trace?.Write("==== SimGameState_GetMaxActiveMechs - entered");
-
-           // Mod.Log.Info?.Write("Returning 3 bays");
-            //         return companyStats.GetValue<int>(Constants.Story.MechBayPodsID) * Constants.Story.MaxMechsPerPod;
-
-            //__instance.Constants.Story.MaxMechsPerPod = 3;
-        }
-    }
-
-    [HarmonyPatch(typeof(SimGameState), "AddMech")]
-    [HarmonyPatch(new Type[] { typeof(int), typeof(MechDef), typeof(bool), typeof(bool), typeof(bool), typeof(string) })]
-    [HarmonyBefore("io.mission.customunits")]
-    static class SimGameState_AddMech
-    {
-        static void Prefix(MechDef mech, SimGameState __instance, ref bool __runOriginal)
-        {
-            if (!__runOriginal) { return; }
-            Mod.Log.Trace?.Write("==== SimGameState_AddMech - entered");
-
-            int hangerStartIdx = CustomHangarHelper.GetHangarShift(mech);
-            Mod.Log.Trace?.Write($"Hangar start idx: {hangerStartIdx}");
-            // 0 == mech
-            // 6 = veh
-            // 12 = ba? 
-            // Bet we need to query the CustomHangarDef to find out, I bet its 0-5, 0-11, 0-17 if 3 bays with mechs
-            
-        }
-    }
-
     [HarmonyPatch(typeof(SimGameState), "AttachUX")]
     static class SimGameState_AttachUX
     {
@@ -195,7 +162,7 @@ namespace UsedDropshipSalesman.Patches
             var prefabsToLoad = new Dictionary<string, string>();
             foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
             {
-                DropshipPrefabConfig prefabConfig = kvp.Value.prefab;
+                DropshipVisuals prefabConfig = kvp.Value.CustomDropship.Visuals;
                 Mod.Log.Info?.Write($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
                     $"prefabPath:{prefabConfig.PrefabPath}");
 

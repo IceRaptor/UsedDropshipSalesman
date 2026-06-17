@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UsedDropshipSalesman.Defs;
 using static Mono.Options.OptionSet;
 
 namespace UsedDropshipSalesman.Helper
@@ -47,32 +48,7 @@ namespace UsedDropshipSalesman.Helper
      * uixSvgIcon_action_multitarget
      */
 
-    public record DropshipUpgradeCategory
-    {
-        public string CategoryId;
-        public string HeaderText;
-        public string Icon;
-        public List<DropshipUpgradeSystem> Systems;
-    }
 
-    public record DropshipUpgradeSystem
-    {
-        public string SystemId;
-        public string HeaderText;
-        public List<string> innateUpgrades;
-        public List<string> optionalUpgrades;
-
-        // Derived from argoUpgradeDefs
-        public List<DropshipUpgradeItem> ItemUpgrades;
-
-    }
-
-    public record DropshipUpgradeItem
-    {
-        public string Name;
-        public string Description;
-        public string Icon;
-    }
 
 
     public static class UpgradeUIHelper

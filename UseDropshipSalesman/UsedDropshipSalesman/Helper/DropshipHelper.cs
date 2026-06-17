@@ -70,7 +70,7 @@ namespace UsedDropshipSalesman.Helper
         public static void OverlayDropshipMeshes(string dropshipId, DropshipConfig config)
         {
             // Check for an existing instance of the prefab already attached to the HBS leopard 
-            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.prefab.AssetBundleId;
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.CustomDropship.Visuals.AssetBundleId;
 
             bool alreadyCreated = ModState.DropshipInstances.TryGetValue(dropshipRootName, out GameObject cachedDropshipRootGO);
             if (alreadyCreated)
@@ -80,18 +80,18 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
-            Mod.Log.Info?.Write($"Overlaying prefab: {config.prefab.PrefabPath} onto the leopard");
+            Mod.Log.Info?.Write($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the leopard");
 
             // Fetch the prefab from the assetBundle that's already been loaded.
             var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
-            var assetBundle = abm.GetLoadedAssetBundle(config.prefab.AssetBundleId);
+            var assetBundle = abm.GetLoadedAssetBundle(config.CustomDropship.Visuals.AssetBundleId);
             if (assetBundle == null) { Mod.Log.Error?.Write("Critical failure, asset bundle was not loaded! Notify Frost!"); }
 
-            var prefabGO = abm.GetAssetFromBundle<GameObject>(config.prefab.PrefabPath, config.prefab.AssetBundleId);
-            Mod.Log.Debug?.Write($"  AssetBundleId: {config.prefab.AssetBundleId}  prefabPath: {config.prefab.PrefabPath}");
+            var prefabGO = abm.GetAssetFromBundle<GameObject>(config.CustomDropship.Visuals.PrefabPath, config.CustomDropship.Visuals.AssetBundleId);
+            Mod.Log.Debug?.Write($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
             Mod.Log.Warn?.Write($"PREFAB_GO == null? {prefabGO == null}");
 
-            Mod.Log.Debug?.Write($"Instantiating prefab: {config.prefab.PrefabPath}");
+            Mod.Log.Debug?.Write($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
             dropshipRootGO.transform.parent = ModState.SGLeopardState.RootGO.transform;
             dropshipRootGO.transform.position = ModState.SGLeopardState.RootGO.transform.position;
@@ -127,7 +127,7 @@ namespace UsedDropshipSalesman.Helper
             // Instance the engine jets and flares 
             // TODO: Get this from configuration
             // TODO: Rename prefab attaches to engine_points?
-            foreach (String ap_name in config.prefab.AttachesEngines)
+            foreach (String ap_name in config.CustomDropship.Visuals.AttachesEngines)
             {
                 var attach_point = dropshipGO.FindFirstChildNamed(ap_name);
                 if (attach_point == null)
@@ -163,14 +163,14 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // For spot lights, instantiate them
-            foreach (String attach_name in config.prefab.AttachesSpotLights)
+            foreach (String attach_name in config.CustomDropship.Visuals.AttachesSpotLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
                 Mod.Log.Debug?.Write($"I should be instantiating a spotlight at attach: {attach_name} with GO != null? {attach_GO != null}");
             }
 
             // For running lights, instantiate them
-            foreach (String attach_name in config.prefab.AttachesRunningLights)
+            foreach (String attach_name in config.CustomDropship.Visuals.AttachesRunningLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
                 Mod.Log.Debug?.Write($"I should be instantiating a running light at attach: {attach_name} with GO != null? {attach_GO != null}");
@@ -178,11 +178,11 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the engine glow
-            var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.prefab.AttachEngineGlow);
+            var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachEngineGlow);
             if (ap_engineGlow != null)
             {
                 var newGlow = UnityEngine.Object.Instantiate(ModState.SGLeopardState.EngineGlowGO);
-                newGlow.name = $"engine_glow_{config.prefab.AttachEngineGlow}";
+                newGlow.name = $"engine_glow_{config.CustomDropship.Visuals.AttachEngineGlow}";
                 newGlow.transform.parent = ap_engineGlow.transform;
                 newGlow.transform.position = ap_engineGlow.transform.position;
                 newGlow.transform.rotation = ModState.SGLeopardState.EngineGlowGO.transform.rotation;
@@ -193,15 +193,15 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - engine_glow attach_point: {config.prefab.AttachEngineGlow} could not be found in the prefab!");
+                Mod.Log.Warn?.Write($"Configuration error - engine_glow attach_point: {config.CustomDropship.Visuals.AttachEngineGlow} could not be found in the prefab!");
             }
 
             // Move the decal
-            var ap_decal = dropshipGO.FindFirstChildNamed(config.prefab.AttachDecal);
+            var ap_decal = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachDecal);
             if (ap_decal != null)
             {
                 var newDecal = UnityEngine.Object.Instantiate(ModState.SGLeopardState.DecalGO);
-                newDecal.name = $"decal_{config.prefab.AttachDecal}";
+                newDecal.name = $"decal_{config.CustomDropship.Visuals.AttachDecal}";
                 newDecal.transform.parent = ap_decal.transform;
                 newDecal.transform.position = ap_decal.transform.position;
                 newDecal.transform.rotation = ModState.SGLeopardState.DecalGO.transform.rotation;
@@ -211,7 +211,7 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.prefab.AttachDecal} could not be found in the prefab!");
+                Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
             }
 
             // Finally set the dropship active and record it as an active instance

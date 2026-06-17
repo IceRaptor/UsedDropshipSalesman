@@ -1,0 +1,145 @@
+{
+  "Description": {
+    "Id": "leopard_tank_variant",
+    "Name": "Leopard (Vehicles)"
+  },
+  "Visuals": {
+    "assetBundleId": "HBS_LEOPARD"
+  },
+  "Costs": {
+    "purchase": 10000.0,
+    "upkeep": 1000.0,
+    "drop": 100.0
+  },
+  "Requirements": {
+    "eventTag": "uds_require_dropship_leopard",
+    "factionReputation": 100,
+    "mustBeAllied": false,
+    "planetTags": [ "planet_industry_electronics", "planet_pop_large" ]
+  },
+  "HangarBays": {
+    "BASE_HANGER": 4,
+    "vehicle_bays": 2,
+    "battle_armor_bays": 0
+  },
+  "DropBays": {
+    "labels": [ "Lance Alpha", "Lance Beta" ],
+    "maxTonnage": 200,
+    "slots": [
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]
+    ]
+  },
+  "Upgrades": [
+    {
+      "categoryId": "movement",
+      "headerText": "Movement",
+      "icon": "lv_brass-eye",
+      "systems": [
+        {
+          "systemId": "main_engine",
+          "headerText": "Main Engines",
+          "innateUpgrades": [
+            "argoUpgrade_uds_leopard_base_engine_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_leopard_base_engine_2",
+            "argoUpgrade_uds_leopard_base_engine_3",
+            "argoUpgrade_uds_leopard_base_engine_4"
+          ]
+        },
+        {
+          "systemId": "maneuver_jets",
+          "headerText": "Maneuvering",
+          "innateUpgrades": [
+            "argoUpgrade_power1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_power2",
+            "argoUpgrade_power3"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+            "argoUpgrade_uds_leopard_base_drop_tonnage_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_leopard_base_drop_tonnage_2",
+            "argoUpgrade_uds_leopard_base_drop_tonnage_3",
+            "argoUpgrade_uds_leopard_base_drop_tonnage_4"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "maintenance",
+      "headerText": "Maintenance",
+      "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
+      "systems": [
+        {
+          "systemId": "mech_bays",
+          "headerText": "Mech Bays",
+          "innateUpgrades": [
+            "argoUpgrade_mechBay1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_mechBay2",
+            "argoUpgrade_mechBay3"
+          ]
+        },
+        {
+          "systemId": "repair_support",
+          "headerText": "Repair Support",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_mechBay_automation1",
+            "argoUpgrade_mechBay_automation2",
+            "argoUpgrade_mechBay_automation2",
+            "argoUpgrade_mechBay_refitHarness"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "personnel",
+      "headerText": "Personnel",
+      "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
+      "systems": [
+        {
+          "systemId": "med_bays",
+          "headerText": "Med Bays",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_medBay1",
+            "argoUpgrade_medBay2",
+            "argoUpgrade_medBay3",
+            "argoUpgrade_medBay_hospital"
+          ]
+        },
+        {
+          "systemId": "training",
+          "headerText": "Training",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_trainingModule1",
+            "argoUpgrade_trainingModule2"
+          ]
+        }
+      ]
+    }
+  ]
+
+
+}

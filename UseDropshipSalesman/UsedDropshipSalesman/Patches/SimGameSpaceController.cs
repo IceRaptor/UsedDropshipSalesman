@@ -62,7 +62,7 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
 
-           if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
+           if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
                 // Use the default Leopard meshes with custom upgrades
                 DropshipHelper.ToggleLeopardVisibility(true);
@@ -72,9 +72,9 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetBool("argo", value: false);
 
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
-                UpgradeUIHelper.OverlayCustomUpgrades(config.upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
-            else if (config.prefab.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
+            else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
                 // Use the default Argo ship with custom upgrades
                 DropshipHelper.ToggleLeopardVisibility(true);
@@ -97,7 +97,7 @@ namespace UsedDropshipSalesman.Patches
 
                 ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
                 DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
-                UpgradeUIHelper.OverlayCustomUpgrades(config.upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
             UpgradeUIHelper.RefreshUpgradeIcons(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen, config);

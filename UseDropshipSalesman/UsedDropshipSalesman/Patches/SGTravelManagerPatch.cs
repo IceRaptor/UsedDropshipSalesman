@@ -29,8 +29,8 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
 
-            Mod.Log.Debug?.Write($"Argo button currently set to: {__instance.argoButton?.Text?.text}, setting label to: {config.Label}");
-            __instance.argoButton.text.SetText(config.Label);
+            Mod.Log.Debug?.Write($"Argo button currently set to: {__instance.argoButton?.Text?.text}, setting label to: {config.CustomDropship.Description.Name}");
+            __instance.argoButton.text.SetText(config.CustomDropship.Description.Name);
 
         }
     }

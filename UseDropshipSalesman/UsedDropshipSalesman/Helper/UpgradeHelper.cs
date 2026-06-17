@@ -1,12 +1,14 @@
 ﻿using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using CustomUnits;
+using CustomUnits.CustomHangars;
 using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman.Helper
 {
@@ -18,21 +20,29 @@ namespace UsedDropshipSalesman.Helper
         {
             int totalUnits = 0;
             List<List<string>> layout = new List<List<string>>();
-            foreach (var slot in config.DropBays.Slots)
+            foreach (var slot in config.CustomDropship.DropBays.Slots)
             {
                 totalUnits += slot.Length;
                 layout.Add(slot.ToList());
             }
 
-            var labels = config.DropBays.Labels.ToList();
+            var labels = config.CustomDropship.DropBays.Labels.ToList();
             Mod.Log.Info?.Write($"Updating CU dropConfig to support {totalUnits} across {layout.Count} lances.");
-            CustomLanceHelper.PushDropLayout(config.Label, layout, totalUnits, labels);
+            CustomLanceHelper.PushDropLayout(config.CustomDropship.Description.Id, layout, totalUnits, labels);
         }
 
         public static void UpdateHangarConfig(DropshipConfig config)
         {
-            // TODO: HACK FOR TESTING
-            ModState.SimGameSpaceController.sim.companyStats.Set<int>(ModState.SimGameSpaceController.sim.Constants.Story.MechBayPodsID, 3);
+            Mod.Log.Info?.Write($"Updating CU hangarConfig to support hangars: ");
+            foreach (KeyValuePair<string, int> kvp in config.CustomDropship.HangarBays)
+            {
+                Mod.Log.Info?.Write($" -- bay: {kvp.Key}  value: {kvp.Value}");
+            }
+
+            Dictionary<string, CustomHangarConstraint> constraints;
+            constraints = config.CustomDropship.HangarBays.ToDictionary(x => x.Key, y => new CustomHangarConstraint() { MaxAvailableUnits= y.Value });
+
+            CustomHangarHelper.SetConstraints(constraints, Mod.LogName);
         }
     }
 

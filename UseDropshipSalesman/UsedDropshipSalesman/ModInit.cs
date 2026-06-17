@@ -2,10 +2,14 @@
 using CustomUnits.CustomHangars;
 using IRBTModUtils.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using UsedDropshipSalesman.Defs;
 using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman
@@ -65,19 +69,59 @@ namespace UsedDropshipSalesman
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);
         }
 
-        public static void FinishedLoading()
+        public static void FinishedLoading(Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
         {
             Mod.Log.Trace?.Write("==== ModInit::FinishedLoading invoked.");
 
             // Setup the dropship size constraints in CU
             Dictionary<string, CustomHangarConstraint> constraints = new Dictionary<string, CustomHangarConstraint>();
-            constraints[CustomHangarHelper.HANGAR_ID_BASE] = new CustomHangarConstraint() { MaxUnitsPerPod = 8 };
-            constraints["vehicle_bays"] = new CustomHangarConstraint() { MaxUnitsPerPod = 3 };
-            constraints["battle_armor_bays"] = new CustomHangarConstraint() { MaxUnitsPerPod = 14 };
+            constraints[CustomHangarHelper.HANGAR_ID_BASE] = new CustomHangarConstraint() { MaxAvailableUnits = 8 };
+            constraints["vehicle_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 3 };
+            constraints["battle_armor_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 14 };
 
             CustomHangarHelper.SetConstraints(constraints, Mod.LogLabel);
 
-           
+            // Load the dropship configs
+            if (customResources != null && customResources.Count > 0)
+            {
+
+                bool hasResources = customResources.TryGetValue(ModConsts.CUSTOM_RESOURCE_DROPSHIP_CONFIG, out Dictionary<string, VersionManifestEntry> dropshipConfigEntries);
+                foreach (KeyValuePair<string, VersionManifestEntry> kvp in dropshipConfigEntries)
+                {
+                    Mod.Log.Debug?.Write($"Loading customDropshipDef: {kvp.Key} from path: {kvp.Value.FilePath}");
+                    try
+                    { 
+                        string fileContent = File.ReadAllText(kvp.Value.FilePath);
+                        Mod.Log.Trace?.Write($"Deserializing context to CustomDropshipDef:\n'{fileContent}'");
+                        CustomDropshipDef dropshipDef = JsonConvert.DeserializeObject<CustomDropshipDef>(fileContent);
+
+                        bool isValid = dropshipDef.Validate();
+                        if (isValid)
+                        {
+                            Mod.Log.Debug?.Write($"Adding dropshipDef with ID: {dropshipDef.Description.Id} to available dropships.");
+                            DropshipConfig newConfig = new DropshipConfig() { CustomDropship = dropshipDef };
+                            Mod.Config.Dropships.Add(dropshipDef.Description.Id, newConfig);
+
+                        }
+                        else
+                        {
+                            Mod.Log.Warn?.Write($"Dropship {dropshipDef?.Description?.Id} failed validation, skipping.!");
+                            var jsonString = JsonConvert.SerializeObject(dropshipDef, Formatting.Indented, 
+                                new JsonConverter[] { new StringEnumConverter() });
+                            Mod.Log.Warn?.Write($" -- Generated object: {jsonString}");
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Mod.Log.Warn?.Write(ex, "Failed read custom resource!");
+                    }
+                }
+            }
         }
+
+
+
+
     }
 }

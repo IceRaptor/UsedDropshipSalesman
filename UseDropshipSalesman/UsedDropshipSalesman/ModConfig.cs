@@ -6,65 +6,44 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 using UsedDropshipSalesman;
+using UsedDropshipSalesman.Defs;
 using UsedDropshipSalesman.Helper;
 
 namespace UsedDropshipSalesman
 {
     public record DropshipConfig
     {
-        public String Label;
-        public DropshipPrefabConfig prefab;
-        public DropshipCosts costs;
-        public DropshipRequirements requirements;
-        public DropshipDropBays DropBays;
-        public DropshipBays RepairBays;
-        public List<DropshipUpgradeCategory> upgrades;
-        
+        CustomDropshipDef _customDropshipDef;
+        public CustomDropshipDef CustomDropship { 
+            get => _customDropshipDef;
+            set {
+                _customDropshipDef = value;
+                this.PopulateUpgrades(value);
+            }
+        }
+
         // Initialized during config
         public List<String> AllUpgradeIds;
         public List<String> InnateUpgradeIds;
-    }
 
-    public record DropshipPrefabConfig
-    {
-        public String AssetBundleId;
-        public String PrefabPath;
-        public String AttachEngineGlow;
-        public String AttachDecal;
-        public List<String> AttachesEngines;
+        private void PopulateUpgrades(CustomDropshipDef customDropshipDef)
+        {
+            Mod.Log.Debug?.Write(" -- Aggregating upgrades.");
 
-        // TODO:TBD
-        public List<String> AttachesSpotLights;
-        public List<String> AttachesRunningLights;
-    }
+            this.AllUpgradeIds = customDropshipDef.Upgrades.SelectMany(cats => customDropshipDef.Upgrades)
+                .SelectMany(cat => cat.Systems)
+                .SelectMany(sys => sys.innateUpgrades.Union(sys.optionalUpgrades))
+                .Distinct()
+                .ToList();
+            Mod.Log.Debug?.Write($" All upgrades for dropship are: {String.Join(",", this.AllUpgradeIds)}");
 
-    public record DropshipRequirements
-    {
-        public String eventTag;
-        public int FactionReputation;
-        public bool MustBeAllied = false;
-        public String[] PlanetTags = Array.Empty<String>();
-    }
-
-    public record DropshipCosts
-    {
-        public float Purchase;
-        public float Upkeep;
-        public float Drop;
-    }
-
-    public record DropshipBays
-    {
-        public int MechBays = 4;
-        public int VehicleBays = 0;
-        public int BattleArmorBays = 0;
-    }
-
-    public record DropshipDropBays
-    {
-        public String[] Labels;
-        public int MaxTonnage;
-        public String[][] Slots;
+            this.InnateUpgradeIds = customDropshipDef.Upgrades.SelectMany(cats => customDropshipDef.Upgrades)
+                .SelectMany(cat => cat.Systems)
+                .SelectMany(sys => sys.innateUpgrades)
+                .Distinct()
+                .ToList();
+            Mod.Log.Debug?.Write($" Innate upgrades for dropship are: {String.Join(",", this.InnateUpgradeIds)}");
+        }
     }
 
     public record ColorConfig
@@ -125,31 +104,35 @@ namespace UsedDropshipSalesman
             Mod.Log.Info?.Write("\n  --- DROPSHIPS CONFIG ---");
             foreach (KeyValuePair<string, DropshipConfig> kvp in Dropships)
             {
+                CustomDropshipDef customDropship = kvp.Value.CustomDropship;
                 Mod.Log.Info?.Write($"\n  DropshipID: {kvp.Key}");
                 Mod.Log.Info?.Write("  ---- PREFAB");
-                Mod.Log.Info?.Write($" assetBundleID          : {kvp.Value.prefab.AssetBundleId}");
-                Mod.Log.Info?.Write($" prefabPath             : {kvp.Value.prefab.AssetBundleId}");
-                Mod.Log.Info?.Write($" attachDecal            : {kvp.Value.prefab.AttachDecal}");
-                Mod.Log.Info?.Write($" attachEngineGlow       : {kvp.Value.prefab.AttachEngineGlow}");
-                Mod.Log.Info?.Write($" attachesEngines        : {(kvp.Value.prefab.AttachesEngines != null ? String.Join(",", kvp.Value.prefab.AttachesEngines) : "None" )}");
-                Mod.Log.Info?.Write($" attachesSpotLights     : {(kvp.Value.prefab.AttachesSpotLights != null ? String.Join(",", kvp.Value.prefab.AttachesSpotLights) : "None" )}");
-                Mod.Log.Info?.Write($" attachesRunningLights  : {(kvp.Value.prefab.AttachesRunningLights != null ? String.Join(",", kvp.Value.prefab.AttachesRunningLights) : "None" )}");
+                Mod.Log.Info?.Write($" assetBundleID          : {customDropship.Visuals.AssetBundleId}");
+                Mod.Log.Info?.Write($" prefabPath             : {customDropship.Visuals.AssetBundleId}");
+                Mod.Log.Info?.Write($" attachDecal            : {customDropship.Visuals.AttachDecal}");
+                Mod.Log.Info?.Write($" attachEngineGlow       : {customDropship.Visuals.AttachEngineGlow}");
+                Mod.Log.Info?.Write($" attachesEngines        : {(customDropship.Visuals.AttachesEngines != null ? String.Join(",", customDropship.Visuals.AttachesEngines) : "None" )}");
+                Mod.Log.Info?.Write($" attachesSpotLights     : {(customDropship.Visuals.AttachesSpotLights != null ? String.Join(",", customDropship.Visuals.AttachesSpotLights) : "None" )}");
+                Mod.Log.Info?.Write($" attachesRunningLights  : {(customDropship.Visuals.AttachesRunningLights != null ? String.Join(",", customDropship.Visuals.AttachesRunningLights) : "None" )}");
                 Mod.Log.Info?.Write("  ---- COSTS");
-                Mod.Log.Info?.Write($" purchase: {kvp.Value.costs.Purchase}  upkeep: {kvp.Value.costs.Upkeep}  drop: {kvp.Value.costs.Drop}");
+                Mod.Log.Info?.Write($" purchase: {customDropship.Costs.Purchase}  upkeep: {customDropship.Costs.Upkeep}  drop: {customDropship.Costs.Drop}");
                 Mod.Log.Info?.Write("  ---- REQUIREMENTS");
-                Mod.Log.Info?.Write($" factionRep: {kvp.Value.requirements.FactionReputation}  mustBeAllied: {kvp.Value.requirements.MustBeAllied}");
-                Mod.Log.Info?.Write($" planetTags       : {String.Join(",", kvp.Value.requirements.PlanetTags)}");
+                Mod.Log.Info?.Write($" factionRep: {customDropship.Requirements.FactionReputation}  mustBeAllied: {customDropship.Requirements.MustBeAllied}");
+                Mod.Log.Info?.Write($" planetTags       : {String.Join(",", customDropship.Requirements.PlanetTags)}");
                 Mod.Log.Info?.Write("  ---- REPAIR BAYS");
-                Mod.Log.Info?.Write($" mech: {kvp.Value?.RepairBays?.MechBays}  vehicle: {kvp.Value?.RepairBays?.VehicleBays}  battleArmor: {kvp.Value?.RepairBays?.BattleArmorBays}");
-                Mod.Log.Info?.Write("  ---- DROP BAYS");
-                Mod.Log.Info?.Write($" maxTonnage: {kvp.Value?.DropBays?.MaxTonnage}");
-                for (int i = 0; i < kvp.Value?.DropBays?.Labels?.Length; i++)
+                foreach (KeyValuePair<string, int> kvpRB in customDropship?.HangarBays)
                 {
-                    Mod.Log.Info?.Write($"Lance: '{kvp.Value?.DropBays?.Labels[i]}' => [{String.Join(",", kvp.Value?.DropBays?.Slots[i])}]");
+                    Mod.Log.Info?.Write($"   hangarBay: {kvpRB.Key}  value: {kvpRB.Value}");
+                }
+                Mod.Log.Info?.Write("  ---- DROP BAYS");
+                Mod.Log.Info?.Write($" maxTonnage: {customDropship?.DropBays?.MaxTonnage}");
+                for (int i = 0; i < customDropship?.DropBays?.Labels?.Length; i++)
+                {
+                    Mod.Log.Info?.Write($"Lance: '{customDropship?.DropBays?.Labels[i]}' => [{String.Join(",", customDropship?.DropBays?.Slots[i])}]");
                 }
 
                 Mod.Log.Info?.Write("  ---- UPGRADES");
-                foreach (var category in kvp.Value.upgrades)
+                foreach (var category in customDropship.Upgrades)
                 {
                     Mod.Log.Info?.Write($" -------- categoryID: {category.CategoryId}  headerText: {category.HeaderText}  icon: {category.Icon}");
                     foreach (var system in category.Systems)
@@ -168,41 +151,12 @@ namespace UsedDropshipSalesman
         {
             Mod.Log.Debug?.Write(" == Initializing Configuration");
             
-            foreach (KeyValuePair<String, DropshipConfig> kvp in this.Dropships)
-            {
-                Mod.Log.Debug?.Write($"Processing dropship: {kvp.Key}");
-
-                if (kvp.Value.DropBays != null &&
-                        kvp.Value.DropBays?.Labels.Length != kvp.Value.DropBays?.Slots.Length)
-                {
-                    Mod.Log.Error?.Write("Critical error - dropbay labels and slots don't match, cannot continue!");
-                }
-
-                ConvertColors();
-                PopulateUpgrades(kvp.Value);
-            }
+            ConvertColors();
 
             Mod.Log.Debug?.Write(" == Configuration Initialized");
         }
 
-        private void PopulateUpgrades(DropshipConfig config)
-        {
-            Mod.Log.Debug?.Write(" -- Aggregating upgrades.");
-
-            config.AllUpgradeIds = config.upgrades.SelectMany(cats => config.upgrades)
-                .SelectMany(cat => cat.Systems)
-                .SelectMany(sys => sys.innateUpgrades.Union(sys.optionalUpgrades))
-                .Distinct()
-                .ToList();
-            Mod.Log.Debug?.Write($" All upgrades for dropship are: {String.Join(",", config.AllUpgradeIds)}");
-
-            config.InnateUpgradeIds = config.upgrades.SelectMany(cats => config.upgrades)
-                .SelectMany(cat => cat.Systems)
-                .SelectMany(sys => sys.innateUpgrades)
-                .Distinct()
-                .ToList();
-            Mod.Log.Debug?.Write($" Innate upgrades for dropship are: {String.Join(",", config.InnateUpgradeIds)}");
-        }
+        
 
         private void ConvertColors()
         {

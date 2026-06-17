@@ -1,0 +1,167 @@
+{
+  "Description": {
+    "Id": "vengenance_base",
+    "Name": "Vengenance"
+  },
+  "Visuals": {
+    "assetBundleId": "chrprfvhcl_uds_vengeance",
+    "prefabPath": "assets/character/vehicle/prefabs/vengeance/chrprfvhcl_uds_vengeance.prefab",
+    "attachEngineGlow": "ap_engine_lights_1",
+    "attachDecal": "ap_decal",
+    "attachesEngines": [
+      "ap_engine_jets_1",
+      "ap_engine_jets_2",
+      "ap_engine_jets_3",
+      "ap_engine_jets_4"
+    ],
+    "attachesSpotLights": [],
+    "attachesRunningLights": []
+  },
+  "Costs": {
+    "purchase": 40000,
+    "upkeep": 4000,
+    "drop": 400
+  },
+  "Requirements": {
+    "eventTag": "uds_require_dropship_vengenance",
+    "factionReputation": 100,
+    "mustBeAllied": false,
+    "planetTags": [
+      "planet_industry_electronics",
+      "planet_pop_large"
+    ]
+  },
+  "HangarBays": {
+    "BASE_HANGER": 2,
+    "vehicle_bays": 2,
+    "battle_armor_bays": 0
+  },
+  "DropBays": {
+    "labels": [
+      "Lance Alpha",
+      "Lance Beta"
+    ],
+    "maxTonnage": 200,
+    "slots": [
+      [
+        "default_mech_slot",
+        "default_mech_slot",
+        "default_mech_slot",
+        "default_mech_slot"
+      ],
+      [
+        "default_mech_slot",
+        "default_mech_slot",
+        "default_mech_slot",
+        "default_mech_slot"
+      ]
+    ]
+  },
+  "Upgrades": [
+    {
+      "categoryId": "movement",
+      "headerText": "Movement",
+      "icon": "lv_brass-eye",
+      "systems": [
+        {
+          "systemId": "main_engine",
+          "headerText": "Main Engines",
+          "innateUpgrades": [
+            "argoUpgrade_uds_vengenance_base_engine_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_vengenance_base_engine_2",
+            "argoUpgrade_uds_vengenance_base_engine_3",
+            "argoUpgrade_uds_vengenance_base_engine_4"
+          ]
+        },
+        {
+          "systemId": "maneuver_jets",
+          "headerText": "Maneuvering",
+          "innateUpgrades": [
+            "argoUpgrade_power1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_power2",
+            "argoUpgrade_power3"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+            "argoUpgrade_uds_vengenance_base_drop_tonnage_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_vengenance_base_drop_tonnage_2",
+            "argoUpgrade_uds_vengenance_base_drop_tonnage_3",
+            "argoUpgrade_uds_vengenance_base_drop_tonnage_4"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "maintenance",
+      "headerText": "Maintenance",
+      "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
+      "systems": [
+        {
+          "systemId": "mech_bays",
+          "headerText": "Mech Bays",
+          "innateUpgrades": [
+            "argoUpgrade_mechBay1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_mechBay2",
+            "argoUpgrade_mechBay3"
+          ]
+        },
+        {
+          "systemId": "repair_support",
+          "headerText": "Repair Support",
+          "innateUpgrades": [],
+          "optionalUpgrades": [
+            "argoUpgrade_mechBay_automation1",
+            "argoUpgrade_mechBay_automation2",
+            "argoUpgrade_mechBay_automation2",
+            "argoUpgrade_mechBay_refitHarness"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "personnel",
+      "headerText": "Personnel",
+      "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
+      "systems": [
+        {
+          "systemId": "med_bays",
+          "headerText": "Med Bays",
+          "innateUpgrades": [],
+          "optionalUpgrades": [
+            "argoUpgrade_medBay1",
+            "argoUpgrade_medBay2",
+            "argoUpgrade_medBay3",
+            "argoUpgrade_medBay_hospital"
+          ]
+        },
+        {
+          "systemId": "training",
+          "headerText": "Training",
+          "innateUpgrades": [],
+          "optionalUpgrades": [
+            "argoUpgrade_trainingModule1",
+            "argoUpgrade_trainingModule2"
+          ]
+        }
+      ]
+    }
+  ]
+}
