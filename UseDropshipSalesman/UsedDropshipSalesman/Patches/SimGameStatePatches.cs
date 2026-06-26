@@ -43,6 +43,11 @@ namespace UsedDropshipSalesman.Patches
 
                 Mod.Log.Debug?.Write($"Current dropship value is: {__instance.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             }
+            else
+            {
+                Mod.Log.Debug?.Write($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
+                Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
+            }
         }
     }
 
@@ -52,6 +57,38 @@ namespace UsedDropshipSalesman.Patches
         static void Postfix(int timeLapse, SimGameState __instance)
         {
             Mod.Log.Trace?.Write("==== SimGameState_OnDayPassed - entered.");
+
+            //if (__instance == null) return;
+
+            // Check for a difference in ships
+            string currDropshipId = __instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP);
+            Mod.Log.Debug?.Write($"Current dropship is: {currDropshipId}");
+            Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
+            if (!String.Equals(currDropshipId, Mod.ModSaveState.CurrentDropshipId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                Mod.Log.Info?.Write($"Current dropship stat: {currDropshipId} does not match SaveState: {Mod.ModSaveState.CurrentDropshipId}, changing dropship.");
+
+                // Check for pending upgrades
+                // Check for mechbay changes
+                // Check for hangarbay storage delta
+
+                
+                Mod.Config.Dropships.TryGetValue(Mod.ModSaveState.CurrentDropshipId, out DropshipConfig oldConfig);
+                Mod.Log.Info?.Write($"Reverting dropship: {oldConfig.CustomDropship.Description.Id}");
+                UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
+
+
+                Mod.Config.Dropships.TryGetValue(currDropshipId, out DropshipConfig newConfig);
+                Mod.Log.Info?.Write($"Applying upgrades for new dropship: {newConfig.CustomDropship.Description.Id}");
+                UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
+
+                __instance.SpaceController.SetShip(DropshipType.Argo);
+                Mod.ModSaveState.CurrentDropshipId = currDropshipId;
+            }
+            else
+            {
+                Mod.Log.Trace?.Write($"Current dropship stat: {currDropshipId} matches saved dropship: {Mod.ModSaveState.CurrentDropshipId}, skipping.");
+            }
         }
     }
 
@@ -155,16 +192,18 @@ namespace UsedDropshipSalesman.Patches
             SimGameState_Debug.sim.SpaceController.SetShip(DropshipType.Leopard);
 
             // Simulate an upgrade flow
-            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId); // mod sets sim-state different, has been changed
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig oldConfig);
             Mod.Config.Dropships.TryGetValue(nextDropshipId, out DropshipConfig newConfig);
             UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
             UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
 
+            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId); // mod sets sim-state different, has been changed
+            Mod.ModSaveState.CurrentDropshipId = newConfig.CustomDropship.Description.Id;
             __runOriginal = false;
         }
     }
 
+    // Invoked at the end of character creation
     [HarmonyPatch(typeof(SimGameState), "InitStartingPlanet_TEMP")]
     static class SimGameState_InitStartingPlanet_TEMP
     {
@@ -187,19 +226,8 @@ namespace UsedDropshipSalesman.Patches
                 CurrentDropshipId = startingDropshipId,
             };
 
+            Mod.Log.Debug?.Write($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
+            Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
         }
     }
-
-
-    //[HarmonyPatch(typeof(SimGameState), "_OnAttachUXComplete")]
-    //static class SimGameState__OnAttachUXComplete
-    //{
-    //    static void Postfix(SimGameState __instance)
-    //    {
-    //        Mod.Log.Trace?.Write("==== SimGameState__OnAttachUXComplete - entered");
-
-
-
-    //    }
-    //}
 }
