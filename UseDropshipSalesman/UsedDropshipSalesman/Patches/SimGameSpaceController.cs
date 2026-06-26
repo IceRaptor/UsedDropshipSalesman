@@ -68,6 +68,7 @@ namespace UsedDropshipSalesman.Patches
                 DropshipHelper.ToggleLeopardVisibility(true);
                 __instance.argo.gameObject.SetActive(false);
                 __instance.leopard.gameObject.SetActive(true);
+
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 

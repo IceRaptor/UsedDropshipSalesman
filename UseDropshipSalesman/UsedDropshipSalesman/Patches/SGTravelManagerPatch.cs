@@ -19,8 +19,10 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Write("==== SGNavigationList_RefreshButtonStates - entered.");
 
             if (simState == null || __instance.argoButton == null) return;
+            if (simState.CompanyStats == null || !simState.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP) || Mod.ModSaveState == null) return;
 
-            var currentDropshipId = simState.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            //var currentDropshipId = simState.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            var currentDropshipId = Mod.ModSaveState.CurrentDropshipId;
             Mod.Log.Debug?.Write($"Current dropship is: '{currentDropshipId}'");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)

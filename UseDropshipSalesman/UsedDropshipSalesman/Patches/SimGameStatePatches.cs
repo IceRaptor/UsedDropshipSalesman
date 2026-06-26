@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using us.frostraptor.modUtils;
 using UsedDropshipSalesman.Defs;
+using UsedDropshipSalesman.Helper;
 
 namespace UsedDropshipSalesman.Patches
 {
@@ -20,8 +21,8 @@ namespace UsedDropshipSalesman.Patches
         static void Postfix(SimGameState __instance)
         {
             Mod.Log.Trace?.Write("==== SimGameState_InitCompanyStats - entered.");
-            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
-
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+            Mod.ModSaveState = new Data.UDSSaveData();
         }
     }
 
@@ -33,9 +34,12 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Write("==== SimGameState_Rehydrate - entered.");
             if (!__instance.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP))
             {
-                Mod.Log.Debug?.Write($"Game without UDS stats loaded, initializing to default: {Mod.Config.DefaultDropship}");
-                __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
-                __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.DefaultDropship);
+                Mod.Log.Debug?.Write($"Game without UDS stats loaded, initializing to default dropship: {Mod.Config.FallbackDropship}");
+                __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+                __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+
+                // Save the dropship state
+                Mod.ModSaveState.CurrentDropshipId = Mod.Config.FallbackDropship;
 
                 Mod.Log.Debug?.Write($"Current dropship value is: {__instance.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             }
@@ -96,6 +100,8 @@ namespace UsedDropshipSalesman.Patches
 
             __instance.CurDropship = __state;
             Mod.Log.Trace?.Write($"state: {__state} sgs.currentDropship: {__instance.CurDropship}");
+
+
         }
     }
 
@@ -116,6 +122,8 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Write("==== SimGameState_UpdateArgoUpgrades - entered");
         }
     }
+
+
 
     [HarmonyPatch(typeof(SimGameState_Debug), "SimDebug_ToggleCurrentShipType")]
     static class SimGameState_Debug_SimDebug_ToggleCurrentShipType
@@ -144,64 +152,54 @@ namespace UsedDropshipSalesman.Patches
             string nextDropshipId = dropshipIds[nextDropshipIdx];
 
             Mod.Log.Info?.Write($"Next dropship is: '{nextDropshipId}' with idx: {nextDropshipIdx}.");
-            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId);
             SimGameState_Debug.sim.SpaceController.SetShip(DropshipType.Leopard);
+
+            // Simulate an upgrade flow
+            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId); // mod sets sim-state different, has been changed
+            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig oldConfig);
+            Mod.Config.Dropships.TryGetValue(nextDropshipId, out DropshipConfig newConfig);
+            UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
+            UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
 
             __runOriginal = false;
         }
     }
 
-    [HarmonyPatch(typeof(SimGameState), "AttachUX")]
-    static class SimGameState_AttachUX
+    [HarmonyPatch(typeof(SimGameState), "InitStartingPlanet_TEMP")]
+    static class SimGameState_InitStartingPlanet_TEMP
     {
         static void Postfix(SimGameState __instance)
         {
-            Mod.Log.Trace?.Write("==== SimGameState_AttachUX - entered");
+            Mod.Log.Trace?.Write("==== SimGameState_InitStartingPlanet_TEMP - entered");
 
-            Mod.Log.Info?.Write("Identifying prefabs to load");
-            var prefabsToLoad = new Dictionary<string, string>();
-            foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
+            // CurrSystem should be set to the start position of the selected life path
+            Mod.Log.Debug?.Write($"Starting system is: {__instance.CurSystem?.Name}");
+
+            var found = Mod.Config.CareerStartDropshipByPlanetName.TryGetValue(__instance.CurSystem.Name, out string startingDropshipId);
+            if (!found)
             {
-                DropshipVisuals prefabConfig = kvp.Value.CustomDropship.Visuals;
-                Mod.Log.Info?.Write($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
-                    $"prefabPath:{prefabConfig.PrefabPath}");
-
-                if (prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_LEOPARD, StringComparison.InvariantCultureIgnoreCase) ||
-                    prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_ARGO, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    Mod.Log.Info?.Write($"  Dropship configured to use HBS assets, skipping load.");
-                    continue;
-                }
-
-                if (!prefabsToLoad.ContainsKey(prefabConfig.AssetBundleId))
-                {
-                    prefabsToLoad.Add(prefabConfig.AssetBundleId, prefabConfig.PrefabPath);
-                }
+                startingDropshipId = Mod.Config.FallbackDropship;
             }
 
-            foreach (KeyValuePair<string, string> kvp in prefabsToLoad)
+            __instance.CompanyStats.Set<String>(ModConsts.STAT_CURRENT_DROPSHIP, startingDropshipId);
+            Mod.ModSaveState = new Data.UDSSaveData()
             {
-                var abm = __instance.DataManager.AssetBundleManager;
-                abm.RequestBundle(kvp.Key, delegate
-                {
-                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {kvp.Key}");
-
-                    var assetBundle = abm.GetLoadedAssetBundle(kvp.Key);
-                    Mod.Log.Trace?.Write($" -- All assets in bundle: {kvp.Key}");
-                    foreach (string n in assetBundle.GetAllAssetNames())
-                    {
-                        Mod.Log.Trace?.Write($"  ---- {n}");
-                    }
-                });
-            }
-
-            Mod.Log.Info?.Write("Printing loaded SVGIcons");
-            var allImages = __instance.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.SVGAsset, false);
-            foreach (VersionManifestEntry vme in allImages)
-            {
-                Mod.Log.Trace?.Write($" --- vme: {vme.id}  name: {vme.Name}  path {vme.path}");
-            }
+                CurrentDropshipId = startingDropshipId,
+            };
 
         }
     }
+
+
+    //[HarmonyPatch(typeof(SimGameState), "_OnAttachUXComplete")]
+    //static class SimGameState__OnAttachUXComplete
+    //{
+    //    static void Postfix(SimGameState __instance)
+    //    {
+    //        Mod.Log.Trace?.Write("==== SimGameState__OnAttachUXComplete - entered");
+
+
+
+    //    }
+    //}
 }

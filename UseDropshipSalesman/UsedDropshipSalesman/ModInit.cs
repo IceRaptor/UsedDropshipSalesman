@@ -1,6 +1,8 @@
 ﻿using CustomUnits;
 using CustomUnits.CustomHangars;
 using IRBTModUtils.Logging;
+using JwTweaks.Data;
+using JwTweaks.Features;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -9,7 +11,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using UsedDropshipSalesman.Data;
 using UsedDropshipSalesman.Defs;
+using static BattleTech.S3Manager;
 using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman
@@ -25,6 +29,7 @@ namespace UsedDropshipSalesman
         public static DeferringLogger Log;
         public static string ModDir;
         public static ModConfig Config;
+        internal static UDSSaveData ModSaveState;
 
         public static readonly Random Random = new Random();
 
@@ -64,6 +69,13 @@ namespace UsedDropshipSalesman
             {
                 Log.Info?.Write($"INFO: No errors reading settings file.");
             }
+
+            // Initialize the custom save block
+            JsonSaveBlock<UDSSaveData> udsSaveDataBlock = new()
+            {
+                Data = Mod.ModSaveState
+            };
+            SaveSerializationManager.RegisterCustomSaveBlock(udsSaveDataBlock, "UDSSaveDataBlock");
 
             // Initialize modules
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);

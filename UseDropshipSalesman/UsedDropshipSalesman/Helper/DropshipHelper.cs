@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UsedDropshipSalesman.Defs;
 using static FSM.StringStateMachine;
 using static RootMotion.FinalIK.RagdollUtility;
 
@@ -85,7 +86,23 @@ namespace UsedDropshipSalesman.Helper
             // Fetch the prefab from the assetBundle that's already been loaded.
             var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
             var assetBundle = abm.GetLoadedAssetBundle(config.CustomDropship.Visuals.AssetBundleId);
-            if (assetBundle == null) { Mod.Log.Error?.Write("Critical failure, asset bundle was not loaded! Notify Frost!"); }
+            if (assetBundle == null)
+            {
+                Mod.Log.Info?.Write("Dropships not loaded, loading assetbundles and short-circuiting");
+                DropshipHelper.LoadAssetBundle(config, ModState.SimGameSpaceController.sim, OverlayMeshes);
+                return;
+            }
+            else
+            {
+                OverlayMeshes(config);
+            }
+        }
+
+        private static void OverlayMeshes(DropshipConfig config)
+        {
+
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.CustomDropship.Visuals.AssetBundleId;
+            var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
 
             var prefabGO = abm.GetAssetFromBundle<GameObject>(config.CustomDropship.Visuals.PrefabPath, config.CustomDropship.Visuals.AssetBundleId);
             Mod.Log.Debug?.Write($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
@@ -328,6 +345,69 @@ namespace UsedDropshipSalesman.Helper
             }
 
             return state;
+        }
+
+        public static void LoadAssetBundle(DropshipConfig config, SimGameState sgs, Action<DropshipConfig> callback)
+        {
+            Mod.Log.Info?.Write($"Loading assetBundle for dropship: {config.CustomDropship.Description.Id}");
+            var abm = sgs.DataManager.AssetBundleManager;
+            var onLoaded = delegate (AssetBundle ab)
+            {
+                Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {ab.name}");
+
+                var assetBundle = abm.GetLoadedAssetBundle(ab.name);
+                Mod.Log.Trace?.Write($" -- All assets in bundle: {ab.name}");
+                foreach (string n in assetBundle.GetAllAssetNames())
+                {
+                    Mod.Log.Trace?.Write($"  ---- {n}");
+                }
+
+                callback(config);
+            };
+            abm.RequestBundle(config.CustomDropship.Visuals.AssetBundleId, onLoaded);
+        }
+
+        public static void LoadAllAssetBundles(SimGameState sgs)
+        {
+            Mod.Log.Info?.Write("Identifying prefabs to load");
+            var prefabsToLoad = new Dictionary<string, string>();
+            foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
+            {
+                DropshipVisuals prefabConfig = kvp.Value.CustomDropship.Visuals;
+                Mod.Log.Info?.Write($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
+                    $"prefabPath:{prefabConfig.PrefabPath}");
+
+                if (prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_LEOPARD, StringComparison.InvariantCultureIgnoreCase) ||
+                    prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_ARGO, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Mod.Log.Info?.Write($"  Dropship configured to use HBS assets, skipping load.");
+                    continue;
+                }
+
+                if (!prefabsToLoad.ContainsKey(prefabConfig.AssetBundleId))
+                {
+                    prefabsToLoad.Add(prefabConfig.AssetBundleId, prefabConfig.PrefabPath);
+                }
+            }
+
+            List<Action<AssetBundle>> callbacks = new List<Action<AssetBundle>>();
+            foreach (KeyValuePair<string, string> kvp in prefabsToLoad)
+            {
+                var abm = sgs.DataManager.AssetBundleManager;
+                var onLoaded = delegate(AssetBundle ab)
+                {
+                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {ab.name}");
+
+                    var assetBundle = abm.GetLoadedAssetBundle(ab.name);
+                    Mod.Log.Trace?.Write($" -- All assets in bundle: {ab.name}");
+                    foreach (string n in assetBundle.GetAllAssetNames())
+                    {
+                        Mod.Log.Trace?.Write($"  ---- {n}");
+                    }
+                };
+                callbacks.Add(onLoaded);
+                abm.RequestBundle(kvp.Key, onLoaded);
+            }
         }
     }
 }

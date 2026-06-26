@@ -78,7 +78,8 @@ namespace UsedDropshipSalesman
         // If true, all logs will be printed
         public bool Trace = false;
 
-        public string DefaultDropship;
+        public string FallbackDropship; // Used for an existing career with values; default to HBS_ARGO
+        public Dictionary<string, string> CareerStartDropshipByPlanetName;
         public List<String> PersistentUpgrades; // TODO: Doc
         public ColorConfig Colors;
 
@@ -88,7 +89,13 @@ namespace UsedDropshipSalesman
         {
             Mod.Log.Info?.Write("=== MOD CONFIG BEGIN ===");
             Mod.Log.Info?.Write($"  DEBUG:{this.Debug} Trace:{this.Trace}");
-            Mod.Log.Info?.Write($"  DefaultDropshipID: {this.DefaultDropship}");
+
+            Mod.Log.Info?.Write("  ---- STARTING DROPSHIPS");
+            Mod.Log.Info?.Write($"Fallback dropshipId: {this.FallbackDropship}");
+            foreach (KeyValuePair<string, string> kvp in this.CareerStartDropshipByPlanetName)
+            {
+                Mod.Log.Info?.Write($" planetName: {kvp.Key}  dropshipId: {kvp.Value}");
+            }
 
             Mod.Log.Info?.Write("  ---- PERSISTENT UPGRADES");
             foreach (String upgrade in this.PersistentUpgrades)
