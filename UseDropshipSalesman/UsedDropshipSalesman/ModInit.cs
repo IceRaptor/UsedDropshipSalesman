@@ -1,11 +1,9 @@
-﻿using CustomUnits;
-using CustomUnits.CustomHangars;
+﻿using CustomUnits.CustomHangars;
 using IRBTModUtils.Logging;
 using JwTweaks.Data;
 using JwTweaks.Features;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +11,6 @@ using System.IO;
 using System.Reflection;
 using UsedDropshipSalesman.Data;
 using UsedDropshipSalesman.Defs;
-using static BattleTech.S3Manager;
 using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman
@@ -29,7 +26,7 @@ namespace UsedDropshipSalesman
         public static DeferringLogger Log;
         public static string ModDir;
         public static ModConfig Config;
-        internal static UDSSaveData ModSaveState;
+        public static UDSSaveData ModSaveData = new UDSSaveData();
 
         public static readonly Random Random = new Random();
 
@@ -73,7 +70,7 @@ namespace UsedDropshipSalesman
             // Initialize the custom save block
             JsonSaveBlock<UDSSaveData> udsSaveDataBlock = new()
             {
-                Data = Mod.ModSaveState
+                Data = Mod.ModSaveData
             };
             SaveSerializationManager.RegisterCustomSaveBlock(udsSaveDataBlock, "UDSSaveDataBlock");
 
@@ -87,7 +84,7 @@ namespace UsedDropshipSalesman
 
             // Setup the dropship size constraints in CU
             Dictionary<string, CustomHangarConstraint> constraints = new Dictionary<string, CustomHangarConstraint>();
-            constraints[CustomHangarHelper.HANGAR_ID_BASE] = new CustomHangarConstraint() { MaxAvailableUnits = 8 };
+            constraints[CustomHangarHelper.BASE_HANGAR_ID] = new CustomHangarConstraint() { MaxAvailableUnits = 8 };
             constraints["vehicle_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 3 };
             constraints["battle_armor_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 14 };
 

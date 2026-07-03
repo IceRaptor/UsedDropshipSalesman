@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman.Helper
@@ -82,6 +83,8 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
+            // TODO: Pull upgrades from save state instead of current mod config
+
             var AllShipUpgrades = sim.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade, false);
             Mod.Log.Info?.Write($"Iterating over {AllShipUpgrades.Length} ShipModuleUpgrade Defs");
             foreach (VersionManifestEntry vme in AllShipUpgrades)
@@ -118,12 +121,118 @@ namespace UsedDropshipSalesman.Helper
                     }
                 }
             }
-
-            foreach (String upgradeId in configToRevert.AllUpgradeIds)
-            {
-
-            }
         }
+
+        public static bool CheckForPendingUpgrades(SimGameState sgs)
+        {
+            bool hasUpgrades = sgs.CurrentUpgradeEntry != null;
+
+
+
+            Mod.Log.Debug?.Write("No pending ShipModuleUpgrades detected");
+            return hasUpgrades;
+
+
+        }
+
+        public static bool IsUpgradeBlocked(DropshipConfig newConfig, DropshipConfig oldConfig, SimGameState sgs)
+        {
+            bool hasBlockingIssues = false;
+
+            List<String> blockedReasons = new List<String>(); 
+            // Check for pending upgrades
+            if (sgs.CurrentUpgradeEntry != null)
+            {
+                Mod.Log.Info?.Write($"Active argo upgrade, must cancel upgrade");
+                // TODO: LOCALIZE 
+                blockedReasons.Add("Pending Ship Upgrade");
+
+                hasBlockingIssues = true;
+            }
+
+            // Check for hangarbay storage delta
+            Dictionary<string, int> countByHangarId = new Dictionary<string, int>();
+            Mod.Log.Debug?.Write($" Counting current active mechs.");
+            foreach (KeyValuePair<int, MechDef> kvp in sgs.ActiveMechs)
+            {
+                // kvp.key is the index of the mechbay; CU will make these in the range of 0-max, 100-max, 200-max, etc
+                Mod.Log.Debug?.Write($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
+                CustomHangarDef customHangarDef = CustomHangarHelper.HangarDef(kvp.Value.Chassis);
+                Mod.Log.Debug?.Write($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
+                // If the hangarDef is null, the unit goes into the default bay (typically MechBay)
+                string hangarId = customHangarDef?.Description?.Id ?? CustomHangarHelper.BASE_HANGAR_ID;
+                Mod.Log.Debug?.Write($"Adding {kvp.Key} active units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
+
+                if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
+                else { countByHangarId.Add(hangarId, 1); }
+            }
+            Mod.Log.Debug?.Write($" Counting current readying mechs.");
+            foreach (KeyValuePair<int, MechDef> kvp in sgs.ReadyingMechs)
+            {
+                Mod.Log.Debug?.Write($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
+                CustomHangarDef customHangarDef = CustomHangarHelper.HangarDef(kvp.Value.Chassis);
+                Mod.Log.Debug?.Write($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
+                // If the hangarDef is null, the unit goes into the default bay (typically MechBay)
+                string hangarId = customHangarDef?.Description?.Id ?? CustomHangarDef.DEFAULT_VEHICLE_HANGAR_ID;
+                Mod.Log.Debug?.Write($"Adding {kvp.Key} readying units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
+
+                if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
+                else { countByHangarId.Add(hangarId, 1); }
+            }
+
+            List<string> allHangars = allHangars = CustomHangarHelper.listHangars.Select(chd => chd.Description.Id).ToList();
+            allHangars.Insert(0, CustomHangarHelper.BASE_HANGAR_ID);
+            foreach (string hangarId in allHangars)
+            {
+                Mod.Log.Debug?.Write($"Evaluating count on hangarDef: {hangarId}");
+                if (countByHangarId.ContainsKey(hangarId) && newConfig.CustomDropship.HangarBays.ContainsKey(hangarId))
+                {
+                    int newConstraintSize = newConfig.CustomDropship.HangarBays.ContainsKey(hangarId) ? 
+                        newConfig.CustomDropship.HangarBays[hangarId] : 0;
+                    if (countByHangarId[hangarId] > newConstraintSize) 
+                    {
+                        Mod.Log.Info?.Write($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
+                        // TODO: LOCALIZE 
+                        blockedReasons.Add($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
+                        hasBlockingIssues = true;
+                    }
+                }
+            } 
+
+            // Check for mechbay changes
+            //if (sgs.MechLabQueue.Count > 0)
+            //{
+            //    Mod.Log.Info?.Write($"Active mechlab upgrades happening");
+            //}
+
+            // Check for medbay changes?
+
+            // Check for pilot limits
+
+            if (hasBlockingIssues)
+            {
+                // TODO: LOCALIZE 
+                string upgradeFailureText = "Your dropship cannot be changed until you resolve the following issues:\n";
+                foreach (string reason in blockedReasons)
+                {
+                    upgradeFailureText += "\n - " + reason;
+                }
+                upgradeFailureText += "\n\nCancel active ship upgrades or readying mechs in the timeline view from the main screen. " +
+                    "Store active units or cancel reading actions to reduce the hangar count to match the new dropship. " +
+                    "\nDo not navigate away from the current star system until you resolve these actions. " + 
+                    "This dialog will repeat each day until the conditions are cleared.\n<b>You cannot cancel the dropship upgrade.</b>";
+                GenericPopup gp = GenericPopupBuilder.Create("Dropship Upgrade Failed", upgradeFailureText)
+                        //.AddButton(localButtonAccept, acceptAction, true, null)                        
+                        .AddButton("OKAY", null, true, null)
+                        .Render();
+
+                    TextMeshProUGUI contentText = gp._contentText;
+                    contentText.alignment = TextAlignmentOptions.Left;
+            }
+
+            return hasBlockingIssues;
+        }
+
     }
 
 }

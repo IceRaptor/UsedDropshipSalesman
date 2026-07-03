@@ -72,6 +72,9 @@
       <HintPath>$(DeployedModPath)\..\IRBTModUtils\IRBTModUtils.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="InControl">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="JWTweaks">
       <HintPath>$(DeployedModPath)\..\JWTweaks\JWTweaks.dll</HintPath>
       <Private>False</Private>

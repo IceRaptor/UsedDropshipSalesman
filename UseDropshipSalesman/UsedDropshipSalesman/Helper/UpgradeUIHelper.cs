@@ -48,9 +48,6 @@ namespace UsedDropshipSalesman.Helper
      * uixSvgIcon_action_multitarget
      */
 
-
-
-
     public static class UpgradeUIHelper
     {
         private const int CATEGORY_Y_PADDING = 140;

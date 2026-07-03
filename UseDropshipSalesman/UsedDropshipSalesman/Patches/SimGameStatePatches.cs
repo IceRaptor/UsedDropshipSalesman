@@ -22,7 +22,9 @@ namespace UsedDropshipSalesman.Patches
         {
             Mod.Log.Trace?.Write("==== SimGameState_InitCompanyStats - entered.");
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
-            Mod.ModSaveState = new Data.UDSSaveData();
+
+            // Force there to be 3 full mechbays for all ships, and let CU constraints handle the rest
+            __instance.companyStats.Set<int>(__instance.Constants.Story.MechBayPodsID, 3);
         }
     }
 
@@ -39,15 +41,18 @@ namespace UsedDropshipSalesman.Patches
                 __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
 
                 // Save the dropship state
-                Mod.ModSaveState.CurrentDropshipId = Mod.Config.FallbackDropship;
+                Mod.ModSaveData.CurrentDropshipId = Mod.Config.FallbackDropship;
 
                 Mod.Log.Debug?.Write($"Current dropship value is: {__instance.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             }
             else
             {
                 Mod.Log.Debug?.Write($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
-                Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
+                Mod.Log.Debug?.Write($"SaveState is: {Mod.ModSaveData}");
             }
+
+            // Force there to be 3 full mechbays for all ships, and let CU constraints handle the rest
+            __instance.companyStats.Set<int>(__instance.Constants.Story.MechBayPodsID, 3);
         }
     }
 
@@ -58,36 +63,39 @@ namespace UsedDropshipSalesman.Patches
         {
             Mod.Log.Trace?.Write("==== SimGameState_OnDayPassed - entered.");
 
-            //if (__instance == null) return;
+            if (__instance == null) return;
+
 
             // Check for a difference in ships
             string currDropshipId = __instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP);
-            Mod.Log.Debug?.Write($"Current dropship is: {currDropshipId}");
-            Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
-            if (!String.Equals(currDropshipId, Mod.ModSaveState.CurrentDropshipId, StringComparison.InvariantCultureIgnoreCase))
+            Mod.Log.Debug?.Write($"Current dropship stat is: {currDropshipId}, SaveState is: {Mod.ModSaveData}");
+            if (!String.Equals(currDropshipId, Mod.ModSaveData.CurrentDropshipId, StringComparison.InvariantCultureIgnoreCase))
             {
-                Mod.Log.Info?.Write($"Current dropship stat: {currDropshipId} does not match SaveState: {Mod.ModSaveState.CurrentDropshipId}, changing dropship.");
+                Mod.Log.Info?.Write($"Current dropship stat: {currDropshipId} does not match SaveState: {Mod.ModSaveData.CurrentDropshipId}, changing dropship.");
 
-                // Check for pending upgrades
-                // Check for mechbay changes
-                // Check for hangarbay storage delta
+                // TODO: Add dialog when traveling 
+                if (__instance.TravelState != SimGameTravelStatus.IN_SYSTEM) { return; } // Only process dropship upgrades at a planet
 
-                
-                Mod.Config.Dropships.TryGetValue(Mod.ModSaveState.CurrentDropshipId, out DropshipConfig oldConfig);
+                Mod.Config.Dropships.TryGetValue(Mod.ModSaveData.CurrentDropshipId, out DropshipConfig oldConfig);
+                Mod.Config.Dropships.TryGetValue(currDropshipId, out DropshipConfig newConfig);
+                bool upgradeIsBlocked = UpgradeHelper.IsUpgradeBlocked(newConfig, oldConfig, __instance);
+                if (upgradeIsBlocked) {
+                    __instance.RoomManager.ShipRoom.SetTimeMoving(false, true);
+                    return; 
+                } // Dialog will fire and try again tomorrow
+
                 Mod.Log.Info?.Write($"Reverting dropship: {oldConfig.CustomDropship.Description.Id}");
                 UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
-
-
-                Mod.Config.Dropships.TryGetValue(currDropshipId, out DropshipConfig newConfig);
+                
                 Mod.Log.Info?.Write($"Applying upgrades for new dropship: {newConfig.CustomDropship.Description.Id}");
                 UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
 
                 __instance.SpaceController.SetShip(DropshipType.Argo);
-                Mod.ModSaveState.CurrentDropshipId = currDropshipId;
+                Mod.ModSaveData.CurrentDropshipId = currDropshipId;
             }
             else
             {
-                Mod.Log.Trace?.Write($"Current dropship stat: {currDropshipId} matches saved dropship: {Mod.ModSaveState.CurrentDropshipId}, skipping.");
+                Mod.Log.Trace?.Write($"Current dropship stat: {currDropshipId} matches saved dropship: {Mod.ModSaveData.CurrentDropshipId}, skipping.");
             }
         }
     }
@@ -198,7 +206,7 @@ namespace UsedDropshipSalesman.Patches
             UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
 
             SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId); // mod sets sim-state different, has been changed
-            Mod.ModSaveState.CurrentDropshipId = newConfig.CustomDropship.Description.Id;
+            Mod.ModSaveData.CurrentDropshipId = newConfig.CustomDropship.Description.Id;
             __runOriginal = false;
         }
     }
@@ -221,13 +229,11 @@ namespace UsedDropshipSalesman.Patches
             }
 
             __instance.CompanyStats.Set<String>(ModConsts.STAT_CURRENT_DROPSHIP, startingDropshipId);
-            Mod.ModSaveState = new Data.UDSSaveData()
-            {
-                CurrentDropshipId = startingDropshipId,
-            };
+            Mod.ModSaveData.Reset();
+            Mod.ModSaveData.CurrentDropshipId = startingDropshipId;
 
             Mod.Log.Debug?.Write($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
-            Mod.Log.Debug?.Write($"SaveState dropship is: {Mod.ModSaveState?.CurrentDropshipId}");
+            Mod.Log.Debug?.Write($"SaveState is: {Mod.ModSaveData}");
         }
     }
 }
