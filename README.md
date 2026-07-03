@@ -23,23 +23,26 @@ The mod is designed to be heavily configurable, but that configuration is spread
 * *Mods/UsedDropshipSalesman/shipUpgrades* contains ShipModuleDef upgrades (aka Argo upgrades)
 * *Mods/UsedDropshipSalesman/icons* contains icons for ShipModuleDef upgrades (aka Argo upgrades)
 * *Mods/UsedDropshipSalesman/simGameStateDesc* contains statistic descriptions for events
+* *Mods/UsedDropshipSalesman/advancedJsonMerges* contains logging config for the ModTek logger (see below)
 
 Finally, some debugging configuration is made available as part of this mod package. You are encouraged to remove this once your testing is complete.
 
-* *Mods/UsedDropshipSalesman/events* contains testing events useful to force dropship chagnes
+* *Mods/UsedDropshipSalesman/events* contains useful testing events, all prefixed with "uds_" in the debug career event screen.
 
 ### Logging
 
+This mod relies upon [ModTek Logging](https://github.com/BattletechModders/ModTek/blob/master/doc/LOGGING.md). 
+It ships by default configured to log at the DEBUG level, which is useful to help diagnose configuration issues. 
+You're encouraged to change the logging level to INFO once your configuration is stable. To do so, edit 
+*Mods/UsedDropshipSalesman/advancedJsonMerges/logging.json* and set the v: value to `Info` instead of `Debug`. 
+
+You can increase the logging level to Trace by setting the v: value to `200` instead, as documented on the ModTek logging page. 
+Trace is really only useful to me as a way to walk through code paths, but it's here if you are curious.
 
 ### General Configuration
 
 These options are available in *Mods/UsedDropshipSalesman/settings.json* or *Mods/UsedDropshipSalesman/mod.json*. 
 
-### Logging
-
-The **Debug** and **Trace** values control the verbosity of the *Mods/UsedDropshipSalesman/uds.log* logfile. 
-You should typically run the mod without either of them set. Debug may be useful to diagnose configuration issues during your initial setup. 
-Trace is intended for my purpose to walk through the code flow when necessary.
 
 ### Dropship Configuration
 
@@ -93,13 +96,15 @@ BiggerDrops Features
 ### Ideas
 
 * Create 'select dropship' option in command center
-* Create argo + 1 dropship where drop-bays are tied to the dropship, not argo
-* Add upkeep costs for additional dropships
 * Create option to auto-magically grant airsrike beacons for dropships that have bays
 * Create option for mechtech, medtech multiplers on units (cramped conditions)
 * Create option to limit pilots size by dropship
-* Create main + child dropship approach (for Shade)
 * Add upgrade stats for mechbays?
-* 
+
+Multiple Dropships
+* Create main + child dropship approach (for Shade)
+* Create argo + 1 dropship where drop-bays are tied to the dropship, not argo
+* Add upkeep costs for additional dropships
+
 ### Interesting methods
   

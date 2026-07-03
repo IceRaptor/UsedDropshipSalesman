@@ -1,0 +1,29 @@
+{
+    "FallbackDropship" : "union_base",
+    "CareerStartDropshipByPlanetName" : {
+        "Ichlangis" : "leopard_base",
+        "Brinton" : "leopard_tank_variant",
+        "Bromhead" : "union_base",
+        "Hurik" : "overlord_base",
+        "Pilpala" : "argo"
+
+    },
+    "Colors" : {
+        "Upgrades": {
+            "Purchased"             : [ [ 0.253, 1.0, 0.0, 0.5 ],   [ 0.253, 1.0, 0.0, 1.0 ] ],
+            "Available"             : [ [ 1.0, 1.0, 1.0, 0.5 ],     [ 1.0, 1.0, 1.0, 1.0 ] ],
+            "Unavailable"           : [ [ 1.0, 0.235, 0.0, 0.196 ], [ 1.0, 0.235, 0.0, 0.5 ] ],
+            "Innate"                : [ [ 0.0, 0.65, 1.0, 0.5 ],    [ 1.0, 1.0, 1.0, 1.0 ] ]
+        }
+    },
+    "PersistentUpgrades" : [
+        "argoUpgrade_medBay1", "argoUpgrade_medBay2", "argoUpgrade_medBay3", "argoUpgrade_medBay_hospital"
+    ],
+    "LocalizedText" : {
+        "FT_IED_DEFAULT" : "Explosive IED",
+        "FT_IED_HE" : "High Explosive IED",
+        "FT_IED_INFERNO" : "Inferno IED",
+        "FT_IED_VBIED" : "Vibration IED",
+        "TURRET_DEATH" : "{0} DESTROYED"
+    }
+}
