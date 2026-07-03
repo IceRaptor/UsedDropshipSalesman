@@ -1,19 +1,41 @@
 # Used Dropship Salesman
-This is a mod for the [HBS BattleTech](http://battletechgame.com/) game that makes Urban combat more dangerous and exciting. It introduces various types of ambushes that will occur in non-interleaved (i.e. non-combat) mode. When the player's non-interleaved turn ends and control flips to the enemy team, the mod will scan for buildings near to the player's current position. If there are buildings around, there is a chance an ambush is spawned. Ambushes can take multiple forms:
+This is a mod for the [HBS BattleTech](http://battletechgame.com/) game that allows players to use different Dropships at the SimGame level. 
+Mod authors can customize dropship configuration to support different hangar bay limits, upgrade paths, number of crew berths, and more. 
+The mod does not change the combat layer.
 
 :warning: This mod requires several other mods to function properly. For each of them, you should download the latest copy and include them in your Mods/ folder.
 
 * [IRBTModUtils](https://github.com/iceraptor/IRBTModUtils/)
 * [CustomAmmoCategories](https://github.com/BattletechModders/CustomBundle/tree/master/CustomAmmoCategories)
+* [CustomUnits](https://github.com/BattletechModders/CustomBundle/tree/master/CustomUnits) - version 0.0.0.199 (with CustomHangarConstraints) minimum
+* [JwTweaks](https://github.com/wmtorode/JwTweaks)
 
 ## Configuration
 
-The mod is designed to be heavily configurable, and express that configuration through mod.json settings. It's brown down into multiple sections, which are covered in sequence. General settings are:
+The mod is designed to be heavily configurable, but that configuration is spread across multiple sources:
 
-* **Debug**: If true, the *Mods/ConcreteJungle/concrete_jungle.log* will be more verbose.
-* **Trace**: If true, the *Mods/ConcreteJungle/concrete_jungle.log* will include every line.
+* *Mods/UsedDropshipSalesman/settings.json* contains general configuration
+* *Mods/UsedDropshipSalesman/customDropships* contains custom dropship variants, expressed as a ModTek custom resource
+* *Mods/UsedDropshipSalesman/shipUpgrades* contains ShipModuleDef upgrades (aka Argo upgrades)
+* *Mods/UsedDropshipSalesman/icons* contains icons for ShipModuleDef upgrades (aka Argo upgrades)
+* *Mods/UsedDropshipSalesman/simGameStateDesc* contains statistic descriptions for events
 
-:information_source: Many mod options have an `Ambushes: [ ]`. These represent different ranges of contract difficulty that you can configure. You MUST supply an appropriate ambush definition for all possible contract difficulties. If a ambush definition cannot be found for the contract's difficulty, it will be discarded and that contract will not experience any mod logic. Ranges cannot overlap and must be distinct - so you cannot have 1-3 and 2-4 ranges, for instance. 
+Finally, some debugging configuration is made available as part of this mod package. You are encouraged to remove this once your testing is complete.
+
+* *Mods/UsedDropshipSalesman/events* contains testing events useful to force dropship chagnes
+
+### Logging
+
+
+### General Configuration
+
+These options are available in *Mods/UsedDropshipSalesman/settings.json* or *Mods/UsedDropshipSalesman/mod.json*. 
+
+### Logging
+
+The **Debug** and **Trace** values control the verbosity of the *Mods/UsedDropshipSalesman/uds.log* logfile. 
+You should typically run the mod without either of them set. Debug may be useful to diagnose configuration issues during your initial setup. 
+Trace is intended for my purpose to walk through the code flow when necessary.
 
 ### Dropship Configuration
 
