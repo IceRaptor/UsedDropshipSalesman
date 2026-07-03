@@ -53,7 +53,8 @@ namespace UsedDropshipSalesman.Patches
 
             // TODO: Need to handle a call to set the argo
             // TODO: Need to handle a default new career by disabling argo
-            var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            //var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
             Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}', overlaying meshes.");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)

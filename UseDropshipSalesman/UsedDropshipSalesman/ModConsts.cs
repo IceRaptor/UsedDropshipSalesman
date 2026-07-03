@@ -12,6 +12,7 @@ namespace UsedDropshipSalesman
 
         public const string HBS_PREFAB_LEOPARD = "HBS_LEOPARD";
         public const string HBS_PREFAB_ARGO = "HBS_ARGO";
+        public const string FALLBACK_DROPSHIP_ID = "argo";
 
         public const string DROPSHIP_GO_PREFIX = "UDS_DROPSHIP_ROOT_";
         public const string UPGRADE_PANEL_CATEGORY_PREFIX = "UDS_UPGRADE_PANEL_CATEGORY_";
