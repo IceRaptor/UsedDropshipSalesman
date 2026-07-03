@@ -55,12 +55,12 @@ namespace UsedDropshipSalesman.Helper
         public static void ResetUpgradePanel(SGEngineeringScreen engineeringScreen)
         {
             // enable the argo hologram
-            Mod.Log.Trace?.Write("Disabling Argo hologram");
+            Mod.Log.Trace?.Log("Disabling Argo hologram");
             var imageShipHoloGO = engineeringScreen.gameObject.FindFirstChildNamed("image_shipHologram");
             imageShipHoloGO.SetActive(false);
 
             // Iterate OBJ_upgradePanels children; disabling any UDS ones
-            Mod.Log.Trace?.Write("Disabling UDS panels, enabling defaults");
+            Mod.Log.Trace?.Log("Disabling UDS panels, enabling defaults");
             var upgradePanelRootGO = engineeringScreen.gameObject.FindFirstChildNamed("OBJ_upgradePanels");
             foreach (Transform childT in upgradePanelRootGO.transform)
             {
@@ -90,39 +90,39 @@ namespace UsedDropshipSalesman.Helper
 
             foreach (GameObject categoryGO in customCategoryGO)
             {
-                Mod.Log.Debug?.Write($"Processing icons for category: {categoryGO.name}");
+                Mod.Log.Debug?.Log($"Processing icons for category: {categoryGO.name}");
                 
                 SGEngineeringShipUpgradePip[] upgradePipComps = categoryGO.transform.GetComponentsInChildren<SGEngineeringShipUpgradePip>();
                 foreach (SGEngineeringShipUpgradePip pip in upgradePipComps)
                 {
                     Color hovered = Color.white;
                     Color unHovered = Color.gray;
-                    Mod.Log.Debug?.Write($" Refreshing pip for module.name: {pip.name}  desc.Name {pip.UpgradeModule?.Description?.Name}  desc.Id: {pip.UpgradeModule?.Description?.Id}");
+                    Mod.Log.Debug?.Log($" Refreshing pip for module.name: {pip.name}  desc.Name {pip.UpgradeModule?.Description?.Name}  desc.Id: {pip.UpgradeModule?.Description?.Id}");
                     if (engineeringScreen.PurchasedUpgrades.Contains(pip.UpgradeModule))
                     {
                         if (config.InnateUpgradeIds.Contains(pip.UpgradeModule?.Description?.Id))
                         {
-                            Mod.Log.Debug?.Write($" -- Module is innate");
+                            Mod.Log.Debug?.Log($" -- Module is innate");
                             unHovered = Mod.Config.Colors.Upgrades.InnateColor;
                             hovered = Mod.Config.Colors.Upgrades.InnateHoverColor;
                         }
                         else
                         {
-                            Mod.Log.Debug?.Write($" -- Module has been purchased");
+                            Mod.Log.Debug?.Log($" -- Module has been purchased");
                             unHovered = Mod.Config.Colors.Upgrades.PurchasedColor;
                             hovered = Mod.Config.Colors.Upgrades.PurchasedHoverColor;
                         }
                     }
                     else if (engineeringScreen.AvailableUpgrades.Contains(pip.UpgradeModule))
                     {
-                        Mod.Log.Debug?.Write($" -- Module is available");
+                        Mod.Log.Debug?.Log($" -- Module is available");
                         unHovered = Mod.Config.Colors.Upgrades.AvailableColor;
                         hovered = Mod.Config.Colors.Upgrades.AvailableHoverColor;
 
                     }
                     else
                     {
-                        Mod.Log.Debug?.Write($" -- Module is unavailable");
+                        Mod.Log.Debug?.Log($" -- Module is unavailable");
                         unHovered = Mod.Config.Colors.Upgrades.UnavailableColor;
                         hovered = Mod.Config.Colors.Upgrades.UnavailableHoverColor;
 
@@ -165,7 +165,7 @@ namespace UsedDropshipSalesman.Helper
         public static void OverlayCustomUpgrades(List<DropshipUpgradeCategory> categories, SGEngineeringScreen engineeringScreen)
         {
             // Disable all the existing ones
-            Mod.Log.Trace?.Write("Disabling existing upgrade panel");
+            Mod.Log.Trace?.Log("Disabling existing upgrade panel");
             var upgradePanelRootGO = engineeringScreen.gameObject.FindFirstChildNamed("OBJ_upgradePanels");
             foreach (Transform childT in upgradePanelRootGO.transform)
             {
@@ -173,11 +173,11 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Disable the argo hologram
-            Mod.Log.Trace?.Write("Disabling Argo hologram");
+            Mod.Log.Trace?.Log("Disabling Argo hologram");
             var imageShipHoloGO = engineeringScreen.gameObject.FindFirstChildNamed("image_shipHologram");
             imageShipHoloGO.SetActive(false);
 
-            Mod.Log.Info?.Write($"Generating {categories.Count} upgrade categories.");
+            Mod.Log.Info?.Log($"Generating {categories.Count} upgrade categories.");
             var categoryReferenceGO = engineeringScreen.gameObject.FindFirstChildNamed("uixPrbPanl_SystemsAndSupportPanel");
             foreach (var (category, idx) in categories.Select((category, idx) => (category, idx)))
             {
@@ -194,7 +194,7 @@ namespace UsedDropshipSalesman.Helper
             newCategoryPanelGO.transform.rotation = categoryReferenceGO.transform.rotation;
             string panelID = ModConsts.UPGRADE_PANEL_CATEGORY_PREFIX + category.CategoryId;
             newCategoryPanelGO.name = panelID;
-            Mod.Log.Trace?.Write($"Created new category panel with name: {panelID}");
+            Mod.Log.Trace?.Log($"Created new category panel with name: {panelID}");
             newCategoryPanelGO.transform.parent = upgradePanelRootGO.transform;
             newCategoryPanelGO.SetActive(true);
             categoryReferenceGO.SetActive(false);
@@ -205,7 +205,7 @@ namespace UsedDropshipSalesman.Helper
             // Disable the connectorLine
             var categoryConnectorLineGO = newCategoryPanelGO.FindFirstChildNamed("connectorLine");
             categoryConnectorLineGO.SetActive(false);
-            Mod.Log.Trace?.Write("Disabled connector line");
+            Mod.Log.Trace?.Log("Disabled connector line");
 
             // Remove unnecessary systems
             GameObject categoryPanelHeaderGO = null;
@@ -213,7 +213,7 @@ namespace UsedDropshipSalesman.Helper
             GameObject systemReferenceGO = null;
             HashSet<string> namesToDisable = new() { "StructureSystem", "DriveSystem", "HabitatSystem" };
             GameObject categoryPanelLayoutGO = newCategoryPanelGO.FindFirstChildNamed("systemsAndSupport-layout");
-            Mod.Log.Trace?.Write("Iterating category children");
+            Mod.Log.Trace?.Log("Iterating category children");
             foreach (Transform childT in categoryPanelLayoutGO.transform)
             {
                 if (childT.gameObject.name.Equals("StructureSystem", StringComparison.InvariantCulture) ||
@@ -238,12 +238,12 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Update the category text
-            Mod.Log.Trace?.Write($"Updating category text to: {category.HeaderText}");
+            Mod.Log.Trace?.Log($"Updating category text to: {category.HeaderText}");
             var categoryPanelHeaderTextComponent = categoryPanelHeaderGO.GetComponent<LocalizableText>();
             categoryPanelHeaderTextComponent.text = category.HeaderText;
 
             // Find the catgegory icon
-            Mod.Log.Trace?.Write($"Updating category text to: {category.Icon}");
+            Mod.Log.Trace?.Log($"Updating category text to: {category.Icon}");
             var categoryPanelIconGO = newCategoryPanelGO.FindFirstChildNamed("icon");
             var categoryPanelIconSVGComponent = categoryPanelIconGO.GetComponent<SVGImage>();
             ModState.SimGameSpaceController.sim.RequestItem<SVGAsset>(category.Icon,
@@ -251,7 +251,7 @@ namespace UsedDropshipSalesman.Helper
                 BattleTechResourceType.SVGAsset);
 
             // Create system upgrades
-            Mod.Log.Trace?.Write("Iterating systems");
+            Mod.Log.Trace?.Log("Iterating systems");
             foreach (DropshipUpgradeSystem system in category.Systems)
             {
                 UpgradeUIHelper.BuildSystemUpgradeGO(system, systemReferenceGO);
@@ -267,7 +267,7 @@ namespace UsedDropshipSalesman.Helper
             systemPanelGO.transform.rotation = categoryPanelGO.transform.rotation;
             string panelID = ModConsts.UPGRADE_PANEL_SYSTEM_PREFIX + system.SystemId;
             systemPanelGO.name = panelID;
-            Mod.Log.Trace?.Write($"Created new systems group with name: {system.SystemId}");
+            Mod.Log.Trace?.Log($"Created new systems group with name: {system.SystemId}");
             systemPanelGO.transform.parent = categoryPanelGO.transform.parent;
             systemPanelGO.SetActive(true);
 
@@ -276,7 +276,7 @@ namespace UsedDropshipSalesman.Helper
             systemReferenceTextComponent.text = system.HeaderText;
 
             // Grab the upgradePip and disable existing pip slots
-            Mod.Log.Trace?.Write("Disabling powerPipSlots");
+            Mod.Log.Trace?.Log("Disabling powerPipSlots");
             var upgradePipSlotsGO = systemPanelGO.FindFirstChildNamed("powerPipSlots");
             foreach (Transform childT in upgradePipSlotsGO.transform)
             {
@@ -286,7 +286,7 @@ namespace UsedDropshipSalesman.Helper
                 }
             }
 
-            Mod.Log.Trace?.Write("Finding innate and optional ShipModuleUpgrade defs");
+            Mod.Log.Trace?.Log("Finding innate and optional ShipModuleUpgrade defs");
             Dictionary<string, ShipModuleUpgrade> dropshipModules = new();
             DataManager dataManager = ModState.SimGameSpaceController.sim.DataManager;
             VersionManifestEntry[] array = dataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade);
@@ -298,10 +298,10 @@ namespace UsedDropshipSalesman.Helper
                     dropshipModules.Add(vme.Id, shipModuleUpgrade);
                 }
             }
-            Mod.Log.Trace?.Write($"  DONE. Found {dropshipModules.Count} upgrades for this dropship.");
+            Mod.Log.Trace?.Log($"  DONE. Found {dropshipModules.Count} upgrades for this dropship.");
 
             // Create new upgrade items
-            Mod.Log.Trace?.Write("Creating new innate upgrade items");
+            Mod.Log.Trace?.Log("Creating new innate upgrade items");
             foreach (string upgradeDefId in system.innateUpgrades)
             {
                 bool exists = dropshipModules.TryGetValue(upgradeDefId, out ShipModuleUpgrade module);
@@ -311,11 +311,11 @@ namespace UsedDropshipSalesman.Helper
                 }
                 else
                 {
-                    Mod.Log.Warn?.Write($"Failed to fetch upgrade def: {upgradeDefId} from all known upgrades, skipping!");
+                    Mod.Log.Warning?.Log($"Failed to fetch upgrade def: {upgradeDefId} from all known upgrades, skipping!");
                 }                
             }
 
-            Mod.Log.Trace?.Write("Creating new optional upgrade items");
+            Mod.Log.Trace?.Log("Creating new optional upgrade items");
             foreach (string upgradeDefId in system.optionalUpgrades)
             {
                 bool exists = dropshipModules.TryGetValue(upgradeDefId, out ShipModuleUpgrade module);
@@ -325,7 +325,7 @@ namespace UsedDropshipSalesman.Helper
                 }
                 else
                 {
-                    Mod.Log.Warn?.Write($"Failed to fetch upgrade def: {upgradeDefId} from all known upgrades, skipping!");
+                    Mod.Log.Warning?.Log($"Failed to fetch upgrade def: {upgradeDefId} from all known upgrades, skipping!");
                 }
             }
 
@@ -334,7 +334,7 @@ namespace UsedDropshipSalesman.Helper
         // TODO: Handles states of innate, avialable, unavailable, purchased
         internal static void BuildUpgradeItemGO(ShipModuleUpgrade upgradeDef, GameObject upgradePipSlotsGO, bool isInnate=false)
         {
-            Mod.Log.Trace?.Write($"Creating new upgrade item: {upgradeDef.Description.Name}");
+            Mod.Log.Trace?.Log($"Creating new upgrade item: {upgradeDef.Description.Name}");
 
             // States
             //  systemId = "uixPrfIndc_SIM_argoUpgradePipUnavailable-element";

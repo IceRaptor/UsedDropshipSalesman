@@ -5,10 +5,14 @@ The mod does not change the combat layer.
 
 :warning: This mod requires several other mods to function properly. For each of them, you should download the latest copy and include them in your Mods/ folder.
 
-* [IRBTModUtils](https://github.com/iceraptor/IRBTModUtils/)
+* [IRBTModUtils](https://github.com/BattletechModders/IRBTModUtils/)
+* [IRTweaks](https://github.com/BattletechModders/IRTweaks/)
 * [CustomAmmoCategories](https://github.com/BattletechModders/CustomBundle/tree/master/CustomAmmoCategories)
 * [CustomUnits](https://github.com/BattletechModders/CustomBundle/tree/master/CustomUnits) - version 0.0.0.199 (with CustomHangarConstraints) minimum
 * [JwTweaks](https://github.com/wmtorode/JwTweaks)
+
+:no_entry: This mod conflicts with [BiggerDrops](https://github.com/BattletechModders/BiggerDrops/) and will not load if that mod is present. 
+Do not attempt to circumvent these; these mods WILL step on each other and result in an incorrect working state.
 
 ## Configuration
 
@@ -52,29 +56,39 @@ These options are available under the `Settings.Dropships`:
 
 ### Todo
 
+Dropship Graphics
 * Integrate dropship replacement for drop screen
 * Integrate dropship replacement for in-mission
 * Add jump costs for additional dropships?
-* Implement dropship change only at planets
+* Implement dropship change only at planets X
 * Implement zoom out for camera
-* 
-* HangerBays fix - adjust size by dropship
-* Check build from storage for hanger limits
-*
-* OnCareerStart - allow defaultDropship by startID, fix dropship
 
-* Implement listener for dropship upgrade from event
-* 
-* Implement mechbay handling for changed dropships w/ less bay sizes
-* OnChange - dialog prompting for storing mechs, stopping argo upgrades, etc
-* Implement upgrade logic XX - need cleanup logic, persistence logic handled
-
-* Allow granting items / itemCoillections on receiving dropship (StratOps integration)
-
+Visuals
 * Replace event text that relies upon argo
-* Implement chassis specific tag at change time
+* Replace UI text that relies upon Argo (argo upgrades, argo timeline, etc)
+
+StratOps integration
+* Allow granting items / itemCollections on receiving dropship (StratOps integration)
+
+* Implement dropship specific tag at change time
 * Implement tag-based restrictions for events
 
+BiggerDrops Features
+* Kill-BD: Implement drop tonnage (defaultMaxTonnage)
+* Kill-BD: Implement custom drop sizes (by type)
+* Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop)
+
+### Done
+
+* OnCareerStart - allow defaultDropship by startID, fix dropship
+* Implement listener for dropship upgrade from event
+* Implement upgrade logic XX - need cleanup logic, persistence logic handled
+
+* HangerBays fix - adjust size by dropship 
+* Check build from storage for hanger limits
+
+* Implement mechbay handling for changed dropships w/ less bay sizes
+* OnChange - dialog prompting for storing mechs, stopping argo upgrades, etc
 
 ### Ideas
 

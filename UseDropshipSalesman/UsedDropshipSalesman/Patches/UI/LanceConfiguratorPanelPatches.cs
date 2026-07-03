@@ -12,20 +12,20 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         static void Prefix(ref bool __runOriginal, LanceConfiguratorPanel __instance, ref int maxUnits)
         {
-            Mod.Log.Trace?.Write("==== LanceConfiguratorPanel_SetData::Prefix - entered.");
+            Mod.Log.Trace?.Log("==== LanceConfiguratorPanel_SetData::Prefix - entered.");
 
-            Mod.Log.Debug?.Write($" maxUnits set to: {maxUnits}");
+            Mod.Log.Debug?.Log($" maxUnits set to: {maxUnits}");
         }
         static void Postfix(LanceConfiguratorPanel __instance, ref int maxUnits)
         {
-            Mod.Log.Trace?.Write("==== LanceConfiguratorPanel_SetData::Postfix- entered.");
+            Mod.Log.Trace?.Log("==== LanceConfiguratorPanel_SetData::Postfix- entered.");
 
-            Mod.Log.Debug?.Write($" maxUnits set to: {maxUnits}");
+            Mod.Log.Debug?.Log($" maxUnits set to: {maxUnits}");
 
-            Mod.Log.Debug?.Write($"  Contract: {__instance.activeContract.Name}  " +
+            Mod.Log.Debug?.Log($"  Contract: {__instance.activeContract.Name}  " +
                 $"contract_id: {__instance.activeContract.internalName}" +
                 $"override_ID: {__instance.activeContract.Override.ID}");
-            Mod.Log.Debug?.Write($"  Contract maxUnits: {__instance.activeContract?.Override?.maxNumberOfPlayerUnits}");
+            Mod.Log.Debug?.Log($"  Contract maxUnits: {__instance.activeContract?.Override?.maxNumberOfPlayerUnits}");
 
         }
 

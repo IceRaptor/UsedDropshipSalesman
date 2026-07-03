@@ -79,6 +79,10 @@
       <HintPath>$(DeployedModPath)\..\JWTweaks\JWTweaks.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ModTek">
+      <HintPath>$(DeployedModPath)\..\..\ModTek\lib\ModTek.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <Private>False</Private>
     </Reference>

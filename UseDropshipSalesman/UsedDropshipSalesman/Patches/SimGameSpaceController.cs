@@ -21,9 +21,9 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SimGameState simGame, SimGameSpaceController __instance)
         {
-            Mod.Log.Trace?.Write("==== SimGameSpaceController_Init - entered");
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_Init - entered");
 
-            Mod.Log.Info?.Write("  Caching HBS Leopard GOs");
+            Mod.Log.Info?.Log("  Caching HBS Leopard GOs");
             ModState.SGLeopardState = DropshipHelper.BuildSGLeopardState(__instance);
 
 
@@ -35,9 +35,9 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SimGameTravelStatus status, bool force, SimGameSpaceController __instance)
         {
-            Mod.Log.Trace?.Write("==== SimGameSpaceController_Dock - entered");
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_Dock - entered");
 
-            Mod.Log.Trace?.Write($"Entry speed is: {__instance.argoAnimator.speed}");
+            Mod.Log.Trace?.Log($"Entry speed is: {__instance.argoAnimator.speed}");
             //__instance.argoAnimator.speed = 0.5f;
         }
     }
@@ -47,7 +47,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(DropshipType ship, SimGameSpaceController __instance)
         {
-            Mod.Log.Trace?.Write("==== SimGameSpaceController_SetShip - entered");
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_SetShip - entered");
 
             ModState.SimGameSpaceController ??= __instance;
 
@@ -55,11 +55,11 @@ namespace UsedDropshipSalesman.Patches
             // TODO: Need to handle a default new career by disabling argo
             //var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
             var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
-            Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}', overlaying meshes.");
+            Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', overlaying meshes.");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)
             {
-                Mod.Log.Error?.Write($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+                Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
 
@@ -122,17 +122,17 @@ namespace UsedDropshipSalesman.Patches
         //    var argoParent = sgsc.argo.gameObject.transform.parent;
         //    var argoAttach = argoParent.gameObject.FindFirstChildNamed("envPrfArgo_argo");
 
-        //    Mod.Log.Trace?.Write("Instantiating prefab");
+        //    Mod.Log.Trace?.Log("Instantiating prefab");
         //    var dropship_go = UnityEngine.Object.Instantiate(dropshipPrefab, argoAttach.transform);
         //    dropship_go.SetActive(true);
 
         //    // Adjust to the center of the first jump point
-        //    Mod.Log.Trace?.Write("Adjusting dropship position");
+        //    Mod.Log.Trace?.Log("Adjusting dropship position");
         //    ModState.DropshipGO = dropship_go;
         //    DropshipHelper.AlignSpheriod(dropship_go);
 
         //    // TODO: Note in docs you must set layer = 20 for visibility
-        //    Mod.Log.Trace?.Write("Setting layer = 20 for all GameObjects");
+        //    Mod.Log.Trace?.Log("Setting layer = 20 for all GameObjects");
         //    dropship_go.gameObject.layer = 20;
         //    var children = dropship_go.GetComponentsInChildren<GameObject>();
         //    foreach (GameObject child in children)
@@ -141,7 +141,7 @@ namespace UsedDropshipSalesman.Patches
         //    }
 
         //    // Disable argo components
-        //    Mod.Log.Trace?.Write("Disabling standard argo meshes");
+        //    Mod.Log.Trace?.Log("Disabling standard argo meshes");
         //    var leopard = sgsc.argo.gameObject.FindFirstChildNamed("chrPrfVhcl_leopard");
         //    leopard.SetActive(false);
 
@@ -149,16 +149,16 @@ namespace UsedDropshipSalesman.Patches
         //    argoCenter.SetActive(false);
 
         //    // Update the mesh to use the battletech shader
-        //    Mod.Log.Trace?.Write("Updating shader to BTS shader");
+        //    Mod.Log.Trace?.Log("Updating shader to BTS shader");
         //    var leopard_mat = leopard.GetComponent<MeshRenderer>().material;
         //    var dropship_mats = dropship_go.GetComponentsInChildren<MeshRenderer>();
         //    foreach (MeshRenderer childMeshRenderer in dropship_mats)
         //    {
-        //        Mod.Log.Trace?.Write($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
+        //        Mod.Log.Trace?.Log($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
         //        childMeshRenderer.material.shader = leopard_mat.shader;
         //    }
 
-        //    Mod.Log.Trace?.Write("Done!");
+        //    Mod.Log.Trace?.Log("Done!");
 
         //}
     }

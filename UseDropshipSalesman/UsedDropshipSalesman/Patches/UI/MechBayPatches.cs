@@ -16,14 +16,14 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         public static void Postfix(MechBayPanel __instance)
         {
-            Mod.Log.Trace?.Write("==== MechBayPanel_ViewBays - entered.");
+            Mod.Log.Trace?.Log("==== MechBayPanel_ViewBays - entered.");
 
             var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-            Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}', updating hanger config.");
+            Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', updating hanger config.");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)
             {
-                Mod.Log.Error?.Write($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+                Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
 
@@ -37,14 +37,14 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         public static void Postfix(MechBayPanel __instance)
         {
-            Mod.Log.Trace?.Write("==== MechBayPanel_ViewMechStorage - entered.");
+            Mod.Log.Trace?.Log("==== MechBayPanel_ViewMechStorage - entered.");
 
             //var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-            //Mod.Log.Info?.Write($"Current dropship is: '{currentDropshipId}', updating hanger config.");
+            //Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', updating hanger config.");
             //Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             //if (config == null)
             //{
-            //    Mod.Log.Error?.Write($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+            //    Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
             //    return;
             //}
 

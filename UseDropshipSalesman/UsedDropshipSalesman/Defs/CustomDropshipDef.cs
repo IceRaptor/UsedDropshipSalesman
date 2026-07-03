@@ -31,24 +31,24 @@ namespace UsedDropshipSalesman.Defs
 
             if (this.Description == null || this.Description.Id == null) 
             {
-                Mod.Log.Debug?.Write("CustomDropship has no description field or ID!");
+                Mod.Log.Debug?.Log("CustomDropship has no description field or ID!");
                 isValid = false; 
             }
-            Mod.Log.Debug?.Write($"Validating CustomDropshipDef with id: {this.Description.Id}");
+            Mod.Log.Debug?.Log($"Validating CustomDropshipDef with id: {this.Description.Id}");
 
             if (this.Visuals == null)
             {
-                Mod.Log.Debug?.Write("Dropship Visuals not defined!");
+                Mod.Log.Debug?.Log("Dropship Visuals not defined!");
                 isValid = false;
             }
             else if (String.IsNullOrEmpty(this.Visuals.AssetBundleId))
             {
-                Mod.Log.Debug?.Write("CustomDropship missing assetBundleID!");
+                Mod.Log.Debug?.Log("CustomDropship missing assetBundleID!");
                 isValid = false;
             }
             else if (String.IsNullOrEmpty(this.Visuals.PrefabPath) && !this.Visuals.AssetBundleId.StartsWith("HBS_"))
             {
-                Mod.Log.Debug?.Write("CustomDropship with custom assetbundle missing prefabPath!");
+                Mod.Log.Debug?.Log("CustomDropship with custom assetbundle missing prefabPath!");
                 isValid = false;
             }
 
@@ -59,16 +59,16 @@ namespace UsedDropshipSalesman.Defs
             // Validate dropbays
             if (this.DropBays == null)
             {
-                Mod.Log.Debug?.Write("Dropship dropBays not defined!");
+                Mod.Log.Debug?.Log("Dropship dropBays not defined!");
             }
             else if (this.DropBays?.Labels?.Length != this.DropBays?.Slots?.Length)
             {
-                Mod.Log.Warn?.Write("Dropship dropBays labels and slots do not match, is not valid!");
+                Mod.Log.Warning?.Log("Dropship dropBays labels and slots do not match, is not valid!");
             }
 
             if (this.Upgrades == null || this.Upgrades.Count <= 1)
             {
-                Mod.Log.Debug?.Write("CustomDropship has no upgrades!");
+                Mod.Log.Debug?.Log("CustomDropship has no upgrades!");
                 isValid = false;
             }
 

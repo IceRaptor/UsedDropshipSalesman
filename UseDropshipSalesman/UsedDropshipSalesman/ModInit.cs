@@ -1,7 +1,10 @@
-﻿using CustomUnits.CustomHangars;
+﻿using CustomAmmoCategoriesLog;
+using CustomUnits.CustomHangars;
+using HBS.Logging;
 using IRBTModUtils.Logging;
 using JwTweaks.Data;
 using JwTweaks.Features;
+using ModTek.Public;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -23,12 +26,12 @@ namespace UsedDropshipSalesman
         public const string LogName = "used_dropship_salesman";
         public const string LogLabel = "USEDDROPSHIP";
 
-        public static DeferringLogger Log;
-        public static string ModDir;
-        public static ModConfig Config;
+        internal static NullableLogger Log = NullableLogger.GetLogger("UsedDropshipSalesman", NullableLogger.TraceLogLevel);
+        internal static string ModDir;
+        internal static ModConfig Config;
         public static UDSSaveData ModSaveData = new UDSSaveData();
 
-        public static readonly Random Random = new Random();
+        //public static readonly Random Random = new Random();
 
         public static void Init(string modDirectory, string settingsJSON)
         {
@@ -37,7 +40,10 @@ namespace UsedDropshipSalesman
             Exception settingsE = null;
             try
             {
-                Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsJSON);
+                string settingsFile = Path.Combine(modDirectory, "settings.json");
+                using StreamReader reader = new(settingsFile);
+                string settingsText = reader.ReadToEnd();
+                Mod.Config = JsonConvert.DeserializeObject<ModConfig>(settingsText);
             }
             catch (Exception e)
             {
@@ -45,26 +51,26 @@ namespace UsedDropshipSalesman
                 Mod.Config = new ModConfig();
             }
 
-            Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
+            //Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
 
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Log.Info?.Write($"Assembly version: {fvi.FileVersion}");
+            Log.Info?.Log($"AssemblyVersion: {fvi.FileVersion}");
 
             // Initialize the mod settings
             Mod.Config.Init();
 
-            Log.Debug?.Write($"ModDir is:{modDirectory}");
-            Log.Debug?.Write($"mod.json settings are:({settingsJSON})");
+            Log.Debug?.Log($"ModDir is:{modDirectory}");
+            Log.Debug?.Log($"mod.json settings are:({settingsJSON})");
             Mod.Config.LogConfig();
 
             if (settingsE != null)
             {
-                Log.Info?.Write($"ERROR reading settings file! Error was: {settingsE}");
+                Log.Info?.Log($"ERROR reading settings file! Error was: {settingsE}");
             }
             else
             {
-                Log.Info?.Write($"INFO: No errors reading settings file.");
+                Log.Info?.Log($"INFO: No errors reading settings file.");
             }
 
             // Initialize the custom save block
@@ -80,7 +86,7 @@ namespace UsedDropshipSalesman
 
         public static void FinishedLoading(Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
         {
-            Mod.Log.Trace?.Write("==== ModInit::FinishedLoading invoked.");
+            Mod.Log.Trace?.Log("==== ModInit::FinishedLoading invoked.");
 
             // Setup the dropship size constraints in CU
             Dictionary<string, CustomHangarConstraint> constraints = new Dictionary<string, CustomHangarConstraint>();
@@ -97,33 +103,33 @@ namespace UsedDropshipSalesman
                 bool hasResources = customResources.TryGetValue(ModConsts.CUSTOM_RESOURCE_DROPSHIP_CONFIG, out Dictionary<string, VersionManifestEntry> dropshipConfigEntries);
                 foreach (KeyValuePair<string, VersionManifestEntry> kvp in dropshipConfigEntries)
                 {
-                    Mod.Log.Debug?.Write($"Loading customDropshipDef: {kvp.Key} from path: {kvp.Value.FilePath}");
+                    Mod.Log.Debug?.Log($"Loading customDropshipDef: {kvp.Key} from path: {kvp.Value.FilePath}");
                     try
                     { 
                         string fileContent = File.ReadAllText(kvp.Value.FilePath);
-                        Mod.Log.Trace?.Write($"Deserializing context to CustomDropshipDef:\n'{fileContent}'");
+                        Mod.Log.Trace?.Log($"Deserializing context to CustomDropshipDef:\n'{fileContent}'");
                         CustomDropshipDef dropshipDef = JsonConvert.DeserializeObject<CustomDropshipDef>(fileContent);
 
                         bool isValid = dropshipDef.Validate();
                         if (isValid)
                         {
-                            Mod.Log.Debug?.Write($"Adding dropshipDef with ID: {dropshipDef.Description.Id} to available dropships.");
+                            Mod.Log.Debug?.Log($"Adding dropshipDef with ID: {dropshipDef.Description.Id} to available dropships.");
                             DropshipConfig newConfig = new DropshipConfig() { CustomDropship = dropshipDef };
                             Mod.Config.Dropships.Add(dropshipDef.Description.Id, newConfig);
 
                         }
                         else
                         {
-                            Mod.Log.Warn?.Write($"Dropship {dropshipDef?.Description?.Id} failed validation, skipping.!");
+                            Mod.Log.Warning?.Log($"Dropship {dropshipDef?.Description?.Id} failed validation, skipping.!");
                             var jsonString = JsonConvert.SerializeObject(dropshipDef, Formatting.Indented, 
                                 new JsonConverter[] { new StringEnumConverter() });
-                            Mod.Log.Warn?.Write($" -- Generated object: {jsonString}");
+                            Mod.Log.Warning?.Log($" -- Generated object: {jsonString}");
                         }
 
                     }
                     catch (Exception ex)
                     {
-                        Mod.Log.Warn?.Write(ex, "Failed read custom resource!");
+                        Mod.Log.Warning?.Log("Failed read custom resource!", ex);
                     }
                 }
             }

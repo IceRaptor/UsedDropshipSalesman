@@ -42,13 +42,13 @@ namespace UsedDropshipSalesman.Helper
         //{
         //    if (dropshipGO == null)
         //    {
-        //        Mod.Log.Warn?.Write("Invoked without a gameobject!");
+        //        Mod.Log.Warning?.Log("Invoked without a gameobject!");
         //        return;
         //    }
 
         //    if (ModState.CurrentTravelStatus == SimGameTravelStatus.WARMING_ENGINES)
         //    {
-        //        Mod.Log.Info?.Write("Aligning spheriod dropship docked to jumpship");
+        //        Mod.Log.Info?.Log("Aligning spheriod dropship docked to jumpship");
         //        // Align docked downward
         //        // Align towards direction of travel
         //        dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
@@ -57,7 +57,7 @@ namespace UsedDropshipSalesman.Helper
         //    }
         //    else
         //    {
-        //        Mod.Log.Info?.Write("Aligning spheriod dropship for travel");
+        //        Mod.Log.Info?.Log("Aligning spheriod dropship for travel");
         //        // Align towards direction of travel
         //        dropshipGO.gameObject.transform.localPosition = new Vector3(12.0f, 0.0f, 7.0f);
         //        dropshipGO.gameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
@@ -76,19 +76,19 @@ namespace UsedDropshipSalesman.Helper
             bool alreadyCreated = ModState.DropshipInstances.TryGetValue(dropshipRootName, out GameObject cachedDropshipRootGO);
             if (alreadyCreated)
             {
-                Mod.Log.Debug?.Write($"Dropship {dropshipRootName} GO already created, setting active.");
+                Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
                 cachedDropshipRootGO.SetActive(true);
                 return;
             }
 
-            Mod.Log.Info?.Write($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the leopard");
+            Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the leopard");
 
             // Fetch the prefab from the assetBundle that's already been loaded.
             var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
             var assetBundle = abm.GetLoadedAssetBundle(config.CustomDropship.Visuals.AssetBundleId);
             if (assetBundle == null)
             {
-                Mod.Log.Info?.Write("Dropships not loaded, loading assetbundles and short-circuiting");
+                Mod.Log.Info?.Log("Dropships not loaded, loading assetbundles and short-circuiting");
                 DropshipHelper.LoadAssetBundle(config, ModState.SimGameSpaceController.sim, OverlayMeshes);
                 return;
             }
@@ -105,10 +105,10 @@ namespace UsedDropshipSalesman.Helper
             var abm = ModState.SimGameSpaceController.sim.DataManager.AssetBundleManager;
 
             var prefabGO = abm.GetAssetFromBundle<GameObject>(config.CustomDropship.Visuals.PrefabPath, config.CustomDropship.Visuals.AssetBundleId);
-            Mod.Log.Debug?.Write($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
-            Mod.Log.Warn?.Write($"PREFAB_GO == null? {prefabGO == null}");
+            Mod.Log.Debug?.Log($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
+            Mod.Log.Warning?.Log($"PREFAB_GO == null? {prefabGO == null}");
 
-            Mod.Log.Debug?.Write($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
+            Mod.Log.Debug?.Log($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
             dropshipRootGO.transform.parent = ModState.SGLeopardState.RootGO.transform;
             dropshipRootGO.transform.position = ModState.SGLeopardState.RootGO.transform.position;
@@ -118,7 +118,7 @@ namespace UsedDropshipSalesman.Helper
 
             // HBS scenes expect layer = 20 for these to be visible. Force the issue.
             // TODO: Note in docs you should set layer = 20 for visibility
-            Mod.Log.Debug?.Write("Setting layer = 20 for all GameObjects");
+            Mod.Log.Debug?.Log("Setting layer = 20 for all GameObjects");
             dropshipGO.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
             var children = dropshipGO.GetComponentsInChildren<GameObject>();
             foreach (GameObject child in children)
@@ -127,11 +127,11 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Update the mesh to use the battletech shader
-            Mod.Log.Debug?.Write("Updating shader for materials to BTS shader");
+            Mod.Log.Debug?.Log("Updating shader for materials to BTS shader");
             var dropship_mats = dropshipGO.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer childMeshRenderer in dropship_mats)
             {
-                Mod.Log.Trace?.Write($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
+                Mod.Log.Trace?.Log($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
                 childMeshRenderer.material.shader = ModState.SGLeopardState.BodyMat.shader;
                 childMeshRenderer.gameObject.layer = ModConsts.HBS_SIMGAME_DROPSHIP_LAYER;
             }
@@ -149,7 +149,7 @@ namespace UsedDropshipSalesman.Helper
                 var attach_point = dropshipGO.FindFirstChildNamed(ap_name);
                 if (attach_point == null)
                 {
-                    Mod.Log.Warn?.Write($"Configuration error - engine_jet attach_point: {ap_name} could not be found in the prefab!");
+                    Mod.Log.Warning?.Log($"Configuration error - engine_jet attach_point: {ap_name} could not be found in the prefab!");
                     continue;
                 }
 
@@ -176,21 +176,21 @@ namespace UsedDropshipSalesman.Helper
                 ModState.SGLeopardState.ArgoEngineComp.engineLights.AddItem(newEngineFlare.GetComponent<Light>());
                 ModState.SGLeopardState.ArgoEngineComp.engineFlares.AddItem(newEngineFlare.GetComponent<BTFlare>());
 
-                Mod.Log.Trace?.Write($"Instantiated duplicate engine_jet {newEngineJet.name} at {attach_point.name} with position: {attach_point.transform.position}");
+                Mod.Log.Trace?.Log($"Instantiated duplicate engine_jet {newEngineJet.name} at {attach_point.name} with position: {attach_point.transform.position}");
             }
 
             // For spot lights, instantiate them
             foreach (String attach_name in config.CustomDropship.Visuals.AttachesSpotLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
-                Mod.Log.Debug?.Write($"I should be instantiating a spotlight at attach: {attach_name} with GO != null? {attach_GO != null}");
+                Mod.Log.Debug?.Log($"I should be instantiating a spotlight at attach: {attach_name} with GO != null? {attach_GO != null}");
             }
 
             // For running lights, instantiate them
             foreach (String attach_name in config.CustomDropship.Visuals.AttachesRunningLights)
             {
                 var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
-                Mod.Log.Debug?.Write($"I should be instantiating a running light at attach: {attach_name} with GO != null? {attach_GO != null}");
+                Mod.Log.Debug?.Log($"I should be instantiating a running light at attach: {attach_name} with GO != null? {attach_GO != null}");
 
             }
 
@@ -210,7 +210,7 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - engine_glow attach_point: {config.CustomDropship.Visuals.AttachEngineGlow} could not be found in the prefab!");
+                Mod.Log.Warning?.Log($"Configuration error - engine_glow attach_point: {config.CustomDropship.Visuals.AttachEngineGlow} could not be found in the prefab!");
             }
 
             // Move the decal
@@ -228,7 +228,7 @@ namespace UsedDropshipSalesman.Helper
             }
             else
             {
-                Mod.Log.Warn?.Write($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
+                Mod.Log.Warning?.Log($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
             }
 
             // Finally set the dropship active and record it as an active instance
@@ -240,15 +240,15 @@ namespace UsedDropshipSalesman.Helper
         {
             if (ModState.SimGameSpaceController == null)
             {
-                Mod.Log.Error?.Write("Unable to ref SimGameSpaceController, this should never happen!");
+                Mod.Log.Error?.Log("Unable to ref SimGameSpaceController, this should never happen!");
                 return;
             }
             if (ModState.SGLeopardState == null)
             {
-                Mod.Log.Error?.Write("Unable to ref SimGameLeopardState, this should never happen!");
+                Mod.Log.Error?.Log("Unable to ref SimGameLeopardState, this should never happen!");
             }
 
-            Mod.Log.Debug?.Write($"Updating HBS Leopard mesh to be visible: {show}");
+            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show}");
 
             // Hide the body
             ModState.SGLeopardState.BodyMRComp.enabled = show;
@@ -349,17 +349,17 @@ namespace UsedDropshipSalesman.Helper
 
         public static void LoadAssetBundle(DropshipConfig config, SimGameState sgs, Action<DropshipConfig> callback)
         {
-            Mod.Log.Info?.Write($"Loading assetBundle for dropship: {config.CustomDropship.Description.Id}");
+            Mod.Log.Info?.Log($"Loading assetBundle for dropship: {config.CustomDropship.Description.Id}");
             var abm = sgs.DataManager.AssetBundleManager;
             var onLoaded = delegate (AssetBundle ab)
             {
-                Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {ab.name}");
+                Mod.Log.Debug?.Log($" -- Loaded assetBundleId: {ab.name}");
 
                 var assetBundle = abm.GetLoadedAssetBundle(ab.name);
-                Mod.Log.Trace?.Write($" -- All assets in bundle: {ab.name}");
+                Mod.Log.Trace?.Log($" -- All assets in bundle: {ab.name}");
                 foreach (string n in assetBundle.GetAllAssetNames())
                 {
-                    Mod.Log.Trace?.Write($"  ---- {n}");
+                    Mod.Log.Trace?.Log($"  ---- {n}");
                 }
 
                 callback(config);
@@ -369,18 +369,18 @@ namespace UsedDropshipSalesman.Helper
 
         public static void LoadAllAssetBundles(SimGameState sgs)
         {
-            Mod.Log.Info?.Write("Identifying prefabs to load");
+            Mod.Log.Info?.Log("Identifying prefabs to load");
             var prefabsToLoad = new Dictionary<string, string>();
             foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
             {
                 DropshipVisuals prefabConfig = kvp.Value.CustomDropship.Visuals;
-                Mod.Log.Info?.Write($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
+                Mod.Log.Info?.Log($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
                     $"prefabPath:{prefabConfig.PrefabPath}");
 
                 if (prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_LEOPARD, StringComparison.InvariantCultureIgnoreCase) ||
                     prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_ARGO, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Mod.Log.Info?.Write($"  Dropship configured to use HBS assets, skipping load.");
+                    Mod.Log.Info?.Log($"  Dropship configured to use HBS assets, skipping load.");
                     continue;
                 }
 
@@ -396,13 +396,13 @@ namespace UsedDropshipSalesman.Helper
                 var abm = sgs.DataManager.AssetBundleManager;
                 var onLoaded = delegate(AssetBundle ab)
                 {
-                    Mod.Log.Debug?.Write($" -- Loaded assetBundleId: {ab.name}");
+                    Mod.Log.Debug?.Log($" -- Loaded assetBundleId: {ab.name}");
 
                     var assetBundle = abm.GetLoadedAssetBundle(ab.name);
-                    Mod.Log.Trace?.Write($" -- All assets in bundle: {ab.name}");
+                    Mod.Log.Trace?.Log($" -- All assets in bundle: {ab.name}");
                     foreach (string n in assetBundle.GetAllAssetNames())
                     {
-                        Mod.Log.Trace?.Write($"  ---- {n}");
+                        Mod.Log.Trace?.Log($"  ---- {n}");
                     }
                 };
                 callbacks.Add(onLoaded);

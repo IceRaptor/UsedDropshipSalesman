@@ -13,9 +13,9 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SimGameTravelStatus startState, SGTravelManager __instance)
         {
-            Mod.Log.Trace?.Write("==== SGTravelManager_Ctor_SimGameTravelStatus - entered.");
+            Mod.Log.Trace?.Log("==== SGTravelManager_Ctor_SimGameTravelStatus - entered.");
 
-            Mod.Log.Info?.Write($"Starting state is: {startState}");
+            Mod.Log.Info?.Log($"Starting state is: {startState}");
             ModState.CurrentTravelStatus = startState;
 
             // Force the travel scenes to pause on transitions
@@ -30,9 +30,9 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SGTravelManager __instance)
         {
-            Mod.Log.Trace?.Write("==== SGTravelManager_TransitionAnimating_OnEnter - entered.");
+            Mod.Log.Trace?.Log("==== SGTravelManager_TransitionAnimating_OnEnter - entered.");
 
-            Mod.Log.Info?.Write($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
             ModState.CurrentTravelStatus = __instance.PostTransitionState;
         }
     }
@@ -42,7 +42,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Postfix(SGTravelManager __instance)
         {
-            Mod.Log.Trace?.Write("==== SGTravelManager_HandleNextTravelStep - entered.");
+            Mod.Log.Trace?.Log("==== SGTravelManager_HandleNextTravelStep - entered.");
 
             __instance.pauseAtTravelSteps = true;
         }

@@ -29,16 +29,16 @@ namespace UsedDropshipSalesman.Helper
             }
 
             var labels = config.CustomDropship.DropBays.Labels.ToList();
-            Mod.Log.Info?.Write($"Updating CU dropConfig to support {totalUnits} across {layout.Count} lances.");
+            Mod.Log.Info?.Log($"Updating CU dropConfig to support {totalUnits} across {layout.Count} lances.");
             CustomLanceHelper.PushDropLayout(config.CustomDropship.Description.Id, layout, totalUnits, labels);
         }
 
         public static void UpdateHangarConfig(DropshipConfig config)
         {
-            Mod.Log.Info?.Write($"Updating CU hangarConfig to support hangars: ");
+            Mod.Log.Info?.Log($"Updating CU hangarConfig to support hangars: ");
             foreach (KeyValuePair<string, int> kvp in config.CustomDropship.HangarBays)
             {
-                Mod.Log.Info?.Write($" -- bay: {kvp.Key}  value: {kvp.Value}");
+                Mod.Log.Info?.Log($" -- bay: {kvp.Key}  value: {kvp.Value}");
             }
 
             Dictionary<string, CustomHangarConstraint> constraints;
@@ -52,7 +52,7 @@ namespace UsedDropshipSalesman.Helper
             if (newConfig == null) { return; }
             if (newConfig.InnateUpgradeIds == null || newConfig.InnateUpgradeIds.Count == 0)
             {
-                Mod.Log.Info?.Write($"Dropship {newConfig.CustomDropship.Description.Id} has no innate upgrades.");
+                Mod.Log.Info?.Log($"Dropship {newConfig.CustomDropship.Description.Id} has no innate upgrades.");
             }
 
             var AllShipUpgrades = sim.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade, false);
@@ -61,13 +61,13 @@ namespace UsedDropshipSalesman.Helper
                 ShipModuleUpgrade smu = sim.DataManager.ShipUpgradeDefs.Get(vme.Id);
                 if (smu == null || smu.Description == null || smu.Description.Id == null || String.IsNullOrEmpty(smu?.Description?.Id))
                 {
-                    Mod.Log.Debug?.Write($"Could not read shipModuleUpgrade from versionManifest: {vme.Id}");
+                    Mod.Log.Debug?.Log($"Could not read shipModuleUpgrade from versionManifest: {vme.Id}");
                     continue;
                 }
 
                 if (newConfig.InnateUpgradeIds.Contains(smu.Description.Id))
                 {
-                    Mod.Log.Debug?.Write($"New config has innate module {vme.Id}, applying changes");
+                    Mod.Log.Debug?.Log($"New config has innate module {vme.Id}, applying changes");
                     sim.AddArgoUpgrade(smu);
                 }
             }
@@ -79,44 +79,44 @@ namespace UsedDropshipSalesman.Helper
             if (configToRevert == null) { return; }
             if (configToRevert.AllUpgradeIds.Count == 0)
             {
-                Mod.Log.Warn?.Write($"DropshipConfig improperly initialized, no upgrades found in AllUpgradeIds. Skipping!");
+                Mod.Log.Warning?.Log($"DropshipConfig improperly initialized, no upgrades found in AllUpgradeIds. Skipping!");
                 return;
             }
 
             // TODO: Pull upgrades from save state instead of current mod config
 
             var AllShipUpgrades = sim.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade, false);
-            Mod.Log.Info?.Write($"Iterating over {AllShipUpgrades.Length} ShipModuleUpgrade Defs");
+            Mod.Log.Info?.Log($"Iterating over {AllShipUpgrades.Length} ShipModuleUpgrade Defs");
             foreach (VersionManifestEntry vme in AllShipUpgrades)
             {
                 ShipModuleUpgrade smu = sim.DataManager.ShipUpgradeDefs.Get(vme.Id);
                 if (smu == null || smu.Description == null || smu.Description.Id == null || String.IsNullOrEmpty(smu?.Description?.Id)) 
                 {
-                    Mod.Log.Debug?.Write($"Could not read shipModuleUpgrade from versionManifest: {vme.Id}");
+                    Mod.Log.Debug?.Log($"Could not read shipModuleUpgrade from versionManifest: {vme.Id}");
                     continue;
                 }
 
                 // Check for persistent configuration items; skip reverting these
                 if (Mod.Config.PersistentUpgrades.Contains(smu.Description.Id))
                 {
-                    Mod.Log.Debug?.Write($"ShipModule {vme.Id} marked as persistent, not reverting.");
+                    Mod.Log.Debug?.Log($"ShipModule {vme.Id} marked as persistent, not reverting.");
                     continue;
                 }
 
                 if (configToRevert.AllUpgradeIds.Contains(smu.Description.Id))
                 {
-                    Mod.Log.Debug?.Write($"Current ship state has module {vme.Id}, reverting Tag and Stat changes");
+                    Mod.Log.Debug?.Log($"Current ship state has module {vme.Id}, reverting Tag and Stat changes");
                     
                     if (smu.Tags != null && !smu.Tags.IsEmpty)
                     {
-                        Mod.Log.Debug?.Write($" -- Removing tags: {String.Join(",", smu.Tags)}");
+                        Mod.Log.Debug?.Log($" -- Removing tags: {String.Join(",", smu.Tags)}");
                         sim.CompanyTags.RemoveRange(smu.Tags);
                     }
 
                     SimGameStat[] stats = smu.Stats;
                     foreach (SimGameStat companyStat in stats)
                     {
-                        Mod.Log.Debug?.Write($" -- Removing statistic: {companyStat.name}");
+                        Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
                         sim.CompanyStats.RemoveStatistic(companyStat.name);
                     }
                 }
@@ -129,7 +129,7 @@ namespace UsedDropshipSalesman.Helper
 
 
 
-            Mod.Log.Debug?.Write("No pending ShipModuleUpgrades detected");
+            Mod.Log.Debug?.Log("No pending ShipModuleUpgrades detected");
             return hasUpgrades;
 
 
@@ -143,7 +143,7 @@ namespace UsedDropshipSalesman.Helper
             // Check for pending upgrades
             if (sgs.CurrentUpgradeEntry != null)
             {
-                Mod.Log.Info?.Write($"Active argo upgrade, must cancel upgrade");
+                Mod.Log.Info?.Log($"Active argo upgrade, must cancel upgrade");
                 // TODO: LOCALIZE 
                 blockedReasons.Add("Pending Ship Upgrade");
 
@@ -152,29 +152,29 @@ namespace UsedDropshipSalesman.Helper
 
             // Check for hangarbay storage delta
             Dictionary<string, int> countByHangarId = new Dictionary<string, int>();
-            Mod.Log.Debug?.Write($" Counting current active mechs.");
+            Mod.Log.Debug?.Log($" Counting current active mechs.");
             foreach (KeyValuePair<int, MechDef> kvp in sgs.ActiveMechs)
             {
                 // kvp.key is the index of the mechbay; CU will make these in the range of 0-max, 100-max, 200-max, etc
-                Mod.Log.Debug?.Write($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
+                Mod.Log.Debug?.Log($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
                 CustomHangarDef customHangarDef = CustomHangarHelper.HangarDef(kvp.Value.Chassis);
-                Mod.Log.Debug?.Write($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
+                Mod.Log.Debug?.Log($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
                 // If the hangarDef is null, the unit goes into the default bay (typically MechBay)
                 string hangarId = customHangarDef?.Description?.Id ?? CustomHangarHelper.BASE_HANGAR_ID;
-                Mod.Log.Debug?.Write($"Adding {kvp.Key} active units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
+                Mod.Log.Debug?.Log($"Adding {kvp.Key} active units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
 
                 if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
                 else { countByHangarId.Add(hangarId, 1); }
             }
-            Mod.Log.Debug?.Write($" Counting current readying mechs.");
+            Mod.Log.Debug?.Log($" Counting current readying mechs.");
             foreach (KeyValuePair<int, MechDef> kvp in sgs.ReadyingMechs)
             {
-                Mod.Log.Debug?.Write($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
+                Mod.Log.Debug?.Log($" Found mech: {kvp.Value?.ChassisID} with count: {kvp.Key}");
                 CustomHangarDef customHangarDef = CustomHangarHelper.HangarDef(kvp.Value.Chassis);
-                Mod.Log.Debug?.Write($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
+                Mod.Log.Debug?.Log($" Found CustomHangarDef: {customHangarDef?.Description?.Id}");
                 // If the hangarDef is null, the unit goes into the default bay (typically MechBay)
                 string hangarId = customHangarDef?.Description?.Id ?? CustomHangarDef.DEFAULT_VEHICLE_HANGAR_ID;
-                Mod.Log.Debug?.Write($"Adding {kvp.Key} readying units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
+                Mod.Log.Debug?.Log($"Adding {kvp.Key} readying units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
 
                 if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
                 else { countByHangarId.Add(hangarId, 1); }
@@ -184,14 +184,14 @@ namespace UsedDropshipSalesman.Helper
             allHangars.Insert(0, CustomHangarHelper.BASE_HANGAR_ID);
             foreach (string hangarId in allHangars)
             {
-                Mod.Log.Debug?.Write($"Evaluating count on hangarDef: {hangarId}");
+                Mod.Log.Debug?.Log($"Evaluating count on hangarDef: {hangarId}");
                 if (countByHangarId.ContainsKey(hangarId) && newConfig.CustomDropship.HangarBays.ContainsKey(hangarId))
                 {
                     int newConstraintSize = newConfig.CustomDropship.HangarBays.ContainsKey(hangarId) ? 
                         newConfig.CustomDropship.HangarBays[hangarId] : 0;
                     if (countByHangarId[hangarId] > newConstraintSize) 
                     {
-                        Mod.Log.Info?.Write($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
+                        Mod.Log.Info?.Log($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
                         // TODO: LOCALIZE 
                         blockedReasons.Add($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
                         hasBlockingIssues = true;
@@ -202,7 +202,7 @@ namespace UsedDropshipSalesman.Helper
             // Check for mechbay changes
             //if (sgs.MechLabQueue.Count > 0)
             //{
-            //    Mod.Log.Info?.Write($"Active mechlab upgrades happening");
+            //    Mod.Log.Info?.Log($"Active mechlab upgrades happening");
             //}
 
             // Check for medbay changes?

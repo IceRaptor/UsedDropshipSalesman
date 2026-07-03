@@ -16,22 +16,22 @@ namespace UsedDropshipSalesman.Helper
     {
         public static void UpdateHangerConfig(DropshipConfig config, SimGameState sgs)
         {
-            Mod.Log.Trace?.Write("==== UpgradeHelper_UpdateHangerConfig - entered.");
+            Mod.Log.Trace?.Log("==== UpgradeHelper_UpdateHangerConfig - entered.");
 
             MechBayPanel mbp = sgs.RoomManager.MechBayRoom.mechBay;
             CustomBaysUICaster baysUI = mbp.gameObject.GetComponentInChildren<CustomBaysUICaster>(true);
             if (baysUI == null)
             {
-                Mod.Log.Info?.Write("BaysUI is still null!");
+                Mod.Log.Info?.Log("BaysUI is still null!");
                 return;
             }
-            Mod.Log.Info?.Write($"MBP: {mbp.name}  BayUI: {baysUI.name}  currentBay: {baysUI.currentBay?.name}");
+            Mod.Log.Info?.Log($"MBP: {mbp.name}  BayUI: {baysUI.name}  currentBay: {baysUI.currentBay?.name}");
 
             // uixPrfPanl_SIM_mechBayNav-Widget(Clone)
             // uixPrfPanl_SIM_mechBayNav-Widget(Clone) / Representation / layout_tabs / uixPrfBttn_BASE_TabMedium-tab-bays / bays
 
             GameObject mechBarNavGO = baysUI.transform.parent.transform.parent.gameObject;
-            Mod.Log.Debug?.Write($"MechBarNav parent != null? {mechBarNavGO != null}  name: {mechBarNavGO?.name}");
+            Mod.Log.Debug?.Log($"MechBarNav parent != null? {mechBarNavGO != null}  name: {mechBarNavGO?.name}");
 
             // Buttons - buttons to toggle mechbay view
             // uixPrfBttn_BASE_TabMedium-bays0 - mechbay, has CustomBayShower, CustomBaysButton comps
@@ -47,7 +47,7 @@ namespace UsedDropshipSalesman.Helper
             //  uixPrfPanl_inventory-Widget-MANAGED
 
             GameObject mechBayPanelGO = mechBarNavGO.FindFirstChildNamed("uixPrfPanl_SIM_mechBays-Widget-MANAGED");
-            Mod.Log.Debug?.Write($"MechBayPanel != null? {mechBayPanelGO != null}  name: {mechBayPanelGO?.name}");
+            Mod.Log.Debug?.Log($"MechBayPanel != null? {mechBayPanelGO != null}  name: {mechBayPanelGO?.name}");
             //   / uixPrfPanl_SIM_mechBays-Widget-MANAGED / Representation / layout_baysScroller / 
             //     / layout_baysScroller / viewport_storage / content_storage
 
@@ -57,7 +57,7 @@ namespace UsedDropshipSalesman.Helper
             // uixPrfPanl_SIM_mechBay_bay-Element-MANAGED
 
             GameObject dropSlotsGO = mechBayPanelGO.FindFirstChildNamed("DropSlots");
-            Mod.Log.Debug?.Write($"dropSlotsGO != null? {dropSlotsGO != null}  name: {dropSlotsGO?.name}");
+            Mod.Log.Debug?.Log($"dropSlotsGO != null? {dropSlotsGO != null}  name: {dropSlotsGO?.name}");
 
             List<GameObject> dropSlotBayGO = new();
             foreach (Transform childT in dropSlotsGO.transform)
