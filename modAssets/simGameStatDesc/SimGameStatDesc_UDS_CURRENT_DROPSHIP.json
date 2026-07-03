@@ -1,0 +1,17 @@
+{
+	"Description": {
+		"Id": "SimGameStatDesc_UDS_CURRENT_DROPSHIP",
+		"Name": "UDS_CURRENT_DROPSHIP",
+		"Details": "The ID of the dropship you currently have",
+		"Icon": null
+	},
+	"setResult": "",
+	"positiveResult": "",
+	"negativeResult": "",
+	"temporalSetResult": "",
+	"temporalPositiveResult": "",
+	"temporalNegativeResult": "",
+	"infinitiveSetResult": "",
+	"infinitivePositiveResult": "",
+	"infinitiveNegativeResult": ""
+}
