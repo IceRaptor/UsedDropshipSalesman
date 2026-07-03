@@ -1,7 +1,6 @@
 ﻿using CustomAmmoCategoriesLog;
 using CustomUnits.CustomHangars;
 using HBS.Logging;
-using IRBTModUtils.Logging;
 using JwTweaks.Data;
 using JwTweaks.Features;
 using ModTek.Public;

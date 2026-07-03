@@ -68,10 +68,6 @@
       <HintPath>$(DeployedModPath)\..\CustomUnits\CustomUnits.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="IRBTModUtils">
-      <HintPath>$(DeployedModPath)\..\IRBTModUtils\IRBTModUtils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="InControl">
       <Private>False</Private>
     </Reference>

@@ -4,7 +4,6 @@ using BattleTech.UI;
 using BattleTech.UI.TMProWrapper;
 using DG.Tweening;
 using HBS.Extensions;
-using IRBTModUtils;
 using SVGImporter;
 using System;
 using System.Collections.Generic;
