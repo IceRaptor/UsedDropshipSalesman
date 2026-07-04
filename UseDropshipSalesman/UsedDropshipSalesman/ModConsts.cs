@@ -19,7 +19,7 @@ namespace UsedDropshipSalesman
         public const string UPGRADE_PANEL_SYSTEM_PREFIX = "UDS_UPGRADE_PANEL_SYSTEM_";
         public const string UPGRADE_PANEL_ITEM_PREFIX = "UDS_UPGRADE_PANEL_ITEM_";
 
-        public const int HBS_SIMGAME_DROPSHIP_LAYER = 20;
+        public const int HBS_LEOPARD_PREFAB_LAYER = 20;
 
         public static Color UPGRADE_COLOR_DEFAULT_PURCHASED = new Color(0.253f, 1.0f, 0.0f, 0.5f);
         public static Color UPGRADE_COLOR_DEFAULT_PURCHASED_HOVER = new Color(0.253f, 1.0f, 0.0f, 1.0f);

@@ -23,10 +23,16 @@ namespace UsedDropshipSalesman.Patches
         {
             Mod.Log.Trace?.Log("==== SimGameSpaceController_Init - entered");
 
-            Mod.Log.Info?.Log("  Caching HBS Leopard GOs");
-            ModState.SGLeopardState = DropshipHelper.BuildSGLeopardState(__instance);
+            // Initilate the leopard references
+            DropshipHelper.BuildSimLeopardState(__instance);
 
-
+            // Make sure we have a datamanager reference
+            if (ModState.DataManagerUnityInstance == null)
+            {
+                GameObject dataManagerGO = GameObject.Find("DataManager");
+                ModState.DataManagerUnityInstance = dataManagerGO?.GetComponent<DataManagerUnityInstance>();
+                if (ModState.DataManagerUnityInstance == null) { Mod.Log.Warning?.Log("Failed to find DataManagerUnityInstance!"); }
+            }
         }
     }
 
@@ -66,39 +72,39 @@ namespace UsedDropshipSalesman.Patches
            if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
                 // Use the default Leopard meshes with custom upgrades
-                DropshipHelper.ToggleLeopardVisibility(true);
+                DropshipHelper.ToggleSimLeopardVisiblity(true);
                 __instance.argo.gameObject.SetActive(false);
                 __instance.leopard.gameObject.SetActive(true);
 
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
                 // Use the default Argo ship with custom upgrades
-                DropshipHelper.ToggleLeopardVisibility(true);
+                DropshipHelper.ToggleSimLeopardVisiblity(true);
                 __instance.argo.gameObject.SetActive(true);
                 __instance.leopard.gameObject.SetActive(false);
                 __instance.argoAnimator.SetTrigger("setArgo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
-                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
                 UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
             {
                 // Use a custom mesh with custom upgrades
-                DropshipHelper.ToggleLeopardVisibility(false);
+                DropshipHelper.ToggleSimLeopardVisiblity(false);
                 __instance.argo.gameObject.SetActive(false);
                 __instance.leopard.gameObject.SetActive(true);
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                ModState.DropshipInstances.Values.ForEach(go => go.SetActive(false));
-                DropshipHelper.OverlayDropshipMeshes(currentDropshipId, config);
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
@@ -114,52 +120,6 @@ namespace UsedDropshipSalesman.Patches
             __instance.sim.HasSimShipBeenSet = true;
         }
 
-        //static void RewriteMeshesOntoArgo(GameObject dropshipPrefab)
-        //{
-        //    //sgsc.argoAnimator.SetBool("argo", false);
-        //    //sgsc.argo.gameObject.SetActive(false); // Does nothing?
-
-        //    var argoParent = sgsc.argo.gameObject.transform.parent;
-        //    var argoAttach = argoParent.gameObject.FindFirstChildNamed("envPrfArgo_argo");
-
-        //    Mod.Log.Trace?.Log("Instantiating prefab");
-        //    var dropship_go = UnityEngine.Object.Instantiate(dropshipPrefab, argoAttach.transform);
-        //    dropship_go.SetActive(true);
-
-        //    // Adjust to the center of the first jump point
-        //    Mod.Log.Trace?.Log("Adjusting dropship position");
-        //    ModState.DropshipGO = dropship_go;
-        //    DropshipHelper.AlignSpheriod(dropship_go);
-
-        //    // TODO: Note in docs you must set layer = 20 for visibility
-        //    Mod.Log.Trace?.Log("Setting layer = 20 for all GameObjects");
-        //    dropship_go.gameObject.layer = 20;
-        //    var children = dropship_go.GetComponentsInChildren<GameObject>();
-        //    foreach (GameObject child in children)
-        //    {
-        //        child.gameObject.layer = 20;
-        //    }
-
-        //    // Disable argo components
-        //    Mod.Log.Trace?.Log("Disabling standard argo meshes");
-        //    var leopard = sgsc.argo.gameObject.FindFirstChildNamed("chrPrfVhcl_leopard");
-        //    leopard.SetActive(false);
-
-        //    var argoCenter = argoParent.gameObject.FindFirstChildNamed("Center");
-        //    argoCenter.SetActive(false);
-
-        //    // Update the mesh to use the battletech shader
-        //    Mod.Log.Trace?.Log("Updating shader to BTS shader");
-        //    var leopard_mat = leopard.GetComponent<MeshRenderer>().material;
-        //    var dropship_mats = dropship_go.GetComponentsInChildren<MeshRenderer>();
-        //    foreach (MeshRenderer childMeshRenderer in dropship_mats)
-        //    {
-        //        Mod.Log.Trace?.Log($"Setting shader to BT shader for render: {childMeshRenderer.gameObject.name}");
-        //        childMeshRenderer.material.shader = leopard_mat.shader;
-        //    }
-
-        //    Mod.Log.Trace?.Log("Done!");
-
-        //}
+       
     }
 }
