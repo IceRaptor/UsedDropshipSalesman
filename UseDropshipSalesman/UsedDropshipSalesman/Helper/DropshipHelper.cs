@@ -190,6 +190,7 @@ namespace UsedDropshipSalesman.Helper
                 newEngineJet.transform.rotation = leopardPrefabState.EngineJet1GO.transform.rotation;
                 newEngineJet.transform.localPosition = Vector3.zero;
                 newEngineJet.transform.localScale = Vector3.one;
+                Mod.Log.Trace?.Log($"  Created newEngineJet: {newEngineJet.name}");
                 newEngineJet.SetActive(true);
                 leopardPrefabState.ArgoEngineComp.engineCores.AddItem<ParticleSystem>(newEngineJet.GetComponent<ParticleSystem>());
 
@@ -202,6 +203,7 @@ namespace UsedDropshipSalesman.Helper
                 newEngineFlare.transform.localPosition = Vector3.zero;
                 newEngineFlare.transform.localScale = Vector3.one;
                 newEngineFlare.SetActive(true);
+                Mod.Log.Trace?.Log($"  Created newEngineFlare: {newEngineFlare.name}");
                 leopardPrefabState.ArgoEngineComp.engineLights.AddItem(newEngineFlare.GetComponent<Light>());
                 leopardPrefabState.ArgoEngineComp.engineFlares.AddItem(newEngineFlare.GetComponent<BTFlare>());
 
@@ -266,7 +268,7 @@ namespace UsedDropshipSalesman.Helper
 
             // Finally set the dropship active and record it as an active instance
             if (isSimGame) { ModState.SimGameDropshipInstances.Add(dropshipRootName, dropshipRootGO); }
-            else { ModState.BriefingDropshipInstances.Add(dropshipRootName, dropshipRootGO); }
+            //else { ModState.BriefingDropshipInstances.Add(dropshipRootName, dropshipRootGO); }
             
             dropshipRootGO.SetActive(true);
         }
@@ -295,7 +297,7 @@ namespace UsedDropshipSalesman.Helper
         private static void ToggleLeopardVisibility(bool isSimGame, bool show = false)
         {
 
-            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show}");
+            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show}  isSimGame: {isSimGame}");
             LeopardPrefabState prefabState = isSimGame ? ModState.SimGameLeopardState : ModState.BriefingLeopardState;
             if (prefabState == null)
             {
@@ -334,6 +336,8 @@ namespace UsedDropshipSalesman.Helper
                 prefabState.ArgoEngineComp.engineLights = Array.Empty<Light>();
                 prefabState.ArgoEngineComp.engineFlares = Array.Empty<BTFlare>();
             }
+
+            Mod.Log.Debug?.Log($"Done updating leopard visibility");
         }
 
         internal static void BuildSimLeopardState(SimGameSpaceController sgsc)

@@ -228,7 +228,6 @@ BiggerDrops Features
 - [ ]  Kill-BD: Implement custom drop sizes (by type)
 - [ ]  Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop)
 
-
 ### Ideas
 
 * Create 'select dropship' option in command center
@@ -236,6 +235,7 @@ BiggerDrops Features
 * Create option for mechtech, medtech multiplers on units (cramped conditions)
 * Create option to limit pilots size by dropship
 * Add upgrade stats for mechbays?
+* Add animator for spheriods to rotate during briefing / simgaem?
 
 Multiple Dropships
 * Create main + child dropship approach (for Shade)

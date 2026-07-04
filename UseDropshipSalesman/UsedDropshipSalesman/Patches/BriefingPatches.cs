@@ -24,7 +24,10 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Debug?.Log($"  Briefing Leopard GO: {argoController?.gameObject?.name} with parent: {parentGO?.name}");
             if (argoController != null && String.Equals(parentGO?.name, "SpaceLoading"))
             {
-                DropshipHelper.BuildBriefingLeopardState(argoController);
+                if (ModState.BriefingLeopardState == null || ModState.BriefingLeopardState.ParentGO == null)
+                {
+                    DropshipHelper.BuildBriefingLeopardState(argoController);
+                }
 
                 // Make sure we have a datamanager reference
                 if (ModState.DataManagerUnityInstance == null) 
@@ -49,27 +52,28 @@ namespace UsedDropshipSalesman.Patches
                 {
                     // Use the default Leopard meshes with custom upgrades
                     DropshipHelper.ToggleBriefingLeopardVisbility(true);
-                    leopardGO.gameObject.SetActive(true);
+                    //leopardGO.gameObject.SetActive(true);
 
                     //argoAnimator.SetTrigger("setleopard");
                     //argoAnimator.SetBool("argo", value: false);
 
-                    ModState.BriefingDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                    //ModState.BriefingDropshipInstances.Values.ForEach(go => go.SetActive(false));
                 }
                 else
                 {
                     // Use a custom mesh with custom upgrades
                     DropshipHelper.ToggleBriefingLeopardVisbility(false);
-                    leopardGO.gameObject.SetActive(true);
+                    //leopardGO.gameObject.SetActive(true);
 
                     //__instance.argoAnimator.SetTrigger("setleopard");
-                    //__instance.argoAnimator.SetBool("argo", value: false);
+                    ////__instance.argoAnimator.SetBool("argo", value: false);
 
-                    ModState.BriefingDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                    //ModState.BriefingDropshipInstances.Values.ForEach(go => go.SetActive(false));
                     DropshipHelper.OverlayBriefingDropshipMeshes(currentDropshipId, config);
                 }
 
-
+                // SimGame is torn down during combat transition
+                ModState.SimGameDropshipInstances.Clear();
 
             }
             else

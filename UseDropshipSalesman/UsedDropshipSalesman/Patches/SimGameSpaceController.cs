@@ -69,7 +69,13 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
 
-           if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
+            if (ModState.SimGameLeopardState == null || ModState.SimGameLeopardState.ParentGO == null)
+            {
+                Mod.Log.Debug?.Log($"SimLeopardState or parentGO was null, rebuidling.");
+                DropshipHelper.BuildSimLeopardState(__instance);
+            }
+
+            if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
                 // Use the default Leopard meshes with custom upgrades
                 DropshipHelper.ToggleSimLeopardVisiblity(true);
@@ -79,7 +85,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
@@ -91,7 +97,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setArgo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
                 UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
@@ -103,8 +109,11 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go.SetActive(false));
+                Mod.Log.Debug?.Log($"Before disabling all SimGameDropshipInstances");
+                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
+                Mod.Log.Debug?.Log($"Before overlaying meshes");
                 DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
+                Mod.Log.Debug?.Log($"Before overlaying upgrades");
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
