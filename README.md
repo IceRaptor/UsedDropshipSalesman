@@ -50,9 +50,9 @@ These options are provided under *Mods/UsedDropshipSalesman/settings.json*.
 | PersistentUpgrades | None | Upgrades that should carry (i.e. persist) across dropship changes. These are only carried forward if the new dropship has them in their list of possible upgrades. If you list `argoUpgrade_MyUpgrade123` here, and the player changes to a variant that doesn't include `argoUpgrade_MyUpgrade123` as an available upgrade, the upgrade is 'hidden' from that dropship. If the player later changes to another dropship that has `argoUpgrade_MyUpgrade123` as an option, they will receive it at that time. |
 | Colors.Upgrades | NA | A dictionary of arrays that defines the colors used for dropship upgrades (aka Argo Upgrades). Each value is represented as a Unity RGBA float array, such as [ 1.0, 1.0, 1.0, 1.0 ] for a fully saturated white or [ 0.0, 0.0, 0.0, 0.5 ] for a half-saturated black. Each setting MUST have two values; the first is the hovered color and the second is the active color.	 |
 | Colors.Upgrades.Purchased | [ 0.253, 1.0, 0.0, 0.5 ], [ 0.253, 1.0, 0.0, 1.0 ] | Colors for ShipUpgrades that have already been purchased |
-| Colors.Upgrades.Purchased | [ 1.0, 1.0, 1.0, 0.5 ], [ 1.0, 1.0, 1.0, 1.0 ] | Colors for ShipUpgrades that are available for purchased |
-| Colors.Upgrades.Purchased | [ 1.0, 0.235, 0.0, 0.196 ], [ 1.0, 0.235, 0.0, 0.5 ] | Colors for ShipUpgrades that are unavailable due to dependencies  |
-| Colors.Upgrades.Purchased | [ 0.0, 0.65, 1.0, 0.5 ], [ 1.0, 1.0, 1.0, 1.0 ] | Colors for ShipUpgrades that are innate to the dropship |
+| Colors.Upgrades.Available | [ 1.0, 1.0, 1.0, 0.5 ], [ 1.0, 1.0, 1.0, 1.0 ] | Colors for ShipUpgrades that are available for purchased |
+| Colors.Upgrades.Unavailable | [ 1.0, 0.235, 0.0, 0.196 ], [ 1.0, 0.235, 0.0, 0.5 ] | Colors for ShipUpgrades that are unavailable due to dependencies  |
+| Colors.Upgrades.Innate | [ 0.0, 0.65, 1.0, 0.5 ], [ 1.0, 1.0, 1.0, 1.0 ] | Colors for ShipUpgrades that are innate to the dropship |
 
 
 ### Dropship Configuration
@@ -103,7 +103,7 @@ assume 'dropship variant' refers to a specific CustomDropshipDef (i.e. either `l
 | eventTag | `uds_require_dropship_union` | Events that have dropship tags (TODO: Add) will be skipped if they don't have this tag |
 | factionReputation | 100 | The amount of faction reputation required for the faction that owns a planet before the player can purchase a dropship. |
 | mustBeAllied | `true` | If true, the player can only purchase the dropship if they are allied with the faction that owns the planet. |
-| planetTags | `[ "planet_industry_electronics", "planet_pop_large" ]` | |
+| planetTags | `[ "planet_industry_electronics", "planet_pop_large" ]` | If present, the dropship can only be purchased on a planet with these tags. |
 
 **HangarBays**
 
@@ -219,6 +219,7 @@ Gameplay
 
 StratOps integration
 - [ ]  Allow granting items / itemCollections on receiving dropship (StratOps integration)
+- [ ] Allow for artillery strike (Fortress)
 - [ ]  Implement dropship specific tag at change time
 - [ ]  Implement tag-based restrictions for events
 
