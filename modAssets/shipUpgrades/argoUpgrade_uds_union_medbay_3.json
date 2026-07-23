@@ -1,0 +1,43 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_medbay_3",
+        "Name" : "Add MedTech Supplies",
+        "Details" : "The Med Bay runs on what the med techs can carry, we need to establish a proper warehouse for their supplies.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_MedBay",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "MED_BAY",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_union_medbay_2"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 0,
+    "PurchaseCost" : 2000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+            "uds_union_medbay_3"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "MedTechSkill",
+			"value" : 1,
+			"valueConstant" : ""
+		}
+    ]
+}

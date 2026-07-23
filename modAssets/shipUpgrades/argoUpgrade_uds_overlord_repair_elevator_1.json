@@ -1,0 +1,43 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_overlord_repair_elevator_1",
+        "Name" : "Restore Primary Elevator",
+        "Details" : "The access elevator along the axis of the ship has been stripped for parts. Getting it back into service will help all the crew.",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_overlord_power_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 20,
+    "PurchaseCost" : 300000,
+    "AdditionalCost" : 2000,
+    "Tags" : {
+        "items" : [
+            "uds_overlord_repair_elevator_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        {
+            "typeString": "System.Int32",
+            "name": "MechTechSkill",
+            "value": 2,
+            "valueConstant": ""
+        }        
+    ]
+}

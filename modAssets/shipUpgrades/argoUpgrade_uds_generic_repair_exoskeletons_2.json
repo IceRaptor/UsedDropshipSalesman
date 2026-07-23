@@ -1,0 +1,41 @@
+{
+    "Description": {
+        "Cost": 0,
+        "Rarity": 0,
+        "Purchasable": true,
+        "UIName": "",
+        "Id": "argoUpgrade_uds_generic_repair_exoskeletons_2",
+        "Name": "Industrial Power Armor",
+        "Details": "[PERSISTENT] Exoskeletons are great, but nothing beats a full set of powered armor build.",
+        "Icon": "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration": "uixTxrSpot_YangWorking",
+    "Location": "MECH_BAY",
+    "shipUpgradeCategoryID": "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "An upgrade from an industrial exoskeleton, the personal AC alone motivates our techs to work all that harder!",
+    "RequiredModules": {
+        "items": [
+            "argoUpgrade_uds_generic_repair_exoskeletons_1"
+        ],
+        "tagSetSourceFile": ""
+    },
+    "Requirements": [],
+    "TechCost": 20,
+    "PurchaseCost": 350000,
+    "AdditionalCost": 35000,
+    "Tags": {
+        "items": [
+            "uds_generic_repair_exoskeletons_2"
+        ],
+        "tagSetSourceFile": ""
+    },
+    "Stats": [
+        {
+            "typeString": "System.Int32",
+            "name": "MechTechSkill",
+            "value": 2,
+            "valueConstant": ""
+        }
+    ]
+}

@@ -1,0 +1,53 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_thrust_1",
+        "Name" : "Drive Cleanup",
+        "Details" : "The <i>Leopard</i>'s drive is functional, but has seen better days. Some basic repairs could help restore some thrust.",
+        "Icon" : "uixSvgIcon_shipUpgrade_drive0"
+    },
+    "Illustration" : "uixTxrSpot_ArgoDrive0",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "DRIVE_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "We can clean out some of the older lubricants corroded connections, but don't expect a miracle Commander.",
+    "RequiredModules" : {
+        "items" : [
+
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 0,
+    "PurchaseCost" : 20000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+            "uds_leopard_thrust_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        {
+            "typeString" : "System.Single",
+            "name" : "DriveTravelMultiplier",
+            "value" : 0.9,
+            "set" : true,
+            "valueConstant" : ""
+        },
+        {
+            "typeString" : "System.Single",
+            "name" : "DriveTravelMultiplier_Display",
+            "value" : 10,
+            "set" : true,
+            "valueConstant" : ""
+        }
+    ],
+    "Actions" : [
+    ]
+}

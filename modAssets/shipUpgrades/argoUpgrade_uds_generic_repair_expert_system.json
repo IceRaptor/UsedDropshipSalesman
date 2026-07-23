@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_generic_repair_expert_system",
+        "Name" : "Repair Expert System",
+        "Details" : "[PERSISTENT] Adding an expert system to our computer core could help speed up mechbay work. ",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "While I'm partial to paper myself, storing manuals isn't easy. Supposedly these expert systems have detailed repair specs on most units, and can offer basic suggestions to the crew to solve common problems. Might be worth investing it.",
+    "RequiredModules" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 20,
+    "PurchaseCost" : 700000,
+    "AdditionalCost" : 100,
+    "Tags" : {
+        "items" : [
+            "uds_generic_repair_expert_system"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+ 		{
+			"typeString" : "System.Int32",
+			"name" : "MechTechSkill",
+			"value" : 2,
+			"valueConstant" : ""
+		}       
+    ]
+}

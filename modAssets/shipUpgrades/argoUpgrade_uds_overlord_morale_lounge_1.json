@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_morale_lounge",
+        "Name" : "Lounge",
+        "Details" : "The lounge in this ship looks like it was used as a nesting bed for some animals. It's going to take some elbow grease to restore it.",
+        "Icon" : "uixSvgIcon_shipUpgrade_library"
+    },
+    "Illustration" : "uixTxrSpot_Library",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [	
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 10000,
+    "AdditionalCost" : 250,
+    "Tags" : {
+        "items" : [
+            "uds_union_morale_lounge"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "Morale",
+			"value" : 1,
+			"valueConstant" : ""
+		}        
+    ]
+}

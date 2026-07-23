@@ -1,0 +1,37 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_overlord_combat_drop_tonnage_1",
+        "Name" : "Drop Tonnage Increase 1",
+        "Details" : "TBD: Needs implemented",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "MOAR POWER",
+    "RequiredModules" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 20,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 2000,
+    "Tags" : {
+        "items" : [
+            "uds_overlord_combat_drop_tonnage_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+
+    ]
+}

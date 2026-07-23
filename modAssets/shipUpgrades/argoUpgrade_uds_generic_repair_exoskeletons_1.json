@@ -1,0 +1,40 @@
+{
+    "Description": {
+        "Cost": 0,
+        "Rarity": 0,
+        "Purchasable": true,
+        "UIName": "",
+        "Id": "argoUpgrade_uds_generic_repair_exoskeletons_1",
+        "Name": "Powered Repair Exoskeletons",
+        "Details": "[PERSISTENT] Mech parts are heavy boss, and even with cranes and ropes there's only so much we can do. Finding some industrial exoskeletons would help the crews work faster.",
+        "Icon": "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration": "uixTxrSpot_YangWorking",
+    "Location": "MECH_BAY",
+    "shipUpgradeCategoryID": "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "Most industrial stations have simple powered exoskeletons to help lifting heavy supplies around. Having a few in our inventory would help ammo reloading for sure.",
+    "RequiredModules": {
+        "items": [
+        ],
+        "tagSetSourceFile": ""
+    },
+    "Requirements": [],
+    "TechCost": 20,
+    "PurchaseCost": 80000,
+    "AdditionalCost": 8000,
+    "Tags": {
+        "items": [
+            "uds_generic_repair_exoskeletons_1"
+        ],
+        "tagSetSourceFile": ""
+    },
+    "Stats": [
+        {
+            "typeString": "System.Int32",
+            "name": "MechTechSkill",
+            "value": 1,
+            "valueConstant": ""
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_power_3",
+        "Name" : "Replace Backup Core",
+        "Details" : "The backup core is down to 10% power. Replacing it will let us push the system to it's standard output",
+        "Icon" : "uixSvgIcon_shipUpgrade_power0"
+    },
+    "Illustration" : "uixTxrSpot_EngineeringInnards",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "POWER_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+		    "argoUpgrade_uds_union_power_2"
+		],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 2000000,
+    "AdditionalCost" : 5000,
+    "Tags" : {
+        "items" : [
+            "uds_union_power_3"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        
+    ],
+	"Actions" : [
+
+	]
+}

@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_overlord_medbay_1",
+        "Name" : "Repair MedBay",
+        "Details" : "Looks like an electrical system caused a fire in the medbay. Restoring it won't be hard, but will take some time.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_MedBay",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "MED_BAY",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 0,
+    "PurchaseCost" : 10000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+            "uds_overlord_medbay_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "MedTechSkill",
+			"value" : 1,
+			"valueConstant" : ""
+		}
+    ]
+}

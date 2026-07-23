@@ -1,0 +1,43 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_repair_cranes",
+        "Name" : "6 Axis Crane System",
+        "Details" : "There's a refit option for the <i>Union</i> that adds powered crane supports to each `Mechbay. That would be a huge time saver boss.",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "Cables and pulleys can get you so far, but if you want to rotate something in zero-g without much effort at all, an internal crane system is the way to go.",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_union_power_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 20,
+    "PurchaseCost" : 270000,
+    "AdditionalCost" : 7700,
+    "Tags" : {
+        "items" : [
+            "uds_union_repair_cranes"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        {
+            "typeString": "System.Int32",
+            "name": "MechTechSkill",
+            "value": 1,
+            "valueConstant": ""
+        }        
+    ]
+}

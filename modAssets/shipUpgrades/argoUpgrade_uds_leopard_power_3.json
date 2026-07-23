@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_power_3",
+        "Name" : "Modern Fusion Core",
+        "Details" : "The fusion core in this <i>Leopard</i> is still reliable, but can't provide as much output as modern ones can.",
+        "Icon" : "uixSvgIcon_shipUpgrade_power0"
+    },
+    "Illustration" : "uixTxrSpot_EngineeringInnards",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "POWER_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "With this upgrade we should be able to push the engines to the absolute maximum thrust, letting get to the jump nodes even faster. It will be expensive to replace the core but worth it in the long run, don't you think?",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_leopard_power_2"
+		],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 1490000,
+    "AdditionalCost" : 2000,
+    "Tags" : {
+        "items" : [
+            "uds_leopard_power_3"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        
+    ],
+	"Actions" : [
+
+	]
+}

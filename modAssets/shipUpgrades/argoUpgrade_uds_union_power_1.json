@@ -1,0 +1,40 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_power_1",
+        "Name" : "Repaired Conduits",
+        "Details" : "The top-bottom conduits for power are infested and filled with junk. We need to refit those core components.",
+        "Icon" : "uixSvgIcon_shipUpgrade_power0"
+    },
+    "Illustration" : "uixTxrSpot_EngineeringInnards",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "POWER_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+		],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 40000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+            "uds_union_power_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        
+    ],
+	"Actions" : [
+
+	]
+}

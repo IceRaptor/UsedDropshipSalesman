@@ -1,0 +1,43 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_medbay_2",
+        "Name" : "Leopard Med Bay Upgrades",
+        "Details" : "Still just a single bay, but at least with some amenties and medtech training for the crew.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_MedBay",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "MED_BAY",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_leopard_medbay_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 0,
+    "PurchaseCost" : 10000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+            "uds_leopard_medbay_2"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "MedTechSkill",
+			"value" : 1,
+			"valueConstant" : ""
+		}
+    ]
+}
