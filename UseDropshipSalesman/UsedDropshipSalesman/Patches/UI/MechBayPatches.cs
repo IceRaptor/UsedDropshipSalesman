@@ -18,7 +18,7 @@ namespace UsedDropshipSalesman.Patches.UI
         {
             Mod.Log.Trace?.Log("==== MechBayPanel_ViewBays - entered.");
 
-            var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
+            var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
             Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', updating hanger config.");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
             if (config == null)
@@ -28,27 +28,6 @@ namespace UsedDropshipSalesman.Patches.UI
             }
 
             UIHelper.UpdateHangerConfig(config, __instance.sim);
-        }
-    }
-
-    [HarmonyPatch(typeof(MechBayPanel), "ViewMechStorage")]
-    [HarmonyAfter("io.mission.customunits")]
-    public static class MechBayPanel_ViewMechStorage
-    {
-        public static void Postfix(MechBayPanel __instance)
-        {
-            Mod.Log.Trace?.Log("==== MechBayPanel_ViewMechStorage - entered.");
-
-            //var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-            //Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', updating hanger config.");
-            //Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
-            //if (config == null)
-            //{
-            //    Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
-            //    return;
-            //}
-
-            //UIHelper.UpdateHangerConfig(config, __instance.sim);
         }
     }
 }

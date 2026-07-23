@@ -19,6 +19,7 @@ namespace UsedDropshipSalesman.Defs
         [JsonRequired]
         public DropshipVisuals Visuals { get; set; }
         public DropshipCosts Costs { get; set; }
+        public DropshipBerths Berths { get; set;  }
         public DropshipRequirements Requirements { get; set; }
         public Dictionary<string, int> HangarBays { get; set; }
         public DropshipDropBays DropBays { get; set; }
@@ -106,9 +107,14 @@ namespace UsedDropshipSalesman.Defs
 
     public record DropshipCosts
     {
-        public float Purchase;
-        public float Upkeep;
-        public float Drop;
+        public int Purchase;
+        public int Upkeep;
+        public int Drop;
+    }
+
+    public record DropshipBerths
+    {
+        public int MaxPilots;
     }
 
     public record DropshipDropBays

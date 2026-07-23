@@ -126,7 +126,10 @@ namespace UsedDropshipSalesman
                 Mod.Log.Info?.Log("  ---- REQUIREMENTS");
                 Mod.Log.Info?.Log($" factionRep: {customDropship.Requirements.FactionReputation}  mustBeAllied: {customDropship.Requirements.MustBeAllied}");
                 Mod.Log.Info?.Log($" planetTags       : {String.Join(",", customDropship.Requirements.PlanetTags)}");
-                Mod.Log.Info?.Log("  ---- REPAIR BAYS");
+                Mod.Log.Info?.Log("  ---- BERTHS");
+                Mod.Log.Info?.Log($" maxPilots: {customDropship.Berths.MaxPilots}");
+
+                Mod.Log.Info?.Log("  ---- HANGAR BAYS");
                 foreach (KeyValuePair<string, int> kvpRB in customDropship?.HangarBays)
                 {
                     Mod.Log.Info?.Log($"   hangarBay: {kvpRB.Key}  value: {kvpRB.Value}");

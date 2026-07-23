@@ -73,23 +73,6 @@ namespace UsedDropshipSalesman.Helper
         //  the target GO already exists
         private static void OverlayDropshipMeshes(string dropshipId, DropshipConfig config, bool isSimGame)
         {
-            // Check for an existing instance of the prefab already attached to the HBS leopard 
-            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.CustomDropship.Visuals.AssetBundleId;
-
-            GameObject cachedDropshipRootGO;
-            bool alreadyCreated = isSimGame ? 
-                ModState.SimGameDropshipInstances.TryGetValue(dropshipRootName, out cachedDropshipRootGO) :
-                ModState.BriefingDropshipInstances.TryGetValue(dropshipRootName, out cachedDropshipRootGO);
-            
-            if (alreadyCreated)
-            {
-                Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
-                cachedDropshipRootGO.SetActive(true);
-                return;
-            }
-
-            string scene = isSimGame ? "simGame" : "briefing";
-            Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the { scene } leopard");
 
             // Fetch the prefab from the assetBundle that's already been loaded.
             var abm = ModState.DataManagerUnityInstance.DataManager.AssetBundleManager;
@@ -110,23 +93,50 @@ namespace UsedDropshipSalesman.Helper
 
         private static void OverlaySimGameMeshes(DropshipConfig config)
         {
-            OverlayMeshes(config, true);
+
+            // Check for an existing instance of the prefab already attached to the HBS leopard 
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX_SIMGAME + config.CustomDropship.Visuals.AssetBundleId;
+            LeopardPrefabState leopardPrefabState = ModState.SimGameLeopardState;
+
+            // Try to find an existing instance - possible since SimGame gets torn down on mission
+            GameObject existingGO = leopardPrefabState.ParentGO.FindFirstChildNamed(dropshipRootName);
+            if (existingGO != null)
+            {
+                Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
+                existingGO.SetActive(true);
+                return;
+            }
+
+            Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the SimGame leopard");
+            OverlayMeshes(config, true, dropshipRootName);
         }
 
         private static void OverlayBriefingMeshes(DropshipConfig config)
         {
-            OverlayMeshes(config, false);
+            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX_BRIEFING + config.CustomDropship.Visuals.AssetBundleId;
+            LeopardPrefabState leopardPrefabState = ModState.BriefingLeopardState;
+
+            // Try to find an existing instance - VERY unlikely as briefing gets torn down constantly
+            GameObject existingGO = leopardPrefabState.ParentGO.FindFirstChildNamed(dropshipRootName);
+            if (existingGO != null)
+            {
+                Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
+                existingGO.SetActive(true);
+                return;
+            }
+
+            Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the briefing leopard");
+            OverlayMeshes(config, false, dropshipRootName);
         }
 
-        private static void OverlayMeshes(DropshipConfig config, bool isSimGame)
+        private static void OverlayMeshes(DropshipConfig config, bool isSimGame, string dropshipRootName)
         {
 
-            string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX + config.CustomDropship.Visuals.AssetBundleId;
             var abm = ModState.DataManagerUnityInstance.DataManager.AssetBundleManager;
 
             var prefabGO = abm.GetAssetFromBundle<GameObject>(config.CustomDropship.Visuals.PrefabPath, config.CustomDropship.Visuals.AssetBundleId);
             Mod.Log.Debug?.Log($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
-            Mod.Log.Warning?.Log($"PREFAB_GO == null? {prefabGO == null}");
+            Mod.Log.Debug?.Log($"PREFAB_GO == null? {prefabGO == null}");
 
             Mod.Log.Debug?.Log($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
             LeopardPrefabState leopardPrefabState = isSimGame ? ModState.SimGameLeopardState : ModState.BriefingLeopardState;
@@ -266,10 +276,6 @@ namespace UsedDropshipSalesman.Helper
                 Mod.Log.Warning?.Log($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
             }
 
-            // Finally set the dropship active and record it as an active instance
-            if (isSimGame) { ModState.SimGameDropshipInstances.Add(dropshipRootName, dropshipRootGO); }
-            //else { ModState.BriefingDropshipInstances.Add(dropshipRootName, dropshipRootGO); }
-            
             dropshipRootGO.SetActive(true);
         }
 

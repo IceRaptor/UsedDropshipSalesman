@@ -47,6 +47,26 @@ namespace UsedDropshipSalesman.Helper
             CustomHangarHelper.SetConstraints(constraints, Mod.LogName);
         }
 
+        private static void DeDupeSGSShipUpgrades(SimGameState sgs)
+        {
+            // De-duplicate any items in ShipUpgrades
+            Dictionary<string, ShipModuleUpgrade> allUpgrades = new();
+            foreach (ShipModuleUpgrade smu in sgs.ShipUpgrades)
+            {
+                if (smu.Description == null || String.IsNullOrEmpty(smu.Description.Name))
+                {
+                    continue; // Don't want empty values floating around
+                }
+                if (allUpgrades.ContainsKey(smu.Description.Id))
+                {
+                    continue;
+                }
+                allUpgrades.Add(smu.Description.Id, smu);
+            }
+
+            sgs.shipUpgrades = allUpgrades.Values.ToList();
+        }
+
         public static void ApplyUpgrades(DropshipConfig newConfig, SimGameState sim)
         {
             if (newConfig == null) { return; }
@@ -70,8 +90,15 @@ namespace UsedDropshipSalesman.Helper
                     Mod.Log.Debug?.Log($"New config has innate module {vme.Id}, applying changes");
                     sim.AddArgoUpgrade(smu);
                 }
+                else if (Mod.ModSaveData.PurchasedPersistentUpgrades.Contains(smu.Description.Id))
+                {
+                    Mod.Log.Debug?.Log($"Purchased persistent module found, reapplying: {smu.Description.Id}");
+                    sim.AddArgoUpgrade(smu);
+                }
             }
 
+            // TODO: Should be unncessary with changes
+            DeDupeSGSShipUpgrades(sim);
         }
 
         public static void RevertUpgrades(DropshipConfig configToRevert, SimGameState sim)
@@ -86,7 +113,7 @@ namespace UsedDropshipSalesman.Helper
             // TODO: Pull upgrades from save state instead of current mod config
 
             var AllShipUpgrades = sim.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade, false);
-            Mod.Log.Info?.Log($"Iterating over {AllShipUpgrades.Length} ShipModuleUpgrade Defs");
+            Mod.Log.Info?.Log($"Reverting upgrades - iterating over {AllShipUpgrades.Length} ShipModuleUpgrades");
             foreach (VersionManifestEntry vme in AllShipUpgrades)
             {
                 ShipModuleUpgrade smu = sim.DataManager.ShipUpgradeDefs.Get(vme.Id);
@@ -96,11 +123,14 @@ namespace UsedDropshipSalesman.Helper
                     continue;
                 }
 
-                // Check for persistent configuration items; skip reverting these
+                // Check for persistent configuration items and move them into save-state. ApplyUpgrade should add them
                 if (Mod.Config.PersistentUpgrades.Contains(smu.Description.Id))
                 {
-                    Mod.Log.Debug?.Log($"ShipModule {vme.Id} marked as persistent, not reverting.");
-                    continue;
+                    Mod.Log.Debug?.Log($"ShipModule {smu.Description.Id} marked as persistent, marking as a purchased upgrades");
+                    if (!Mod.ModSaveData.PurchasedPersistentUpgrades.Contains(smu.Description.Id))
+                    {
+                        Mod.ModSaveData.PurchasedPersistentUpgrades.Add(smu.Description.Id);
+                    }
                 }
 
                 if (configToRevert.AllUpgradeIds.Contains(smu.Description.Id))
@@ -120,19 +150,45 @@ namespace UsedDropshipSalesman.Helper
                         sim.CompanyStats.RemoveStatistic(companyStat.name);
                     }
                 }
+
+                if (ModConsts.BASEGAME_DEFAULT_ARGO_UPGRADES.Contains(smu.Description.Id))
+                {
+                    Mod.Log.Debug?.Log($"Base game default argo module {vme.Id} found, reverting Tag and Stat changes");
+
+                    if (smu.Tags != null && !smu.Tags.IsEmpty)
+                    {
+                        Mod.Log.Debug?.Log($" -- Removing tags: {String.Join(",", smu.Tags)}");
+                        sim.CompanyTags.RemoveRange(smu.Tags);
+                    }
+
+                    SimGameStat[] stats = smu.Stats;
+                    foreach (SimGameStat companyStat in stats)
+                    {
+                        Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
+                        sim.CompanyStats.RemoveStatistic(companyStat.name);
+                    }
+                }
             }
-        }
 
-        public static bool CheckForPendingUpgrades(SimGameState sgs)
-        {
-            bool hasUpgrades = sgs.CurrentUpgradeEntry != null;
+            sim.purchasedArgoUpgrades.Clear();
+            sim.shipUpgrades.Clear();
 
+            // There should be NO upgrades at this point
+            if (sim.ShipUpgrades.Count > 0)
+            {
+                String upgrades = String.Join(", ", sim.ShipUpgrades.Select(su => su.Description.Id).ToList());
+                Mod.Log.Warning?.Log($"Ship still has {sim.ShipUpgrades.Count} upgrades after being reverted. This should not happen!\n" +
+                    $"  Upgrades list: {upgrades}");
+            }
+            if (sim.PurchasedArgoUpgrades.Count >0)
+            {
+                String upgrades = String.Join(", ", sim.ShipUpgrades.Select(su => su.Description.Id).ToList());
+                Mod.Log.Warning?.Log($"Ship still has {sim.ShipUpgrades.Count} purchased upgrades after being reverted. This should not happen!\n" +
+                    $"  Upgrades list: {upgrades}");
+            }
 
-
-            Mod.Log.Debug?.Log("No pending ShipModuleUpgrades detected");
-            return hasUpgrades;
-
-
+            // TODO: Should be unnecessary with changes
+            DeDupeSGSShipUpgrades(sim);
         }
 
         public static bool IsUpgradeBlocked(DropshipConfig newConfig, DropshipConfig oldConfig, SimGameState sgs)
@@ -197,7 +253,7 @@ namespace UsedDropshipSalesman.Helper
                         hasBlockingIssues = true;
                     }
                 }
-            } 
+            }
 
             // Check for mechbay changes
             //if (sgs.MechLabQueue.Count > 0)
@@ -208,6 +264,13 @@ namespace UsedDropshipSalesman.Helper
             // Check for medbay changes?
 
             // Check for pilot limits
+            int currentPilotCount = sgs.PilotRoster.Count;
+            Mod.Log.Debug?.Log($"New dropship has {newConfig.CustomDropship.Berths.MaxPilots} berths for {currentPilotCount} pilots");
+            if (currentPilotCount > newConfig.CustomDropship.Berths.MaxPilots)
+            {
+                blockedReasons.Add($"New dropship berth limit is {newConfig.CustomDropship.Berths.MaxPilots}, but there are {currentPilotCount} active pilots.");
+                hasBlockingIssues = true;
+            }
 
             if (hasBlockingIssues)
             {
@@ -219,6 +282,7 @@ namespace UsedDropshipSalesman.Helper
                 }
                 upgradeFailureText += "\n\nCancel active ship upgrades or readying mechs in the timeline view from the main screen. " +
                     "Store active units or cancel reading actions to reduce the hangar count to match the new dropship. " +
+                    "Dismiss pilots that exceed the berth limit on the new dropship. " +
                     "\nDo not navigate away from the current star system until you resolve these actions. " + 
                     "This dialog will repeat each day until the conditions are cleared.\n<b>You cannot cancel the dropship upgrade.</b>";
                 GenericPopup gp = GenericPopupBuilder.Create("Dropship Upgrade Failed", upgradeFailureText)

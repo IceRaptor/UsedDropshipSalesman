@@ -18,11 +18,6 @@ namespace UsedDropshipSalesman
         internal static LeopardPrefabState SimGameLeopardState = null;
         internal static LeopardPrefabState BriefingLeopardState = null;
 
-        internal static Dictionary<string, GameObject> SimGameDropshipInstances = new Dictionary<string, GameObject>();
-        internal static Dictionary<string, GameObject> BriefingDropshipInstances = new Dictionary<string, GameObject>();
-
-        internal static GameObject SneakyLadGO = null;
-
         // Upgrades state
         internal static bool HasCustomUpgradeScreen = false;
 
@@ -37,5 +32,3 @@ namespace UsedDropshipSalesman
     }
 
 }
-
-

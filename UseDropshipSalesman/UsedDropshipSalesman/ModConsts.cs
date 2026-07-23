@@ -14,10 +14,17 @@ namespace UsedDropshipSalesman
         public const string HBS_PREFAB_ARGO = "HBS_ARGO";
         public const string FALLBACK_DROPSHIP_ID = "argo";
 
-        public const string DROPSHIP_GO_PREFIX = "UDS_DROPSHIP_ROOT_";
+        public const string DROPSHIP_GO_PREFIX_SIMGAME = "UDS_DROPSHIP_ROOT_SG_";
+        public const string DROPSHIP_GO_PREFIX_BRIEFING = "UDS_DROPSHIP_ROOT_BRF_";
         public const string UPGRADE_PANEL_CATEGORY_PREFIX = "UDS_UPGRADE_PANEL_CATEGORY_";
         public const string UPGRADE_PANEL_SYSTEM_PREFIX = "UDS_UPGRADE_PANEL_SYSTEM_";
         public const string UPGRADE_PANEL_ITEM_PREFIX = "UDS_UPGRADE_PANEL_ITEM_";
+
+        // These are set by the base game
+        public static List<string> BASEGAME_DEFAULT_ARGO_UPGRADES = new() 
+        {
+            "argoUpgrade_drive0", "argoUpgrade_mechBay1", "argoUpgrade_medBay1", "argoUpgrade_pod1", "argoUpgrade_structure0"
+        };
 
         public const int HBS_LEOPARD_PREFAB_LAYER = 20;
 

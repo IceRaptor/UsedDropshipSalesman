@@ -59,7 +59,6 @@ namespace UsedDropshipSalesman.Patches
 
             // TODO: Need to handle a call to set the argo
             // TODO: Need to handle a default new career by disabling argo
-            //var currentDropshipId = __instance.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
             var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
             Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}', overlaying meshes.");
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
@@ -85,7 +84,6 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
@@ -97,7 +95,6 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setArgo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
                 UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
@@ -110,7 +107,6 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetBool("argo", value: false);
 
                 Mod.Log.Debug?.Log($"Before disabling all SimGameDropshipInstances");
-                ModState.SimGameDropshipInstances.Values.ForEach(go => go?.SetActive(false));
                 Mod.Log.Debug?.Log($"Before overlaying meshes");
                 DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
                 Mod.Log.Debug?.Log($"Before overlaying upgrades");

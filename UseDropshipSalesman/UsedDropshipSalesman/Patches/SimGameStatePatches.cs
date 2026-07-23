@@ -241,131 +241,52 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SimGameState), "_OnAttachUXComplete")]
-    static class SimGameState__OnAttachUXComplete
+
+    // Limits the count of mechwarriors available
+    [HarmonyPatch(typeof(SimGameState), "GetMaxMechWarriors")]
+    static class SimGameState_GetMaxMechWarriors
     {
-        static void Postfix(SimGameState __instance)
+        static void Postfix(SimGameState __instance, ref int __result)
         {
+            Mod.Log.Trace?.Log("==== SimGameState_GetMaxMechWarriors - entered");
 
-            //if (ModState.SneakyLadGO == null)
-            //{
-            //    ModState.SneakyLadGO = new("UDS_SNEAKY_LAD");
-            //    UnityEngine.Object.DontDestroyOnLoad(ModState.SneakyLadGO);
-            //}
+            if (__instance == null) { return; }
+            if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
 
-            //Mod.Log.Trace?.Log("==== SimGameState__OnAttachUXComplete - entered");
+            Mod.Log.Trace?.Log($"Resolving MaxMechwarriors for dropshipId: {Mod.ModSaveData?.CurrentDropshipId}");
+            var hasValue = Mod.Config.Dropships.TryGetValue(Mod.ModSaveData.CurrentDropshipId, out DropshipConfig dropshipConfig);
+            if (!hasValue) 
+            {
+                Mod.Log.Warning?.Log($"Failed to lookup dropship config for: {Mod.ModSaveData.CurrentDropshipId}, this should not happen! TELL FROST");
+                return;
+            }
 
-            //var parentGO = ModState.SneakyLadGO.transform?.parent?.gameObject;
-            //Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: parent GO: {parentGO?.name} is null ? {parentGO == null}");
-            //foreach (Transform t in parentGO.transform)
-            //{
-            //    Mod.Log.Debug?.Log($" -- childGO: {t?.gameObject?.name}");
-            //}
-
-            //var parentGO = __instance?.SpaceController?.gameObject;
-            //var grandparentGO = parentGO?.transform?.parent?.gameObject;
-            //var rootGO = parentGO?.transform?.root?.gameObject;
-            //Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: parent GO: {parentGO?.name} is null ? {parentGO == null}");
-            //Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: grandparent GO: {grandparentGO?.name} is null ? {grandparentGO == null}");
-            //Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: parent root GO: {rootGO?.name} is null ? {rootGO == null}");
-            //if (parentGO != null)
-            //{
-            //    var spaceLoadingGO = parentGO.FindFirstChildNamed("SpaceLoading");
-            //    Mod.Log.Debug?.Log($"SpaceLoading == null ? {spaceLoadingGO == null}");
-
-            //    var newGOChild = parentGO.FindFirstChildNamed("SpaceLoading");
-            //    Mod.Log.Debug?.Log($"newGOChild == null ? {newGOChild == null}");
-            //}
-
-            var spaceLoadingGO = GameObject.Find("envPrfVhcl_leopard");
-            var realSpaceGO = GameObject.Find("Real Space");
-            Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: spaceLoadingGO: '{spaceLoadingGO?.name}' is null ? {spaceLoadingGO == null}");
-            Mod.Log.Debug?.Log($"SimGameState__OnAttachUXComplete: realSpaceGO: '{realSpaceGO?.name}' is null ? {realSpaceGO == null}");
-
-
+            Mod.Log.Debug?.Log($"Returning {dropshipConfig.CustomDropship.Berths.MaxPilots} for max pilots.");
+            __result = dropshipConfig.CustomDropship.Berths.MaxPilots;
         }
     }
 
-    [HarmonyPatch(typeof(SimGameState), "StartContract")]
-    static class SimGameState_StartContract
+    // Total maintenance cost for the ship
+    [HarmonyPatch(typeof(SimGameState), "GetShipBaseMaintenanceCost")]
+    static class SimGameState_GetShipBaseMaintenanceCost
     {
-        static void Prefix(SimGameState __instance)
+        static void Postfix(SimGameState __instance, ref int __result)
         {
-            Mod.Log.Trace?.Log("==== SimGameState_StartContract - entered");
-            //var parentGO = __instance?.SpaceController?.gameObject;
-            //var grandparentGO = parentGO?.transform?.parent?.gameObject;
-            //var rootGO = parentGO?.transform?.root?.gameObject;
-            //Mod.Log.Debug?.Log($"SimGameState_StartContract: parent GO: {parentGO?.name} is null ? {parentGO == null}");
-            //Mod.Log.Debug?.Log($"SimGameState_StartContract: grandparent GO: {grandparentGO?.name} is null ? {grandparentGO == null}");
-            //Mod.Log.Debug?.Log($"SimGameState_StartContract: parent root GO: {rootGO?.name} is null ? {rootGO == null}");
-            //if (parentGO != null)
-            //{
-            //    var spaceLoadingGO = parentGO.FindFirstChildNamed("SpaceLoading");
-            //    Mod.Log.Debug?.Log($"SpaceLoading == null ? {spaceLoadingGO == null}");
-            //}
+            Mod.Log.Trace?.Log("==== SimGameState_GetShipBaseMaintenanceCost - entered");
 
-            var spaceLoadingGO = GameObject.Find("envPrfVhcl_leopard");
-            var realSpaceGO = GameObject.Find("Real Space");
-            Mod.Log.Debug?.Log($"SimGameState_StartContract: spaceLoadingGO: '{spaceLoadingGO?.name}' is null ? {spaceLoadingGO == null}");
-            Mod.Log.Debug?.Log($"SimGameState_StartContract: realSpaceGO: '{realSpaceGO?.name}' is null ? {realSpaceGO == null}");
-            if (spaceLoadingGO != null) { spaceLoadingGO.SetActive(false); }
+            if (__instance == null) { return; }
+            if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
+
+            var hasValue = Mod.Config.Dropships.TryGetValue(Mod.ModSaveData.CurrentDropshipId, out DropshipConfig dropshipConfig);
+            if (!hasValue)
+            {
+                Mod.Log.Warning?.Log($"Failed to lookup dropship config for: {Mod.ModSaveData.CurrentDropshipId}, this should not happen! TELL FROST");
+                return;
+            }
+
+            Mod.Log.Debug?.Log($"Returning {dropshipConfig.CustomDropship.Costs.Upkeep} for monthly dropship cost.");
+            __result = dropshipConfig.CustomDropship.Costs.Upkeep;
         }
     }
 
-    [HarmonyPatch(typeof(GameInstance), "LaunchContract", new Type[] { typeof(Contract)})]
-    static class GameInstance_LaunchContract
-    {
-        static void Prefix(GameInstance __instance)
-        {
-            Mod.Log.Trace?.Log("==== GameInstance_LaunchContract - entered");
-            //var parentGO = __instance?.Simulation?.SpaceController?.gameObject;
-            //var grandparentGO = parentGO?.transform?.parent?.gameObject;
-            //var rootGO = parentGO?.transform?.root?.gameObject;
-            //Mod.Log.Debug?.Log($"GameInstance_LaunchContract: parent GO: {parentGO?.name} is null ? {parentGO == null}");
-            //Mod.Log.Debug?.Log($"GameInstance_LaunchContract: grandparent GO: {grandparentGO?.name} is null ? {grandparentGO == null}");
-            //Mod.Log.Debug?.Log($"GameInstance_LaunchContract: parent root GO: {rootGO?.name} is null ? {rootGO == null}");
-
-            //if (parentGO != null)
-            //{
-            //    var spaceLoadingGO = parentGO.FindFirstChildNamed("SpaceLoading");
-            //    Mod.Log.Debug?.Log($"SpaceLoading == null ? {spaceLoadingGO == null}");
-            //}
-
-            var spaceLoadingGO = GameObject.Find("envPrfVhcl_leopard");
-            var realSpaceGO = GameObject.Find("Real Space");
-            Mod.Log.Debug?.Log($"GameInstance_LaunchContract: spaceLoadingGO: '{spaceLoadingGO?.name}' is null ? {spaceLoadingGO == null}");
-            Mod.Log.Debug?.Log($"GameInstance_LaunchContract: realSpaceGO: '{realSpaceGO?.name}' is null ? {realSpaceGO == null}");
-            if (spaceLoadingGO != null) { spaceLoadingGO.SetActive(false); }
-
-        }
-    }
-
-    [HarmonyPatch(typeof(LevelLoader), "LoadScene", new Type[] { typeof(string), typeof(string) })]
-    static class LevelLoader_LoadScene
-    {
-        static void Prefix(LevelLoader __instance, string scene, string loadingInterstitialScene)
-        {
-            Mod.Log.Trace?.Log("==== LevelLoader_LoadScene - entered");
-            Mod.Log.Debug?.Log($"==== LevelLoader_LoadScene - scene: {scene}  loadingInterstitialScene: {loadingInterstitialScene}");
-
-
-        }
-    }
-
-
-
-    // UnityEngine.Object.Instantiate
-    //[HarmonyPatch(typeof(UnityEngine.Object), "Instantiate", new Type[] { typeof(UnityEngine.Object)} )]
-    //static class UnityEngine_Object_Instantiate
-    //{
-    //    static void Prefix(UnityEngine.Object original)
-    //    {
-    //        Mod.Log.Trace?.Log("==== UnityEngine_Object_Instantiate:Object - entered");
-    //        if (original as GameObject != null)
-    //        {
-    //            Mod.Log.Debug?.Log($"==== UnityEngine_Object_Instantiate:Object - {original?.name} ");
-    //        }
-
-    //    }
-    //}
 }
