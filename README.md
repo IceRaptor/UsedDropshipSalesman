@@ -183,9 +183,9 @@ TBD
 ### Todo
 
 Dropship Graphics
-- [ ] Fix/Inject camo holder on SimScreen
-- [ ] Integrate dropship replacement for drop screen
-- [ ] Implement transform delta for dropscreen (for spheriods)
+- [X] Fix/Inject camo holder on SimScreen
+- [X] Integrate dropship replacement for drop screen
+
 - [ ] Integrate dropship replacement for in-mission
 - [ ] Add jump costs for additional dropships?
 - [ ] Implement zoom out for camera
@@ -196,21 +196,23 @@ Visuals
 - [ ]  Replace UI text that relies upon Argo (argo upgrades, argo timeline, etc)
 
 Gameplay
-- [ ] Implement dropship change only at planets X
+- [X] Implement dropship change only at planets
 - [X] OnCareerStart - allow defaultDropship by startID, fix dropship
 - [X] Implement listener for dropship upgrade from event
 - [X] Implement upgrade logic XX - need cleanup logic, persistence logic handled
 - [ ] Validate that persistentUpgrades are carried forward across dropships. 
 - [ ] Persist persistentUpgrades in save game state
 - [ ] Persist per-variant ugprades in save game state
-- [ ] Implement costs - upkeep, drop
+- [ ] Implement costs - upkeep
+- [ ] Implement costs - drop
+- [ ] Implement costs - jump
 - [ ] Implement costs - purchase (plus item?)
 - [ ] Localize Upgrade category, system text
 - [ ] Fix reversion logic for persistent upgrades; only those defined on the new ship should be kept, not all of them.
 
 - [X] HangerBays fix - adjust size by dropship 
 - [X] Check build from storage for hanger limits
-- [ ] Limit crew berths by dropship 
+- [X] Limit crew berths by dropship 
 - [ ] Limit medtech values by dropship 
 - [ ] Limit mechtech values by dropship
 
@@ -218,15 +220,15 @@ Gameplay
 - [X] OnChange - dialog prompting for storing mechs, stopping argo upgrades, etc
 
 StratOps integration
-- [ ]  Allow granting items / itemCollections on receiving dropship (StratOps integration)
+- [ ] Allow granting items / itemCollections on receiving dropship (StratOps integration)
 - [ ] Allow for artillery strike (Fortress)
-- [ ]  Implement dropship specific tag at change time
-- [ ]  Implement tag-based restrictions for events
+- [ ] Implement dropship specific tag at change time
+- [ ] Implement tag-based restrictions for events
 
 BiggerDrops Features
 - [ ] Kill-BD: Implement drop tonnage (defaultMaxTonnage)
-- [ ]  Kill-BD: Implement custom drop sizes (by type)
-- [ ]  Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop)
+- [ ] Kill-BD: Implement custom drop sizes (by type) - is this a CU issue?
+- [ ] Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop) - is this a CU issue?
 
 ### Ideas
 
@@ -241,6 +243,9 @@ Multiple Dropships
 * Create main + child dropship approach (for Shade)
 * Create argo + 1 dropship where drop-bays are tied to the dropship, not argo
 * Add upkeep costs for additional dropships
+
+- [ ] Implement transform delta for dropscreen (for spheriods) [EDIT: WILL NOT DO]
+
 
 ### Interesting methods
   

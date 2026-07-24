@@ -110,66 +110,49 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
-            // TODO: Pull upgrades from save state instead of current mod config
+            Mod.Log.Debug?.Log($"== Reverting all upgrades for current dropship: {configToRevert.CustomDropship.Description.Id}");
 
-            var AllShipUpgrades = sim.DataManager.ResourceLocator.AllEntriesOfResource(BattleTechResourceType.ShipModuleUpgrade, false);
-            Mod.Log.Info?.Log($"Reverting upgrades - iterating over {AllShipUpgrades.Length} ShipModuleUpgrades");
-            foreach (VersionManifestEntry vme in AllShipUpgrades)
+            // TODO: Need to iterate purchasedmodules (and shipModules for non-purchased?) instead of all - screwing with the logic
+            Mod.Log.Debug?.Log($"Ship has {sim.PurchasedArgoUpgrades.Count} purchased upgrades: [{String.Join(",", sim.PurchasedArgoUpgrades)}]");
+            foreach (String purchasedShipModuleId in sim.PurchasedArgoUpgrades)
             {
-                ShipModuleUpgrade smu = sim.DataManager.ShipUpgradeDefs.Get(vme.Id);
-                if (smu == null || smu.Description == null || smu.Description.Id == null || String.IsNullOrEmpty(smu?.Description?.Id)) 
-                {
-                    Mod.Log.Debug?.Log($"Could not read shipModuleUpgrade from versionManifest: {vme.Id}");
-                    continue;
-                }
-
                 // Check for persistent configuration items and move them into save-state. ApplyUpgrade should add them
-                if (Mod.Config.PersistentUpgrades.Contains(smu.Description.Id))
+                if (Mod.Config.PersistentUpgrades.Contains(purchasedShipModuleId))
                 {
-                    Mod.Log.Debug?.Log($"ShipModule {smu.Description.Id} marked as persistent, marking as a purchased upgrades");
-                    if (!Mod.ModSaveData.PurchasedPersistentUpgrades.Contains(smu.Description.Id))
+                    Mod.Log.Debug?.Log($"Persistent shipModule {purchasedShipModuleId} was purchased, marking it as purchased in SaveData");
+                    if (!Mod.ModSaveData.PurchasedPersistentUpgrades.Contains(purchasedShipModuleId))
                     {
-                        Mod.ModSaveData.PurchasedPersistentUpgrades.Add(smu.Description.Id);
-                    }
-                }
-
-                if (configToRevert.AllUpgradeIds.Contains(smu.Description.Id))
-                {
-                    Mod.Log.Debug?.Log($"Current ship state has module {vme.Id}, reverting Tag and Stat changes");
-                    
-                    if (smu.Tags != null && !smu.Tags.IsEmpty)
-                    {
-                        Mod.Log.Debug?.Log($" -- Removing tags: {String.Join(",", smu.Tags)}");
-                        sim.CompanyTags.RemoveRange(smu.Tags);
-                    }
-
-                    SimGameStat[] stats = smu.Stats;
-                    foreach (SimGameStat companyStat in stats)
-                    {
-                        Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
-                        sim.CompanyStats.RemoveStatistic(companyStat.name);
-                    }
-                }
-
-                if (ModConsts.BASEGAME_DEFAULT_ARGO_UPGRADES.Contains(smu.Description.Id))
-                {
-                    Mod.Log.Debug?.Log($"Base game default argo module {vme.Id} found, reverting Tag and Stat changes");
-
-                    if (smu.Tags != null && !smu.Tags.IsEmpty)
-                    {
-                        Mod.Log.Debug?.Log($" -- Removing tags: {String.Join(",", smu.Tags)}");
-                        sim.CompanyTags.RemoveRange(smu.Tags);
-                    }
-
-                    SimGameStat[] stats = smu.Stats;
-                    foreach (SimGameStat companyStat in stats)
-                    {
-                        Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
-                        sim.CompanyStats.RemoveStatistic(companyStat.name);
+                        Mod.ModSaveData.PurchasedPersistentUpgrades.Add(purchasedShipModuleId);
                     }
                 }
             }
 
+            String shipUpgrades = String.Join(", ", sim.ShipUpgrades.Select(su => su.Description.Id).ToList());
+            Mod.Log.Debug?.Log($"Ship has {sim.ShipUpgrades.Count} upgrades to revert: [{shipUpgrades}]");
+            foreach (ShipModuleUpgrade smu in sim.ShipUpgrades)
+            {
+                if (smu == null || smu.Description == null || smu.Description.Id == null || String.IsNullOrEmpty(smu?.Description?.Id))
+                {
+                    Mod.Log.Warning?.Log($"Ship module is null somehow? Skipping.");
+                    continue;
+                }
+
+                Mod.Log.Debug?.Log($"Reverting ShipModuleUpgrade: {smu.Description.Id}");
+                if (smu.Tags != null && !smu.Tags.IsEmpty)
+                {
+                    Mod.Log.Debug?.Log($" -- Removing tags: {String.Join(",", smu.Tags)}");
+                    sim.CompanyTags.RemoveRange(smu.Tags);
+                }
+
+                SimGameStat[] stats = smu.Stats;
+                foreach (SimGameStat companyStat in stats)
+                {
+                    Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
+                    sim.CompanyStats.RemoveStatistic(companyStat.name);
+                }
+
+            }
+            // TODO: Pull upgrades from save state instead of current mod config
             sim.purchasedArgoUpgrades.Clear();
             sim.shipUpgrades.Clear();
 
@@ -182,13 +165,11 @@ namespace UsedDropshipSalesman.Helper
             }
             if (sim.PurchasedArgoUpgrades.Count >0)
             {
-                String upgrades = String.Join(", ", sim.ShipUpgrades.Select(su => su.Description.Id).ToList());
-                Mod.Log.Warning?.Log($"Ship still has {sim.ShipUpgrades.Count} purchased upgrades after being reverted. This should not happen!\n" +
-                    $"  Upgrades list: {upgrades}");
+                Mod.Log.Warning?.Log($"Ship still has {sim.PurchasedArgoUpgrades.Count} purchased upgrades after being reverted. This should not happen!\n" +
+                    $"  Upgrades list: [{String.Join(",", sim.PurchasedArgoUpgrades)}]");
             }
 
-            // TODO: Should be unnecessary with changes
-            DeDupeSGSShipUpgrades(sim);
+            Mod.Log.Debug?.Log($"== DONE");
         }
 
         public static bool IsUpgradeBlocked(DropshipConfig newConfig, DropshipConfig oldConfig, SimGameState sgs)

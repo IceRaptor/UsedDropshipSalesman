@@ -33,26 +33,26 @@ namespace UsedDropshipSalesman.Helper
         public SimpleCustomization CamoComp;
 
         // Mutated state references 
-        public ParticleSystem[] DefaultAMECores = Array.Empty<ParticleSystem>();
-        public Light[] DefaultAMELights = Array.Empty<Light>();
-        public BTFlare[] DefaultAMEFlares = Array.Empty<BTFlare>();
+        public List<ParticleSystem> DefaultAMECores = new();
+        public List<Light> DefaultAMELights = new();
+        public List<BTFlare> DefaultAMEFlares = new();
 
         public override string ToString()
         {
             return 
                 $"ParentGO.name: {(ParentGO == null ? "NULL" : ParentGO?.name)}  " +
                 $"EngineGlowGO.name: {(EngineGlowGO == null ? "NULL" : EngineGlowGO?.name)}  " +
+                $"EngineJet1GO.name: {(EngineJet1GO == null ? "NULL" : EngineJet1GO.name)}  " +
                 $"EngineFlare1GO.name: {(EngineFlare1GO == null ? "NULL" : EngineFlare1GO?.name)}  " +
-                $"EngineFlare2GO.name: {(EngineFlare2GO == null ? "NULL" : EngineFlare2GO?.name)}  " +
-                $"EngineJet1GO.name: {(EngineJet1GO == null ? "NULL" : EngineFlare1GO.name)}  " +
+                $"EngineJet2GO.name: {(EngineJet2GO == null ? "NULL" : EngineJet2GO?.name)}  " +
                 $"EngineFlare2GO.name: {(EngineFlare2GO == null ? "NULL" : EngineFlare2GO?.name)}  " +
                 $"RunningLightsRootGO.name: {(RunningLightsRootGO == null ? "NULL" : RunningLightsRootGO?.name)}  " +
                 $"DecalGO.name: {(DecalGO == null ? "NULL" : DecalGO?.name)}  " +
                 $"ArgoEngineComp is null? {ArgoEngineComp == null}  BodyMRComp is null? {BodyMRComp == null} " +
                 $"BodyMat is null? {BodyMat == null}  CamoComp is null? {CamoComp == null} " +
-                $"DefaultAMECores == null? {DefaultAMECores == null}  DefaultAMECores.Size: {(DefaultAMECores != null ? DefaultAMECores?.Length : 0)} " +
-                $"DefaultAMELights == null? {DefaultAMELights == null}  DefaultAMELights.Size: {(DefaultAMELights != null ? DefaultAMELights?.Length : 0)} " +
-                $"DefaultAMEFlares == null? {DefaultAMEFlares == null}  DefaultAMEFlares.Size: {(DefaultAMEFlares != null ? DefaultAMEFlares?.Length : 0)} ";
+                $"DefaultAMECores == null? {DefaultAMECores == null}  DefaultAMECores.Size: {(DefaultAMECores != null ? DefaultAMECores?.Count : 0)} " +
+                $"DefaultAMELights == null? {DefaultAMELights == null}  DefaultAMELights.Size: {(DefaultAMELights != null ? DefaultAMELights?.Count: 0)} " +
+                $"DefaultAMEFlares == null? {DefaultAMEFlares == null}  DefaultAMEFlares.Size: {(DefaultAMEFlares != null ? DefaultAMEFlares?.Count : 0)} ";
         }
     }
 
@@ -108,7 +108,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the SimGame leopard");
-            OverlayMeshes(config, true, dropshipRootName);
+            OverlayMeshes(config, leopardPrefabState, dropshipRootName);
         }
 
         private static void OverlayBriefingMeshes(DropshipConfig config)
@@ -126,10 +126,10 @@ namespace UsedDropshipSalesman.Helper
             }
 
             Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the briefing leopard");
-            OverlayMeshes(config, false, dropshipRootName);
+            OverlayMeshes(config, leopardPrefabState, dropshipRootName);
         }
 
-        private static void OverlayMeshes(DropshipConfig config, bool isSimGame, string dropshipRootName)
+        private static void OverlayMeshes(DropshipConfig config, LeopardPrefabState leopardPrefabState, string dropshipRootName)
         {
 
             var abm = ModState.DataManagerUnityInstance.DataManager.AssetBundleManager;
@@ -139,7 +139,6 @@ namespace UsedDropshipSalesman.Helper
             Mod.Log.Debug?.Log($"PREFAB_GO == null? {prefabGO == null}");
 
             Mod.Log.Debug?.Log($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
-            LeopardPrefabState leopardPrefabState = isSimGame ? ModState.SimGameLeopardState : ModState.BriefingLeopardState;
             GameObject dropshipRootGO = new GameObject(dropshipRootName);
             dropshipRootGO.transform.parent = leopardPrefabState.ParentGO.transform;
             dropshipRootGO.transform.position = leopardPrefabState.ParentGO.transform.position;
@@ -174,10 +173,9 @@ namespace UsedDropshipSalesman.Helper
             leopardPrefabState.CamoComp.paintSchemeTex = (Texture2D)camoMeshRenderer.material.mainTexture;
             leopardPrefabState.CamoComp.UpdateHeraldry();
 
-            // Empty the ArgoMainEngine controller values that we're going to mutate
-            leopardPrefabState.ArgoEngineComp.engineCores = Array.Empty<ParticleSystem>();
-            leopardPrefabState.ArgoEngineComp.engineLights = Array.Empty<Light>();
-            leopardPrefabState.ArgoEngineComp.engineFlares = Array.Empty<BTFlare>();
+            List<ParticleSystem> newEngineCores = new();
+            List<Light> newEngineLights = new();
+            List<BTFlare> newEngineFlares = new();
 
             // Instance the engine jets and flares 
             // TODO: Get this from configuration
@@ -202,7 +200,7 @@ namespace UsedDropshipSalesman.Helper
                 newEngineJet.transform.localScale = Vector3.one;
                 Mod.Log.Trace?.Log($"  Created newEngineJet: {newEngineJet.name}");
                 newEngineJet.SetActive(true);
-                leopardPrefabState.ArgoEngineComp.engineCores.AddItem<ParticleSystem>(newEngineJet.GetComponent<ParticleSystem>());
+                newEngineCores.Add(newEngineJet.GetComponent<ParticleSystem>());
 
                 // Create a new point flare
                 var newEngineFlare = UnityEngine.Object.Instantiate(leopardPrefabState.EngineFlare1GO);
@@ -214,11 +212,16 @@ namespace UsedDropshipSalesman.Helper
                 newEngineFlare.transform.localScale = Vector3.one;
                 newEngineFlare.SetActive(true);
                 Mod.Log.Trace?.Log($"  Created newEngineFlare: {newEngineFlare.name}");
-                leopardPrefabState.ArgoEngineComp.engineLights.AddItem(newEngineFlare.GetComponent<Light>());
-                leopardPrefabState.ArgoEngineComp.engineFlares.AddItem(newEngineFlare.GetComponent<BTFlare>());
+                newEngineLights.Add(newEngineFlare.GetComponent<Light>());
+                newEngineFlares.Add(newEngineFlare.GetComponent<BTFlare>());
 
                 Mod.Log.Trace?.Log($"Instantiated duplicate engine_jet {newEngineJet.name} at {attach_point.name} with position: {attach_point.transform.position}");
             }
+
+            // Empty the ArgoMainEngine controller values that we're going to mutate
+            leopardPrefabState.ArgoEngineComp.engineCores = newEngineCores.ToArray();
+            leopardPrefabState.ArgoEngineComp.engineLights = newEngineLights.ToArray();
+            leopardPrefabState.ArgoEngineComp.engineFlares = newEngineFlares.ToArray();
 
             // For spot lights, instantiate them
             Mod.Log.Debug?.Log("Updating spot lights");
@@ -287,7 +290,8 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
-            DropshipHelper.ToggleLeopardVisibility(true, show);
+            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show} for simgame");
+            DropshipHelper.ToggleLeopardVisibility(ModState.SimGameLeopardState, show);
         }
         internal static void ToggleBriefingLeopardVisbility(bool show = false)
         {
@@ -297,14 +301,12 @@ namespace UsedDropshipSalesman.Helper
                 return;
             }
 
-            DropshipHelper.ToggleLeopardVisibility(false, show);
+            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show} for briefing");
+            DropshipHelper.ToggleLeopardVisibility(ModState.BriefingLeopardState, show);
         }
 
-        private static void ToggleLeopardVisibility(bool isSimGame, bool show = false)
+        private static void ToggleLeopardVisibility(LeopardPrefabState prefabState, bool show = false)
         {
-
-            Mod.Log.Debug?.Log($"Updating HBS Leopard mesh to be visible: {show}  isSimGame: {isSimGame}");
-            LeopardPrefabState prefabState = isSimGame ? ModState.SimGameLeopardState : ModState.BriefingLeopardState;
             if (prefabState == null)
             {
                 Mod.Log.Warning?.Log($"Failed to find a prefabState to manipulate, fast-failing!");
@@ -327,14 +329,9 @@ namespace UsedDropshipSalesman.Helper
             if (show)
             {
                 // Reset the argoEngineState to default values
-                prefabState.ArgoEngineComp.engineCores = Array.Empty<ParticleSystem>();
-                prefabState.ArgoEngineComp.engineCores = prefabState.DefaultAMECores;
-
-                prefabState.ArgoEngineComp.engineLights = Array.Empty<Light>();
-                prefabState.ArgoEngineComp.engineLights = prefabState.DefaultAMELights;
-
-                prefabState.ArgoEngineComp.engineFlares = Array.Empty<BTFlare>();
-                prefabState.ArgoEngineComp.engineFlares = prefabState.DefaultAMEFlares;
+                prefabState.ArgoEngineComp.engineCores = prefabState.DefaultAMECores.ToArray();
+                prefabState.ArgoEngineComp.engineLights = prefabState.DefaultAMELights.ToArray();
+                prefabState.ArgoEngineComp.engineFlares = prefabState.DefaultAMEFlares.ToArray();
             }
             else
             {
@@ -351,7 +348,7 @@ namespace UsedDropshipSalesman.Helper
             GameObject leopardPrefabGO = sgsc.leopard.gameObject;
             Mod.Log.Debug?.Log($"Building leopardState for SimGame scene with leopardGO: '{leopardPrefabGO?.name}'");
             ModState.SimGameLeopardState = BuildLeopardState(leopardPrefabGO);
-            if (ModState.SimGameLeopardState != null) { Mod.Log.Debug?.Log($"SimGameLeopardState is: {ModState.BriefingLeopardState}"); }
+            if (ModState.SimGameLeopardState != null) { Mod.Log.Debug?.Log($"SimGameLeopardState is: {ModState.SimGameLeopardState}"); }
             else { Mod.Log.Debug?.Log($"  SimGameLeopardState == null!"); }
         }
         internal static void BuildBriefingLeopardState(ArgoController leopardArgoController)
@@ -388,10 +385,15 @@ namespace UsedDropshipSalesman.Helper
                     state.EngineFlare2GO ??= childT.gameObject;
                     childT.gameObject.SetActive(false);
                 }
-                else if (childT.name.StartsWith("jetFlames", StringComparison.InvariantCultureIgnoreCase))
+                else if (childT.name.Equals("jetFlames", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Should be the jet plumes of engines
                     state.EngineJet1GO ??= childT.gameObject;
+                    childT.gameObject.SetActive(false);
+                }
+                else if (childT.name.Equals("jetFlames (1)", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Should be the jet plumes of engines
                     state.EngineJet2GO ??= childT.gameObject;
                     childT.gameObject.SetActive(false);
                 }
@@ -415,9 +417,9 @@ namespace UsedDropshipSalesman.Helper
 
             if (state.ArgoEngineComp != null)
             {
-                state.DefaultAMECores = state.ArgoEngineComp.engineCores.ToArray<ParticleSystem>();
-                state.DefaultAMELights = state.ArgoEngineComp.engineLights.ToArray<Light>();
-                state.DefaultAMEFlares = state.ArgoEngineComp.engineFlares.ToArray<BTFlare>();
+                state.DefaultAMECores = state.ArgoEngineComp.engineCores.ToArray<ParticleSystem>().ToList();
+                state.DefaultAMELights = state.ArgoEngineComp.engineLights.ToArray<Light>().ToList();
+                state.DefaultAMEFlares = state.ArgoEngineComp.engineFlares.ToArray<BTFlare>().ToList();
             }
 
             return state;

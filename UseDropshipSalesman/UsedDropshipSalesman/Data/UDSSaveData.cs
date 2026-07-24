@@ -16,7 +16,7 @@ namespace UsedDropshipSalesman.Data
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"CurrentDropship: {CurrentDropshipId} ");
-            sb.Append($"Persistent Upgrades: [{PurchasedPersistentUpgrades}] ");
+            sb.Append($"Persistent Upgrades: [{String.Join(",", PurchasedPersistentUpgrades)}] ");
             foreach (KeyValuePair<String, List<String>> kvp in PurchasedUpgrades)
             {
                 sb.Append($"Upgrades for dropship: {kvp.Value}: '{String.Join(", ", kvp.Value)}'");

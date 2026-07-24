@@ -90,44 +90,41 @@ namespace UsedDropshipSalesman.Helper
             foreach (GameObject categoryGO in customCategoryGO)
             {
                 Mod.Log.Debug?.Log($"Processing icons for category: {categoryGO.name}");
-                
+
+                //Mod.Log.Debug?.Log("Engineering Screen has:\n" +
+                //    $"  PurchasedUpgrades: {String.Join(",", engineeringScreen.PurchasedUpgrades.Select(smu => smu.Description.Id).ToArray())}\n" +
+                //    $"  AvailableUpgrades: {String.Join(",", engineeringScreen.AvailableUpgrades.Select(smu => smu.Description.Id).ToArray())}\n"
+                //    );
+                //Mod.Log.Debug?.Log($"Ship has {engineeringScreen.simState.PurchasedArgoUpgrades.Count} purchased upgrades: [{String.Join(",", engineeringScreen.simState.PurchasedArgoUpgrades)}]");
+                //String shipUpgrades = String.Join(", ", engineeringScreen.simState.ShipUpgrades.Select(su => su.Description.Id).ToList());
+                //Mod.Log.Debug?.Log($"Ship has {engineeringScreen.simState.ShipUpgrades.Count} installed upgrades: [{shipUpgrades}]");
+
                 SGEngineeringShipUpgradePip[] upgradePipComps = categoryGO.transform.GetComponentsInChildren<SGEngineeringShipUpgradePip>();
                 foreach (SGEngineeringShipUpgradePip pip in upgradePipComps)
                 {
                     Color hovered = Color.white;
                     Color unHovered = Color.gray;
                     Mod.Log.Debug?.Log($" Refreshing pip for module.name: {pip.name}  desc.Name {pip.UpgradeModule?.Description?.Name}  desc.Id: {pip.UpgradeModule?.Description?.Id}");
-                    if (engineeringScreen.PurchasedUpgrades.Contains(pip.UpgradeModule))
+                    if (config.InnateUpgradeIds.Contains(pip.UpgradeModule?.Description?.Id))
                     {
-                        if (config.InnateUpgradeIds.Contains(pip.UpgradeModule?.Description?.Id))
-                        {
-                            Mod.Log.Debug?.Log($" -- Module is innate");
-                            unHovered = Mod.Config.Colors.Upgrades.InnateColor;
-                            hovered = Mod.Config.Colors.Upgrades.InnateHoverColor;
-                        }
-                        else
-                        {
-                            Mod.Log.Debug?.Log($" -- Module has been purchased");
-                            unHovered = Mod.Config.Colors.Upgrades.PurchasedColor;
-                            hovered = Mod.Config.Colors.Upgrades.PurchasedHoverColor;
-                        }
+                        unHovered = Mod.Config.Colors.Upgrades.InnateColor;
+                        hovered = Mod.Config.Colors.Upgrades.InnateHoverColor;
+                    }
+                    else if (engineeringScreen.PurchasedUpgrades.Contains(pip.UpgradeModule))
+                    {
+                        unHovered = Mod.Config.Colors.Upgrades.PurchasedColor;
+                        hovered = Mod.Config.Colors.Upgrades.PurchasedHoverColor;
                     }
                     else if (engineeringScreen.AvailableUpgrades.Contains(pip.UpgradeModule))
                     {
-                        Mod.Log.Debug?.Log($" -- Module is available");
                         unHovered = Mod.Config.Colors.Upgrades.AvailableColor;
                         hovered = Mod.Config.Colors.Upgrades.AvailableHoverColor;
-
                     }
                     else
                     {
-                        Mod.Log.Debug?.Log($" -- Module is unavailable");
                         unHovered = Mod.Config.Colors.Upgrades.UnavailableColor;
                         hovered = Mod.Config.Colors.Upgrades.UnavailableHoverColor;
-
                     }
-
-                    // TODO: Innate upgrades should be automatically purchased - where to do?
 
                     // Find the actual pip
                     GameObject iconGO = pip.gameObject.FindFirstChildNamed("pip_ICON");

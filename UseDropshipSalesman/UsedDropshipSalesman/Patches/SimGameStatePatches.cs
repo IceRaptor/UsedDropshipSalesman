@@ -3,6 +3,7 @@ using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using CustomUnits;
 using CustomUnits.CustomHangars;
+using HBS.Collections;
 using HBS.Extensions;
 using Steamworks;
 using System;
@@ -113,12 +114,23 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SimGameState), "ApplyArgoUpgrades")]
-    static class SimGameState_ApplyArgoUpgrades
+    [HarmonyPatch(typeof(SimGameState), "CompleteArgoUpgrade")]
+    static class SimGameState_CompleteArgoUpgrade
     {
         static void Postfix(SimGameState __instance)
         {
-            Mod.Log.Trace?.Log("==== SimGameState_ApplyArgoUpgrades - entered.");
+            Mod.Log.Trace?.Log("==== SimGameState_CompleteArgoUpgrade - entered.");
+            if (__instance == null || __instance?.RoomManager?.EngineeringRoom?.engineeringScreen == null) return; // Nothing to do
+
+            // Refresh argo upgrade colors
+            var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
+            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
+            if (config == null)
+            {
+                Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+                return;
+            }
+            UpgradeUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
         }
     }
 
@@ -288,5 +300,35 @@ namespace UsedDropshipSalesman.Patches
             __result = dropshipConfig.CustomDropship.Costs.Upkeep;
         }
     }
+
+    //// Total maintenance cost for the ship
+    //[HarmonyPatch(typeof(SimGameState), "HasShipUpgrade")]
+    //[HarmonyPatch(new Type[] { typeof(TagSet), typeof(List<string>)})]
+    //static class SimGameState_HasShipUpgrade_TagSet
+    //{
+    //    static void Postfix(SimGameState __instance, bool __result, TagSet idList, List<string> upgradesToCheck = null)
+    //    {
+    //        if (__instance == null) { return; }
+    //        if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
+
+    //        Mod.Log.Trace?.Log("==== SimGameState_HasShipUpgrade(TagSet, List)- entered");
+    //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(TagSet, List): {__result} for idList: [{idList}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
+    //    }
+    //}
+
+    //// Total maintenance cost for the ship
+    //[HarmonyPatch(typeof(SimGameState), "HasShipUpgrade")]
+    //[HarmonyPatch(new Type[] { typeof(string), typeof(List<string>) })]
+    //static class SimGameState_HasShipUpgrade_String
+    //{
+    //    static void Postfix(SimGameState __instance, bool __result, String id, List<string> upgradesToCheck = null)
+    //    {
+    //        if (__instance == null) { return; }
+    //        if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
+
+    //        Mod.Log.Trace?.Log("==== SimGameState_HasShipUpgrade - entered");
+    //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(string, List): {__result} for idList: [{id}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
+    //    }
+    //}
 
 }
