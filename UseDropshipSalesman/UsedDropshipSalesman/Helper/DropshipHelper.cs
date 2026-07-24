@@ -173,6 +173,8 @@ namespace UsedDropshipSalesman.Helper
             leopardPrefabState.CamoComp.paintSchemeTex = (Texture2D)camoMeshRenderer.material.mainTexture;
             leopardPrefabState.CamoComp.UpdateHeraldry();
 
+
+            leopardPrefabState.ArgoEngineComp.gameObject.SetActive(false);
             List<ParticleSystem> newEngineCores = new();
             List<Light> newEngineLights = new();
             List<BTFlare> newEngineFlares = new();
@@ -279,6 +281,7 @@ namespace UsedDropshipSalesman.Helper
                 Mod.Log.Warning?.Log($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
             }
 
+            leopardPrefabState.ArgoEngineComp.gameObject.SetActive(true);
             dropshipRootGO.SetActive(true);
         }
 

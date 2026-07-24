@@ -17,29 +17,6 @@ namespace UsedDropshipSalesman.Patches.UI
     [HarmonyPatch(typeof(SGEngineeringScreen), "PopulateUpgradeDictionary")]
     static class SimGameState_PopulateUpgradeDictionary
     {
-        //static void Prefix(ref bool __runOriginal, SGEngineeringScreen __instance)
-        //{
-        //    Mod.Log.Trace?.Log("==== SimGameState_PopulateUpgradeDictionary:PREFIX - entered.");
-
-        //    Mod.Log.Debug?.Log("--- Ship upgrades: Purchased");
-        //    foreach (var smu in __instance.PurchasedUpgrades)
-        //    {
-        //        Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}'  requires: [{smu.RequiredModules}]");
-        //    }
-
-        //    Mod.Log.Debug?.Log("--- Ship upgrades: Available");
-        //    foreach (var smu in __instance.AvailableUpgrades)
-        //    {
-        //        Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}' requires: [{smu.RequiredModules}]");
-        //    }
-
-        //    Mod.Log.Debug?.Log("--- Ship upgrades: Unavailable");
-        //    foreach (var smu in __instance.UnavailableUpgrades)
-        //    {
-        //        Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}' requires: [{smu.RequiredModules}]");
-        //    }
-        //}
-
         static void Postfix(SGEngineeringScreen __instance)
         {
             Mod.Log.Trace?.Log("==== SimGameState_PopulateUpgradeDictionary:POSTFIX- entered.");

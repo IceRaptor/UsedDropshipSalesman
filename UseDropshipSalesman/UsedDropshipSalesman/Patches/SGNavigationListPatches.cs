@@ -21,7 +21,6 @@ namespace UsedDropshipSalesman.Patches
             // Force the travel scenes to pause on transitions
             __instance.pauseAtTravelSteps = true;
 
-            // Do not align from here, too early in the initiation chain
         }
     }
 

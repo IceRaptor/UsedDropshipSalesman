@@ -48,12 +48,45 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
+    [HarmonyPatch(typeof(SimGameSpaceController), "CurrentShipController", MethodType.Getter)]
+    [HarmonyPatch()]
+    static class SimGameSpaceController_CurrentShipController
+    {
+        static void Postfix(ref ArgoController __result, SimGameSpaceController __instance)
+        {
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_CurrentShipController - entered");
+
+            var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
+            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
+            if (config == null)
+            {
+                Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
+                return;
+            }
+
+            if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
+            {
+                Mod.Log.Debug?.Log(" Returning argo ArgoController instance");
+                __result = __instance.argo;
+            }
+            else
+            {
+                Mod.Log.Debug?.Log(" Returning leopard ArgoController instance");
+                __result = __instance.leopard;
+            }
+            Mod.Log.Debug?.Log($" EngineController id: {__result.name}  parent.id: {__result?.gameObject?.transform?.parent?.gameObject?.name}  " +
+                $"currentState: {__result.currentState}  currentEngineState: {__result.currentEngineState}  dropshipType: {__result.dropshipType}  " +
+                $"currShip: {__instance.currentShip}  simCurrShip: {__instance.sim.CurDropship}");
+        }
+    }
+
     [HarmonyPatch(typeof(SimGameSpaceController), "SetShip")]
     static class SimGameSpaceController_SetShip
     {
         static void Postfix(DropshipType ship, SimGameSpaceController __instance)
         {
             Mod.Log.Trace?.Log("==== SimGameSpaceController_SetShip - entered");
+            Mod.Log.Debug?.Log($"SetShip invoked with: {ship}");
 
             ModState.SimGameSpaceController ??= __instance;
 
@@ -68,17 +101,26 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
 
+            // Always force the argo to make the upgrades visible
+            __instance.currentShip = DropshipType.Argo;
+            __instance.sim.CurDropship = DropshipType.Argo;
+            __instance.sim.HasSimShipBeenSet = true;
+            __instance.sim.RoomManager.RefreshDisplay();
+
             if (ModState.SimGameLeopardState == null || ModState.SimGameLeopardState.ParentGO == null)
             {
                 Mod.Log.Debug?.Log($"SimLeopardState or parentGO was null, rebuidling.");
                 DropshipHelper.BuildSimLeopardState(__instance);
             }
 
+            __instance.argo.gameObject.SetActive(false);
+            __instance.leopard.gameObject.SetActive(false);
+
             if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
+                Mod.Log.Debug?.Log($"Setting visuals to HBS_LEOPARD");
                 // Use the default Leopard meshes with custom upgrades
                 DropshipHelper.ToggleSimLeopardVisiblity(true);
-                __instance.argo.gameObject.SetActive(false);
                 __instance.leopard.gameObject.SetActive(true);
 
                 __instance.argoAnimator.SetTrigger("setleopard");
@@ -88,27 +130,29 @@ namespace UsedDropshipSalesman.Patches
             }
             else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
+                Mod.Log.Debug?.Log($"Setting visuals to HBS_ARGO");
                 // Use the default Argo ship with custom upgrades
-                DropshipHelper.ToggleSimLeopardVisiblity(true);
+                DropshipHelper.ToggleSimLeopardVisiblity(false);
                 __instance.argo.gameObject.SetActive(true);
-                __instance.leopard.gameObject.SetActive(false);
-                __instance.argoAnimator.SetTrigger("setArgo");
+
+                __instance.argoAnimator.SetTrigger("setargo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
                 UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
             {
+                Mod.Log.Debug?.Log($"Setting visuals to CUSTOM");
                 // Use a custom mesh with custom upgrades
-                DropshipHelper.ToggleSimLeopardVisiblity(false);
-                __instance.argo.gameObject.SetActive(false);
                 __instance.leopard.gameObject.SetActive(true);
+                DropshipHelper.ToggleSimLeopardVisiblity(false);
+
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                Mod.Log.Debug?.Log($"Before disabling all SimGameDropshipInstances");
                 Mod.Log.Debug?.Log($"Before overlaying meshes");
                 DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
+
                 Mod.Log.Debug?.Log($"Before overlaying upgrades");
                 UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
@@ -118,13 +162,8 @@ namespace UsedDropshipSalesman.Patches
             UpgradeHelper.UpdateHangarConfig(config);
             UIHelper.UpdateHangerConfig(config, __instance.sim);
 
-           // Always force the argo to make the upgrades visible
-            __instance.currentShip = DropshipType.Argo;
-            __instance.sim.RoomManager.RefreshDisplay();
-            __instance.sim.CurDropship = DropshipType.Argo;
-            __instance.sim.HasSimShipBeenSet = true;
         }
 
-       
+
     }
 }
