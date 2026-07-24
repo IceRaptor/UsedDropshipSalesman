@@ -23,7 +23,7 @@
     "Requirements" : [
 
     ],
-    "TechCost" : 0,
+    "TechCost" : 5,
     "PurchaseCost" : 20000,
     "AdditionalCost" : 0,
     "Tags" : {
