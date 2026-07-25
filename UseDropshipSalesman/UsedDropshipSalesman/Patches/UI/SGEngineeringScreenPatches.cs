@@ -47,7 +47,7 @@ namespace UsedDropshipSalesman.Patches.UI
                 Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
-            UpgradeUIHelper.RefreshUpgradeIcons(__instance, config);
+            EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance, config);
         }
 
     }

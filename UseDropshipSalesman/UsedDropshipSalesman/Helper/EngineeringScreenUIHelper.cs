@@ -47,7 +47,7 @@ namespace UsedDropshipSalesman.Helper
      * uixSvgIcon_action_multitarget
      */
 
-    public static class UpgradeUIHelper
+    public static class EngineeringScreenUIHelper
     {
         private const int CATEGORY_Y_PADDING = 140;
 
@@ -177,7 +177,7 @@ namespace UsedDropshipSalesman.Helper
             var categoryReferenceGO = engineeringScreen.gameObject.FindFirstChildNamed("uixPrbPanl_SystemsAndSupportPanel");
             foreach (var (category, idx) in categories.Select((category, idx) => (category, idx)))
             {
-                GameObject categoryGO = UpgradeUIHelper.BuildCategoryUpgradeGO(category, categoryReferenceGO, upgradePanelRootGO, idx);
+                GameObject categoryGO = EngineeringScreenUIHelper.BuildCategoryUpgradeGO(category, categoryReferenceGO, upgradePanelRootGO, idx);
             }
 
         }
@@ -250,7 +250,7 @@ namespace UsedDropshipSalesman.Helper
             Mod.Log.Trace?.Log("Iterating systems");
             foreach (DropshipUpgradeSystem system in category.Systems)
             {
-                UpgradeUIHelper.BuildSystemUpgradeGO(system, systemReferenceGO);
+                EngineeringScreenUIHelper.BuildSystemUpgradeGO(system, systemReferenceGO);
             }
 
             return newCategoryPanelGO;
@@ -303,7 +303,7 @@ namespace UsedDropshipSalesman.Helper
                 bool exists = dropshipModules.TryGetValue(upgradeDefId, out ShipModuleUpgrade module);
                 if (exists)
                 {
-                    UpgradeUIHelper.BuildUpgradeItemGO(module, upgradePipSlotsGO, true);
+                    EngineeringScreenUIHelper.BuildUpgradeItemGO(module, upgradePipSlotsGO, true);
                 }
                 else
                 {
@@ -317,7 +317,7 @@ namespace UsedDropshipSalesman.Helper
                 bool exists = dropshipModules.TryGetValue(upgradeDefId, out ShipModuleUpgrade module);
                 if (exists)
                 {
-                    UpgradeUIHelper.BuildUpgradeItemGO(module, upgradePipSlotsGO, false);
+                    EngineeringScreenUIHelper.BuildUpgradeItemGO(module, upgradePipSlotsGO, false);
                 }
                 else
                 {

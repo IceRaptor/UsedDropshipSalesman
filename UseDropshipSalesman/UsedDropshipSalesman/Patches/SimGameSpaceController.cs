@@ -105,7 +105,6 @@ namespace UsedDropshipSalesman.Patches
             __instance.currentShip = DropshipType.Argo;
             __instance.sim.CurDropship = DropshipType.Argo;
             __instance.sim.HasSimShipBeenSet = true;
-            __instance.sim.RoomManager.RefreshDisplay();
 
             if (ModState.SimGameLeopardState == null || ModState.SimGameLeopardState.ParentGO == null)
             {
@@ -126,7 +125,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
-                UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                EngineeringScreenUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_ARGO)
            {
@@ -138,7 +137,7 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setargo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
-                UpgradeUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                EngineeringScreenUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
             else
             {
@@ -154,13 +153,10 @@ namespace UsedDropshipSalesman.Patches
                 DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
 
                 Mod.Log.Debug?.Log($"Before overlaying upgrades");
-                UpgradeUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                EngineeringScreenUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
-            UpgradeUIHelper.RefreshUpgradeIcons(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen, config);
-            UpgradeHelper.UpdateDropConfig(config);
-            UpgradeHelper.UpdateHangarConfig(config);
-            UIHelper.UpdateHangerConfig(config, __instance.sim);
+
 
         }
 

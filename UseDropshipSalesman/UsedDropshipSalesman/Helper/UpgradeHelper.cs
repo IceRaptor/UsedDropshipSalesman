@@ -129,11 +129,21 @@ namespace UsedDropshipSalesman.Helper
 
             String shipUpgrades = String.Join(", ", sim.ShipUpgrades.Select(su => su.Description.Id).ToList());
             Mod.Log.Debug?.Log($"Ship has {sim.ShipUpgrades.Count} upgrades to revert: [{shipUpgrades}]");
+            List<ShipModuleUpgrade> baseArgoUpgrades = new();
             foreach (ShipModuleUpgrade smu in sim.ShipUpgrades)
             {
                 if (smu == null || smu.Description == null || smu.Description.Id == null || String.IsNullOrEmpty(smu?.Description?.Id))
                 {
                     Mod.Log.Warning?.Log($"Ship module is null somehow? Skipping.");
+                    continue;
+                }
+
+                // DO NOT REVERT the default argo upgrades, as these are tied to core Statistic values (like MechTechSkill, MedBayPods, etc). 
+                //  If we nuke them, they aren't save-safe.
+                if (ModConsts.BASEGAME_DEFAULT_ARGO_UPGRADES.Contains(smu.Description.Id))
+                {
+                    Mod.Log.Trace?.Log($"Default argo upgrade: {smu.Description.Id} found, skipping revert.");
+                    baseArgoUpgrades.Add(smu);
                     continue;
                 }
 
@@ -150,11 +160,13 @@ namespace UsedDropshipSalesman.Helper
                     Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
                     sim.CompanyStats.RemoveStatistic(companyStat.name);
                 }
-
             }
+            
             // TODO: Pull upgrades from save state instead of current mod config
             sim.purchasedArgoUpgrades.Clear();
+            sim.purchasedArgoUpgrades.AddRange(baseArgoUpgrades.Select(smu => smu.Description.Id).ToList());
             sim.shipUpgrades.Clear();
+            sim.shipUpgrades.AddRange(baseArgoUpgrades);
 
             // There should be NO upgrades at this point
             if (sim.ShipUpgrades.Count > 0)

@@ -87,16 +87,27 @@ namespace UsedDropshipSalesman.Patches
                 } // Dialog will fire and try again tomorrow
 
                 Mod.Log.Info?.Log($"Reverting dropship: {oldConfig.CustomDropship.Description.Id}");
+                // THIS IS WHAT BREAKS MECHBAY
                 UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
-                
+
                 Mod.Log.Info?.Log($"Applying upgrades for new dropship: {newConfig.CustomDropship.Description.Id}");
                 UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
+                EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, newConfig);
+
+                UpgradeHelper.UpdateDropConfig(newConfig);
+                UpgradeHelper.UpdateHangarConfig(newConfig);
+                UIHelper.UpdateHangerConfig(newConfig, __instance);
 
                 Mod.ModSaveData.CurrentDropshipId = currDropshipId;
 
-                // This should force and update of the visuals
+                // This should update the visuals
                 __instance.SpaceController.SetShip(DropshipType.Argo);
-               
+
+                // Refresh rooms - WHY AM I DOING THIS?
+                //__instance.RoomManager.RefreshDisplay();
+
+                // Pause after the upgrade
+                __instance.RoomManager.ShipRoom.TimePlayPause.ToggleTime();
             }
             else
             {
@@ -130,7 +141,7 @@ namespace UsedDropshipSalesman.Patches
                 Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
-            UpgradeUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
+            EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
         }
     }
 
@@ -184,8 +195,7 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
-
-
+    // Invoked on F7
     [HarmonyPatch(typeof(SimGameState_Debug), "SimDebug_ToggleCurrentShipType")]
     static class SimGameState_Debug_SimDebug_ToggleCurrentShipType
     {
@@ -195,35 +205,26 @@ namespace UsedDropshipSalesman.Patches
 
             Mod.Log.Trace?.Log("==== SimGameState_Debug_SimDebug_ToggleCurrentShipType - entered");
 
-            var currentDropshipId = SimGameState_Debug.sim.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-            Mod.Log.Info?.Log($"Current dropship is: '{currentDropshipId}'.");
+            if (!__runOriginal) return;
 
-            int nextDropshipIdx = -1;
-            var dropshipIds = Mod.Config.Dropships.Keys.ToArray();
-            for (int i = 0; i < dropshipIds.Length; i++)
-            {
-                string dropshipId = dropshipIds[i];
-                Mod.Log.Trace?.Log($"Evaluating dropshipId: {dropshipId} with idx: {i}");
-                if (currentDropshipId.Equals(dropshipId, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    nextDropshipIdx = i+1;
-                }
-            }
-            if (nextDropshipIdx == dropshipIds.Length) { nextDropshipIdx = 0; }
-            string nextDropshipId = dropshipIds[nextDropshipIdx];
+            if (!SimGameState_Debug.isSimAvailable) return;
 
-            Mod.Log.Info?.Log($"Next dropship is: '{nextDropshipId}' with idx: {nextDropshipIdx}.");
-            SimGameState_Debug.sim.SpaceController.SetShip(DropshipType.Leopard);
-
-            // Simulate an upgrade flow
-            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig oldConfig);
-            Mod.Config.Dropships.TryGetValue(nextDropshipId, out DropshipConfig newConfig);
-            UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
-            UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
-
-            SimGameState_Debug.sim.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, nextDropshipId); // mod sets sim-state different, has been changed
-            Mod.ModSaveData.CurrentDropshipId = newConfig.CustomDropship.Description.Id;
             __runOriginal = false;
+
+            var gpb = GenericPopupBuilder.Create("Choose Dropship", "Choose a dropship from the buttons below.");
+            foreach (KeyValuePair<string, DropshipConfig> kvp in Mod.Config.Dropships)
+            {
+                gpb.AddButton($"{kvp.Value.CustomDropship.Description.Name}",
+                    delegate () { SetCurrentDropship(kvp.Value.CustomDropship.Description.Id); }
+                    );
+            }
+            gpb.Render();
+        }
+        private static void SetCurrentDropship(string dropshipId)
+        {
+            if (!SimGameState_Debug.isSimAvailable) return;
+
+            SimGameState_Debug.sim.CompanyStats.Set(ModConsts.STAT_CURRENT_DROPSHIP, dropshipId);
         }
     }
 
@@ -313,21 +314,6 @@ namespace UsedDropshipSalesman.Patches
 
     //        Mod.Log.Trace?.Log("==== SimGameState_HasShipUpgrade(TagSet, List)- entered");
     //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(TagSet, List): {__result} for idList: [{idList}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
-    //    }
-    //}
-
-    //// Total maintenance cost for the ship
-    //[HarmonyPatch(typeof(SimGameState), "HasShipUpgrade")]
-    //[HarmonyPatch(new Type[] { typeof(string), typeof(List<string>) })]
-    //static class SimGameState_HasShipUpgrade_String
-    //{
-    //    static void Postfix(SimGameState __instance, bool __result, String id, List<string> upgradesToCheck = null)
-    //    {
-    //        if (__instance == null) { return; }
-    //        if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
-
-    //        Mod.Log.Trace?.Log("==== SimGameState_HasShipUpgrade - entered");
-    //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(string, List): {__result} for idList: [{id}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
     //    }
     //}
 
