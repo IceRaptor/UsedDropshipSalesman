@@ -4,7 +4,7 @@
         "Rarity" : 0,
         "Purchasable" : true,
         "UIName" : "",
-        "Id" : "argoUpgrade_uds_overlord_medbay_1",
+        "Id" : "argoUpgrade_uds_overlord_medbay_2",
         "Name" : "Med Bay Modernization",
         "Details" : "Most of the med bay equipment looks like it's from the late 2800s, upgrading it would improve outcomes. ",
         "Icon" : "uixSvgIcon_shipUpgrade_medbay1"

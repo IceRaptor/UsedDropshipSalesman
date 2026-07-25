@@ -4,7 +4,7 @@
         "Rarity" : 0,
         "Purchasable" : true,
         "UIName" : "",
-        "Id" : "argoUpgrade_uds_overlord_thrust_1",
+        "Id" : "argoUpgrade_uds_overlord_thrust_2",
         "Name" : "Refurbished Interchange",
         "Details" : "The fusion to propellant interchange has been worked too many times. We need to replace it to get a full thrust profile.",
         "Icon" : "uixSvgIcon_shipUpgrade_power0"
