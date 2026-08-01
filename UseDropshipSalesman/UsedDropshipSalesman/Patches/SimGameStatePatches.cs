@@ -249,11 +249,31 @@ namespace UsedDropshipSalesman.Patches
             Mod.ModSaveData.Reset();
             Mod.ModSaveData.CurrentDropshipId = startingDropshipId;
 
+            // Setup values at career start
+            Mod.Config.Dropships.TryGetValue(startingDropshipId, out DropshipConfig newConfig);
+            UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
+            UpgradeHelper.UpdateDropConfig(newConfig);
+            UpgradeHelper.UpdateHangarConfig(newConfig);
+
             Mod.Log.Debug?.Log($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             Mod.Log.Debug?.Log($"SaveState is: {Mod.ModSaveData}");
         }
     }
 
+    // Invoked at the end of character creation
+    [HarmonyPatch(typeof(SimGameState), "InitFromSave")]
+    static class SimGameState_InitFromSave
+    {
+        static void Postfix(SimGameState __instance)
+        {
+            Mod.Log.Trace?.Log("==== SimGameState_InitFromSave - entered");
+
+            // Update CAC settings on save load
+            Mod.Config.Dropships.TryGetValue(Mod.ModSaveData.CurrentDropshipId, out DropshipConfig newConfig);
+            UpgradeHelper.UpdateDropConfig(newConfig);
+            UpgradeHelper.UpdateHangarConfig(newConfig);
+        }
+    }
 
     // Limits the count of mechwarriors available
     [HarmonyPatch(typeof(SimGameState), "GetMaxMechWarriors")]
