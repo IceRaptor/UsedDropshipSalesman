@@ -2,7 +2,7 @@
     "Name": "UsedDropshipSalesman",
     "Enabled": true,
     "Hidden": true,
-    "Version": "0.5.0",
+    "Version": "0.6.0",
     "Description": "Allows for a progression of dropship types.",
     "Author": "IceRaptor",
     "Website": "https://github.com/IceRaptor/UsedDropshipSalesman",
@@ -19,8 +19,9 @@
         { "Type": "CustomDropshipDef", "Path": "customDropships" },
         { "Type": "ShipModuleUpgrade", "Path": "shipUpgrades" },
         { "Type": "SVGAsset", "Path": "icons" },
-        { "Type": "SimGameEventDef", "Path": "events" },
-        { "Type": "SimGameStatDescDef", "Path": "simGameStatDesc", "AddToDB": true },
+        { "Type": "VehicleDef", "Path": "vehicles" },
+        { "Type": "TurretDef", "Path": "turret" },
+        { "Type": "AbilityDef", "Path": "abilities" },
         { "Type": "AdvancedJSONMerge", "Path": "advancedJsonMerges" }
     ]
 }

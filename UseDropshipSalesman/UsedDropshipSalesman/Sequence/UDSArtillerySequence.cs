@@ -41,7 +41,7 @@ namespace UsedDropshipSalesman.Sequence
 
         public string TeamGUID { get; private set; }
 
-        public Turret ArtillerySource { get; private set; }
+        public Turret Attacker { get; private set; }
 
         public Vector3 TargetPos { get; private set; }
 
@@ -59,16 +59,16 @@ namespace UsedDropshipSalesman.Sequence
 
         public override bool IsComplete => state == SequenceState.Finished;
 
-        public UDSArtillerySequence(CombatGameState combat, string teamGUID, Turret artillerySource, string explodeFX, Vector3 targetPos, float radius)
+        public UDSArtillerySequence(CombatGameState combat, string teamGUID, Turret attacker, string explodeFX, Vector3 targetPos, float radius)
             : base(combat)
         {
-            ArtillerySource = artillerySource;
+            Attacker = attacker;
             ExplodeFX = explodeFX;
             TargetPos = targetPos;
             Radius = radius;
             TeamGUID = base.Combat.LocalPlayerTeamGuid;
             state = SequenceState.None;
-            Mod.Log.Info?.Log($"Created UDSArtillerySequence with source: {artillerySource?.DisplayName} at pos: {targetPos} with radius: {radius}");
+            Mod.Log.Info?.Log($"Created UDSArtillerySequence with source: {attacker?.DisplayName} at pos: {targetPos} with radius: {radius}");
         }
 
         private void SetState(SequenceState newState)
@@ -94,9 +94,18 @@ namespace UsedDropshipSalesman.Sequence
                     break;
                 case SequenceState.Finished:
                     ClearCamera();
+                    CleanupAttacker();
                     Mod.Log.Trace?.Log($"UDSArtillerySequence::Finished");
                     break;
             }
+        }
+
+        private void CleanupAttacker()
+        {
+            Attacker.PlaceFarAwayFromMap();
+            Attacker.GetPilot()?.KillPilot(Combat.Constants, "", 0, DamageType.Unknown, null, null);
+            Attacker.FlagForDeath("Death after strike!", DeathMethod.Unknown, DamageType.Unknown, -1, -1, "", isSilent: true);
+            Attacker.HandleDeath("0");
         }
 
         private void Update()
@@ -148,8 +157,16 @@ namespace UsedDropshipSalesman.Sequence
         {
             Mod.Log.Trace?.Log($"UDSArtillerySequence showing explodeFX: {ExplodeFX} at targetPos: {TargetPos}");
             osd = new ObjectSpawnData(ExplodeFX, TargetPos, Quaternion.identity, playFX: true, autoPoolObject: true);
-            osd.Spawn(base.Combat);
-            PlaySoundEffect();
+            try
+            {
+                osd.Spawn(base.Combat);
+                PlaySoundEffect();
+            }
+            catch (Exception ex)
+            {
+                Mod.Log.Trace?.Log($"Failed to spawn the OSD", ex);
+
+            }
         }
 
         private void PlaySoundEffect()
@@ -199,15 +216,16 @@ namespace UsedDropshipSalesman.Sequence
         private void PerformAttack(ICombatant target)
         {
 
-            foreach (Weapon weapon in ArtillerySource.Weapons)
+            foreach (Weapon weapon in Attacker.Weapons)
             {
                 try
                 {
-                    Mod.Log.Info?.Log($"Attacking combatant: {target?.DisplayName} with weapon: {weapon?.Name} from parent: {ArtillerySource?.DisplayName}");
+                    Mod.Log.Info?.Log($"Attacking combatant: {target?.DisplayName} with weapon: {weapon?.Name} from parent: {Attacker?.DisplayName}");
+                    weapon.PreFireWeapon(base.SequenceGUID); // Prevent the weapon ahs not prefired error
                     int totalHits = weapon.ShotsWhenFired;
                     WeaponHitInfo hitInfo = new WeaponHitInfo
                     {
-                        attackerId = "Artillery",
+                        attackerId = Attacker.GUID,
                         targetId = target.GUID,
                         numberOfShots = totalHits,
                         stackItemUID = base.SequenceGUID,
@@ -218,18 +236,18 @@ namespace UsedDropshipSalesman.Sequence
                     AttackDirection attackDirection = base.Combat.HitLocation.GetAttackDirection(TargetPos, target);
                     hitInfo.attackDirections = new AttackDirection[totalHits];
                     hitInfo.hitQualities = new AttackImpactQuality[totalHits];
-                    for (int i = 0; i < totalHits; i++)
-                    {
-                        hitInfo.attackDirections[i] = attackDirection;
-                        hitInfo.hitQualities[i] = AttackImpactQuality.Solid;
-                    }
-
+                    hitInfo.locationRolls = base.Combat.AttackDirector.GetRandomFromCache(hitInfo, hitInfo.numberOfShots);
+                    hitInfo.hitVariance = base.Combat.AttackDirector.GetVarianceSumsFromCache(hitInfo, hitInfo.numberOfShots, weapon);
                     Mod.Log.Debug?.Log($"Resolved individual hit locations against combatant: {target?.DisplayName}");
-                    GetIndividualHits(ref hitInfo, weapon, target);
                     for (int hitIndex = 0; hitIndex < totalHits; hitIndex++)
                     {
+                        hitInfo.attackDirections[hitIndex] = attackDirection;
+                        hitInfo.hitQualities[hitIndex] = AttackImpactQuality.Solid;
+                        hitInfo.hitLocations[hitIndex] = target.GetHitLocation(weapon.parent, TargetPos, hitInfo.locationRolls[hitIndex], 0, 1f);
+
                         Mod.Log.Debug?.Log($" -- Applying hit to location: {hitInfo.hitLocations[hitIndex]}");
                         target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[hitIndex], weapon, weapon.DamagePerShot, 0f, hitIndex, DamageType.Artillery);
+
                     }
 
                     Mod.Log.Debug?.Log($"Resolving weapon damage for sequence: {hitInfo.attackSequenceId}");
@@ -242,16 +260,6 @@ namespace UsedDropshipSalesman.Sequence
                 }
             }
 
-        }
-
-        private void GetIndividualHits(ref WeaponHitInfo hitInfo, Weapon weapon, ICombatant target)
-        {
-            hitInfo.locationRolls = base.Combat.AttackDirector.GetRandomFromCache(hitInfo, hitInfo.numberOfShots);
-            hitInfo.hitVariance = base.Combat.AttackDirector.GetVarianceSumsFromCache(hitInfo, hitInfo.numberOfShots, weapon);
-            for (int i = 0; i < hitInfo.numberOfShots; i++)
-            {
-                hitInfo.hitLocations[i] = target.GetHitLocation(weapon.parent, TargetPos, hitInfo.locationRolls[i], 0, 1f);
-            }
         }
 
         public override void OnAdded()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,29 +10,34 @@ namespace UsedDropshipSalesman.Helper
 {
     internal class SpawnHelper
     {
-        internal static Turret WeaponsTurret;
-
-        internal static Lance CreateSupportLance(Team team)
+        internal static Lance GetSupportLance(CombatGameState combat)
         {
-            Lance lance = new(team, new BattleTech.Framework.LanceSpawnerRef[] { });
-            Guid g = Guid.NewGuid();
-            string lanceGuid = LanceSpawnerGameLogic.GetLanceGuid(g.ToString());
-            lance.lanceGuid = lanceGuid;
-            team.Combat.ItemRegistry.AddItem(lance);
-            team.lances.Add(lance);
+            if (ModState.SeqSupportLance == null)
+            {
+                Team team = combat.LocalPlayerTeam;
+                Lance lance = new(team, new BattleTech.Framework.LanceSpawnerRef[] { });
+                Guid g = Guid.NewGuid();
+                string lanceGuid = LanceSpawnerGameLogic.GetLanceGuid(g.ToString());
+                lance.lanceGuid = lanceGuid;
+                team.Combat.ItemRegistry.AddItem(lance);
+                team.lances.Add(lance);
 
-            Mod.Log.Error?.Log($"Created new support lance with GUID: {lance.lanceGuid} fo team: {team}");
-            return lance;
+                Mod.Log.Debug?.Log($"Created new support lance with GUID: {lance.lanceGuid} for team: {team}");
+                ModState.SeqSupportLance = lance;
+            }
+
+            return ModState.SeqSupportLance;
         }
 
-        internal static void CreateVehicleSupportResource(Team team, Lance lance, string vehicleDefId)
+        internal static Vehicle CreateVehicleForSequence(CombatGameState combat, string vehicleDefId, string pilotDefId)
         {
             // TODO: Pull from mod stats
-            PilotDef pilotDef = team.combat.DataManager.PilotDefs.Get("pilot_d10_sharpshooter");
-            VehicleDef vehicleDef = team.combat.DataManager.VehicleDefs.Get(vehicleDefId);
+            VehicleDef vehicleDef = combat.DataManager.VehicleDefs.Get(vehicleDefId);
+            PilotDef pilotDef = combat.DataManager.PilotDefs.Get(pilotDefId);
             Mod.Log.Debug?.Log($"Refreshing {vehicleDefId} with pilotDef: {pilotDef}");
             vehicleDef.Refresh();
 
+            Team team = combat.LocalPlayerTeam;
             Vehicle vehicle = ActorFactory.CreateVehicle(vehicleDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
             if (vehicle == null)
             {
@@ -53,7 +59,7 @@ namespace UsedDropshipSalesman.Helper
 
             Mod.Log.Debug?.Log($"Adding team and lance to vehicle");
             vehicle.AddToTeam(team);
-            vehicle.AddToLance(lance);
+            vehicle.AddToLance(GetSupportLance(combat));
 
             Mod.Log.Debug?.Log($"Adding behavior tree");
             vehicle.BehaviorTree = BehaviorTreeFactory.MakeBehaviorTree(team.Combat.BattleTechGame, vehicle, BehaviorTreeIDEnum.CoreAITree);
@@ -63,16 +69,19 @@ namespace UsedDropshipSalesman.Helper
             vehicle.GameRep.transform.position = team.OffScreenPosition;
             vehicle.OnPositionUpdate(team.OffScreenPosition, vehicle.CurrentRotation, -1, updateDesignMask: true, null);
             Mod.Log.Debug?.Log($"Vehicle moved to offMap position: {team.OffScreenPosition} with currentRotation: {vehicle.CurrentRotation}");
+
+            return vehicle;
         }
 
-        internal static Turret CreateTurret(Team team, Lance lance, string turretDefId)
+        internal static Turret CreateTurretForSequence(CombatGameState combat, string turretDefId, string pilotDefId)
         {
             // TODO: Pull from mod stats
-            PilotDef pilotDef = team.combat.DataManager.PilotDefs.Get("pilot_d10_sharpshooter");
-            TurretDef turretDef = team.combat.DataManager.TurretDefs.Get(turretDefId);
+            TurretDef turretDef = combat.DataManager.TurretDefs.Get(turretDefId);
+            PilotDef pilotDef = combat.DataManager.PilotDefs.Get(pilotDefId);
             Mod.Log.Debug?.Log($"Refreshing {turretDefId} with pilotDef: {pilotDef}");
             turretDef.Refresh();
 
+            Team team = combat.LocalPlayerTeam;
             Turret turret = ActorFactory.CreateTurret(turretDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
             if (turret == null)
             {
@@ -94,7 +103,7 @@ namespace UsedDropshipSalesman.Helper
 
             //Mod.Log.Debug?.Log($"Adding team and lance to vehicle");
             turret.AddToTeam(team);
-            turret.AddToLance(lance);
+            turret.AddToLance(GetSupportLance(combat));
 
             Mod.Log.Debug?.Log($"Adding behavior tree");
             turret.BehaviorTree = BehaviorTreeFactory.MakeBehaviorTree(team.Combat.BattleTechGame, turret, BehaviorTreeIDEnum.CoreAITree);
@@ -108,76 +117,29 @@ namespace UsedDropshipSalesman.Helper
             return turret;
         }
 
-        internal static void CreateWeaponSupportResource(Team team, Lance lance, string weaponDefId)
+        internal static void SpawnFlares(CombatGameState combat, AbilityDef sourceAbility, Vector3 positionA, Vector3 positionB, 
+            string prefabName, int numFlares, int numPhases)
         {
-
-            // CU requires a parent turret + pilot or throws an NRE - see Weapon_Constructor_Turret
-            if (WeaponsTurret == null)
+            Vector3 spaceBetweenFlares = (positionB - positionA) / numFlares;
+            Vector3 startFlarePos = positionA;
+            startFlarePos.y = combat.MapMetaData.GetLerpedHeightAt(startFlarePos);
+            List<ObjectSpawnData> list = new();
+            for (int i = 0; i < numFlares; i++)
             {
-                WeaponsTurret = CreateWeaponsTurret(team, lance);
+                ObjectSpawnData item = new(prefabName, startFlarePos, Quaternion.identity, playFX: true, autoPoolObject: false);
+                list.Add(item);
+                startFlarePos += spaceBetweenFlares;
+                startFlarePos.y = combat.MapMetaData.GetLerpedHeightAt(startFlarePos);
             }
-            WeaponDef weaponDef = team.combat.DataManager.WeaponDefs.Get(weaponDefId);
 
-            TurretComponentRef turretComponentRef = new()
-            {
-                Def = weaponDef
-            };
+            SpawnObjectSequence spawnObjectSequence = new(combat, list);
+            combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage(spawnObjectSequence));
+            List<ObjectSpawnData> spawnedObjects = spawnObjectSequence.spawnedObjects;
+            CleanupObjectSequence eventSequence = new(combat, spawnedObjects);
 
-            Weapon weapon = new(WeaponsTurret, team.combat, turretComponentRef, team.GetNextSupportUnitGuid());
-            weapon.Init();
-            weapon.InitStats();
-
-            Mod.Log.Debug?.Log($"Added weapon: {weaponDefId} to team: {team}'s support weapons");
-            team.SupportWeapons.Add(weapon);
+            TurnEvent tEvent = new(GUIDFactory.GetGUID(), combat, numPhases, null, eventSequence, sourceAbility, showInPhaseTrack: false);
+            combat.TurnDirector.AddTurnEvent(tEvent);
         }
 
-        private static Turret CreateWeaponsTurret(Team team, Lance lance)
-        {
-
-            PilotDef pilotDef = team.combat.DataManager.PilotDefs.Get("pilot_d10_sharpshooter");
-            // TODO: Make this a mod config value
-            Mod.Log.Info?.Log($"== ITERATING TURRETS");
-            foreach (KeyValuePair<string, TurretDef> kvp in team.combat.DataManager.TurretDefs)
-            {
-                Mod.Log.Info?.Log($" -- found Def with key: {kvp.Key} with desc.id: {kvp.Value?.Description?.Id}");
-            }
-
-            TurretDef turretDef = team.combat.DataManager.TurretDefs.Get("turretdef_Standard_Sniper");
-            Mod.Log.Debug?.Log($"Refreshing {turretDef} with pilotDef: {pilotDef}");
-            turretDef.Refresh();
-
-            Turret turret = ActorFactory.CreateTurret(turretDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
-            if (turret == null)
-            {
-                Mod.Log.Error?.Log($"Failed to spawn turretDef: {turretDef} / pilotDefId: pilot_d10_sharpshooter !");
-            }
-            else
-            {
-                Mod.Log.Debug?.Log($"Created turret");
-            }
-
-            turret.Init(Vector3.zero, 0f, false);
-            Mod.Log.Debug?.Log($"Initted turret");
-            turret.InitGameRep(null);
-            Mod.Log.Debug?.Log($"Initted gameRep");
-
-            Mod.Log.Debug?.Log($"Adding turret to team and support units");
-            //team.AddUnit(turret);
-            team.SupportUnits.Add(turret);
-
-            Mod.Log.Debug?.Log($"Adding team and lance to turret");
-            turret.AddToTeam(team);
-            turret.AddToLance(lance);
-
-            Mod.Log.Debug?.Log($"Adding behavior tree");
-            turret.BehaviorTree = BehaviorTreeFactory.MakeBehaviorTree(team.Combat.BattleTechGame, turret, BehaviorTreeIDEnum.CoreAITree);
-
-            Mod.Log.Debug?.Log("Moving unit off map");
-            //turret.PlaceFarAwayFromMap();
-            turret.GameRep.transform.position = team.OffScreenPosition;
-            turret.OnPositionUpdate(team.OffScreenPosition, turret.CurrentRotation, -1, updateDesignMask: true, null);
-            Mod.Log.Debug?.Log($"Unit moved to offMap position: {team.OffScreenPosition} with currentRotation: {turret.CurrentRotation}");
-            return turret;
-        }
     }
 }

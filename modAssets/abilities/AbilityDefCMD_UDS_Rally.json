@@ -1,0 +1,14 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_Rally",
+		"Name" : "RALLY",
+		"Details" : "RESTORES CONSCIOUSNESS TO ALL PILOTS, PLACES ANY DOWNED MECHS UPRIGHT, AND (TODO) REMOVES ANY DEMORALIZATION EFFECTS.",
+		"Icon" : "uixSvgIcon_genericDiamond"
+	},
+	"ActivationTime" : "CommandAbility",
+	"Resource" : "CommandAbility",
+	"ActivationCooldown" : -1,
+	"NumberOfUses" : 1,
+	"specialRules" : "Rally",
+	"Targeting" : "CommandInstant"
+}

@@ -21,13 +21,20 @@ namespace UsedDropshipSalesman
         // Upgrades state
         internal static bool HasCustomUpgradeScreen = false;
 
-        internal static void Reset()
-        {
-            
-            // Reinitialize state
-            CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
-        }
+        internal static Lance SeqSupportLance = null;
 
+        internal static void Reset(bool afterCombat)
+        {
+            if (afterCombat)
+            {
+                SeqSupportLance = null;
+            }
+            else
+            {
+                // Reinitialize state
+                CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
+            }
+        }
 
     }
 

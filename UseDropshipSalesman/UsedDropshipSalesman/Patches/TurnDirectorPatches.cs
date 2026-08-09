@@ -28,7 +28,7 @@ namespace UsedDropshipSalesman.Patches
             List<string> mechsToLoad = new();
             List<string> turretsToLoad = new();
             List<string> vehiclesToLoad = new();
-            //List<string> weaponsToLoad = new();
+            List<string> pilotsToLoad = new();
             List<string> abilities = new() { "AbilityDefCMD_UDS_Strafe", "AbilityDefCMD_UDS_ActiveProbe_Ping", "AbilityDefCMD_UDS_ArtThumperHE", "AbilityDefCMD_UDS_ArtThumperAP" };
             foreach (string abilityId in abilities)
             {
@@ -63,92 +63,33 @@ namespace UsedDropshipSalesman.Patches
                     }
                 }
 
-                //if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !weaponsToLoad.Contains(abilityDef.WeaponResource))
-                //{
-                //    Mod.Log.Debug?.Log($"Loading weaponResource: {abilityDef.WeaponResource}' for ability: {abilityId}");
-                //    weaponsToLoad.Add(abilityDef.WeaponResource);
-                //}
-            }
-
-            if (mechsToLoad.Count > 0 || vehiclesToLoad.Count > 0 || turretsToLoad.Count > 0)
-            {
-                DataloadHelper.LoadSupportResources(team, mechsToLoad, vehiclesToLoad, turretsToLoad);
-            }
-
-        }
-    }
-
-    [HarmonyPatch(typeof(TurnDirector), "OnEncounterBegin")]
-    public static class TurnDirector_OnEncounterBegin
-    {
-        static void Postfix(TurnDirector __instance)
-        {
-            Mod.Log.Trace?.Log("==== TurnDirector_OnEncounterBegin:POSTFIX- entered.");
-
-            // Get the local player team
-            Team team = __instance.Combat.localPlayerTeam;
-
-            // Assume everything is loaded already
-            List<string> abilityActorResources = new();
-            List<string> abilityWeaponResources = new();
-            List<string> abilities = new() { "AbilityDefCMD_UDS_Strafe", "AbilityDefCMD_UDS_ActiveProbe_Ping", "AbilityDefCMD_UDS_ArtThumperHE", "AbilityDefCMD_UDS_ArtThumperAP" };
-            foreach (string abilityId in abilities)
-            {
-                // Add the def to the command options
-                bool had_key = __instance.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
-
-                if (!String.IsNullOrEmpty(abilityDef.ActorResource) && !abilityWeaponResources.Contains(abilityDef.ActorResource))
+                if (!String.IsNullOrEmpty(abilityDef.WeaponResource))
                 {
-                    Mod.Log.Debug?.Log($"Loading actorResource: {abilityDef.ActorResource}' for ability: {abilityId}");
-                    abilityActorResources.Add(abilityDef.ActorResource);
-                }
-
-                if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !abilityWeaponResources.Contains(abilityDef.WeaponResource))
-                {
-                    Mod.Log.Debug?.Log($"Loading weaponResource: {abilityDef.WeaponResource}' for ability: {abilityId}");
-                    abilityWeaponResources.Add(abilityDef.WeaponResource);
-                }
-            }
-
-            if (abilityActorResources.Count > 0 || abilityWeaponResources.Count > 0)
-            {
-
-                Lance supportLance = SpawnHelper.CreateSupportLance(team);
-
-                // Create vehicle actors and attach them as support to the team
-                try
-                {
-                    foreach (string defId in abilityActorResources)
+                    if (!pilotsToLoad.Contains(abilityDef.WeaponResource))
                     {
-                        if (defId.StartsWith("vehicleDef", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            SpawnHelper.CreateVehicleSupportResource(team, supportLance, defId);
-                        }
-                        //else if (defId.StartsWith("turretDef", StringComparison.InvariantCultureIgnoreCase))
-                        //{
-                        //    SpawnHelper.CreateTurret(team, supportLance, defId);
-                        //}
-                        
+                        pilotsToLoad.Add(abilityDef.WeaponResource);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Mod.Log.Error?.Log("Failed to create support vehicles!", ex);
-                }
 
-                //try
-                //{
-                //    foreach (string defId in abilityWeaponResources)
-                //    {
-                //        SpawnHelper.CreateWeaponSupportResource(team, supportLance, defId);
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    Mod.Log.Error?.Log("Failed to create support weapons!", ex);
-                //}
+            }
+
+            if (pilotsToLoad.Count > 0 || mechsToLoad.Count > 0 || vehiclesToLoad.Count > 0 || turretsToLoad.Count > 0)
+            {
+                DataloadHelper.LoadSupportResources(team, mechsToLoad, vehiclesToLoad, turretsToLoad, pilotsToLoad);
             }
 
         }
+
+        [HarmonyPatch(typeof(TurnDirector), "OnCombatGameDestroyed")]
+        public static class TurnDirector_OnCombatGameDestroyed
+        {
+            static void Postfix(TurnDirector __instance)
+            {
+                Mod.Log.Trace?.Log("==== TurnDirector_OnCombatGameDestroyed:POSTFIX- entered.");
+
+                ModState.Reset(true);
+            }
+        }
+
     }
 }

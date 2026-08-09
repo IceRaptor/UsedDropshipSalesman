@@ -11,9 +11,8 @@ namespace UsedDropshipSalesman.Helper
     internal class DataloadHelper
     {
 
-
         internal static void LoadSupportResources(Team team, List<string> mechDefs, List<string> vehicleDefs, 
-            List<string> turretDefs)
+            List<string> turretDefs, List<string> pilotsToLoad)
         {
             // Load the necessary turret defs
             Mod.Log.Info?.Log($"== BEGIN load request for support elements");
@@ -21,31 +20,31 @@ namespace UsedDropshipSalesman.Helper
                 delegate (LoadRequest loadRequest) { OnLoadComplete(team, mechDefs, vehicleDefs, turretDefs); }, false
                 );
             Mod.Log.Info?.Log($" -- Pre-load counts => weaponDefs: {team.combat.DataManager.WeaponDefs.Count}  " +
-                $"pilotDefs: {team.combat.DataManager.PilotDefs.Count}  mechDefs: {team.combat.DataManager.MechDefs.Count}" +
-                $"turretDefs: {team.combat.DataManager.TurretDefs.Count}  vehicleDefs: {team.combat.DataManager.VehicleDefs.Count}");
+                $"pilotDefs: {team.combat.DataManager.PilotDefs.Count}  mechDefs: {team.combat.DataManager.MechDefs.Count}  " +
+                $"turretDefs: {team.combat.DataManager.TurretDefs.Count}  vehicleDefs: {team.combat.DataManager.VehicleDefs.Count}  ");
+
+            foreach (string defId in pilotsToLoad)
+            {
+                Mod.Log.Info?.Log($"  - PilotDefId: {defId}");
+                asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.PilotDef, defId, new bool?(false));
+            }
 
             foreach (string defId in mechDefs)
             {
                 Mod.Log.Info?.Log($"  - MechDefId: {defId}");
                 asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.MechDef, defId, new bool?(false));
-                // TODO: Make a mod option
-                asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.PilotDef, "pilot_d10_sharpshooter", new bool?(false));
             }
 
             foreach (string defId in vehicleDefs)
             {
                 Mod.Log.Info?.Log($"  - VehicleDefId: {defId}");
                 asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.VehicleDef, defId, new bool?(false));
-                // TODO: Make a mod option
-                asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.PilotDef, "pilot_d10_sharpshooter", new bool?(false));
             }
 
             foreach (string defId in turretDefs)
             {
                 Mod.Log.Info?.Log($"  - TurretDefId: {defId}");
                 asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.TurretDef, defId, new bool?(false));
-                // TODO: Make a mod option - use WeaponResource?
-                asyncSpawnReq.AddBlindLoadRequest(BattleTechResourceType.PilotDef, "pilot_d10_sharpshooter", new bool?(false));
             }
 
             // Fire the load request
@@ -56,8 +55,8 @@ namespace UsedDropshipSalesman.Helper
         {
             Mod.Log.Info?.Log($"== END load request for support elements");
             Mod.Log.Info?.Log($" -- Post-load counts => weaponDefs: {team.combat.DataManager.WeaponDefs.Count}  " +
-                $"pilotDefs: {team.combat.DataManager.PilotDefs.Count}  mechDefs: {team.combat.DataManager.MechDefs.Count}" +
-                $"turretDefs: {team.combat.DataManager.TurretDefs.Count}  vehicleDefs: {team.combat.DataManager.VehicleDefs.Count}");
+                $"pilotDefs: {team.combat.DataManager.PilotDefs.Count}  mechDefs: {team.combat.DataManager.MechDefs.Count}  " +
+                $"turretDefs: {team.combat.DataManager.TurretDefs.Count}  vehicleDefs: {team.combat.DataManager.VehicleDefs.Count}  ");
         }
 
         internal static void UnloadSupportResources(CombatGameState combat)

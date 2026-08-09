@@ -1,0 +1,22 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_ArtThumperHE",
+		"Name" : "HE STRIKE",
+		"Details" : "CALLS IN A HIGH EXPLOSIVE ARTILLERY STRIKE FROM YOUR THUMPER SUPPORT UNIT.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "CommandAbility",
+	"Resource" : "CommandAbility",
+	"ActivationCooldown" : 3,
+	"ActivationETA" : 4,
+	"specialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 60.0,
+	"IntParam1" : 100,
+    "IntParam1" : 0,
+	"IntParam2": 600,
+    "ActorResource" : "turretdef_UDS_Artillery_Light",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

@@ -46,16 +46,14 @@ namespace UsedDropshipSalesman.Patches
             {
                 __runOriginal = false;
 
-                // TODO: Spawn weapon here instead of relying on support weapon
-                Lance supportLance = SpawnHelper.CreateSupportLance(team);
-                Turret turret = SpawnHelper.CreateTurret(team, supportLance, __instance.Def.ActorResource);
-
-                UDSArtillerySequence eventSequence = new UDSArtillerySequence(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
-                TurnEvent tEvent = new TurnEvent(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
+                Turret turret = SpawnHelper.CreateTurretForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
+                UDSArtillerySequence eventSequence = new(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
+                TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
                 __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
+                
                 if (__instance.Def.IntParam1 > 0)
                 {
-                    __instance.SpawnFlares(targetPos, targetPos, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
+                    SpawnHelper.SpawnFlares(__instance.Combat, __instance.Def, targetPos, targetPos, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
                 }
 
             }
@@ -67,14 +65,28 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(new Type[] {typeof(Team), typeof(Vector3), typeof(Vector3), typeof(float)})]
     static class Ability_ActivateStrafe
     {
-        static void Prefix(Ability __instance, Team team, Vector3 positionA, Vector3 positionB, float radius)
+        static void Prefix(Ability __instance, ref bool __runOriginal, Team team, Vector3 positionA, Vector3 positionB, float radius)
         {
             Mod.Log.Trace?.Log("==== Ability_ActivateStrafe:POSTFIX- entered.");
 
             Mod.Log.Debug?.Log($"Ability_ActivateStrafe for team: {team}  positionA: {positionA}  positionB: {positionB}  radius: {radius}  " +
                 $"Combat == null: {__instance.Combat == null}");
-
             __instance.Combat = team.Combat;
+
+            if (!String.IsNullOrEmpty(__instance?.Def?.Description?.Id) && __instance.Def.Description.Id.Contains("_UDS_"))
+            {
+                __runOriginal = false;
+
+                Vehicle strafingUnit = SpawnHelper.CreateVehicleForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
+                StrafeSequence eventSequence = new(strafingUnit, positionA, positionB, radius);
+                TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
+                __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
+
+                if (__instance.Def.IntParam1 > 0)
+                {
+                    SpawnHelper.SpawnFlares(__instance.Combat, __instance.Def, positionA, positionB, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
+                }
+            }
         }
     }
 

@@ -1,0 +1,22 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_ArtThumperAP",
+		"Name" : "AP STRIKE",
+		"Details" : "CALLS IN AN ARMOR-PIERCING ARTILLERY STRIKE FROM YOUR THUMPER SUPPORT UNIT.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "CommandAbility",
+	"Resource" : "CommandAbility",
+	"ActivationCooldown" : 3,
+	"ActivationETA" : 4,
+	"specialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 20.0,
+	"IntParam1" : 100,
+	"IntParam1" : 1,
+	"IntParam2": 600,
+    "ActorResource" : "turretdef_UDS_Artillery_Light",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

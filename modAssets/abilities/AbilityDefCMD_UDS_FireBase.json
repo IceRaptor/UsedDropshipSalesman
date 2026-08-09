@@ -1,0 +1,17 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_FireBase",
+		"Name" : "FIRE BASE",
+		"Details" : "DEPLOY FIRE BASE (AC/10)",
+		"Icon" : "uixSvgIcon_genericDiamond"
+	},
+	"ActivationTime" : "CommandAbility",
+	"Resource" : "CommandAbility",
+	"ActivationCooldown" : -1,
+	"NumberOfUses" : 1,
+	"specialRules" : "SpawnTurret",
+	"Targeting" : "CommandSpawnPosition",
+	"ActorResource" : "turretdef_TestTurret_AC101_360",
+    "FloatParam1" : 50,
+    "FloatParam2" : 50
+}

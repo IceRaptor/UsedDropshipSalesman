@@ -1,0 +1,22 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Strafe",
+		"Name" : "STRAFE",
+		"Details" : "CALLS IN A STRAFING RUN BY YOUR AEROSPACE SUPPORT UNIT.",
+		"Icon" : "uixSvgIcon_genericDiamond"
+	},
+	"ActivationTime" : "CommandAbility",
+	"Resource" : "CommandAbility",
+	"ActivationCooldown" : 2,
+	"ActivationETA" : 4,
+	"specialRules" : "Strafe",
+	"Targeting" : "CommandTargetTwoPoints",
+	"FloatParam1" : 50.0,
+	"FloatParam2" : 200.0,
+	"IntParam1" : 5,
+	"IntParam2": 600,
+	"ActorResource" : "vehicledef_MANTICORE",
+	"weaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_smokeStackPlume_sm_loop"
+
+}
