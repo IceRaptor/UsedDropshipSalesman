@@ -21,6 +21,7 @@ namespace UsedDropshipSalesman.Patches.UI
         {
             if (__instance == null || HUD == null) return;
 
+            // Fix issue where TurnEvents don't initialize the uiManager properly
             Mod.Log.Trace?.Log("==== CombatHUDIconTracker_Init(CombatHUD, TurnEvent) - entered.");
             if (__instance.uiManager == null)
             {

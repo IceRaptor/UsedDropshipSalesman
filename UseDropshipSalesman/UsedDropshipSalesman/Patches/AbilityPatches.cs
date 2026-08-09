@@ -47,15 +47,10 @@ namespace UsedDropshipSalesman.Patches
                 __runOriginal = false;
 
                 // TODO: Spawn weapon here instead of relying on support weapon
-                Weapon weapon = team.FindSupportWeapon(__instance.Def.WeaponResource);
-                if (weapon == null)
-                {
-                    Mod.Log.Warning?.Log($"Failed to spawn weapon: {__instance.Def.WeaponResource}, skipping!");
-                    return;
-                }
+                Lance supportLance = SpawnHelper.CreateSupportLance(team);
+                Turret turret = SpawnHelper.CreateTurret(team, supportLance, __instance.Def.ActorResource);
 
-
-                UDSArtillerySequence eventSequence = new UDSArtillerySequence(__instance.Combat, team.GUID, weapon, __instance.Def.StringParam2, targetPos, radius);
+                UDSArtillerySequence eventSequence = new UDSArtillerySequence(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
                 TurnEvent tEvent = new TurnEvent(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
                 __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
                 if (__instance.Def.IntParam1 > 0)

@@ -11,7 +11,7 @@ namespace UsedDropshipSalesman.Helper
     {
         internal static Turret WeaponsTurret;
 
-        internal static Lance CreateAmbushLance(Team team)
+        internal static Lance CreateSupportLance(Team team)
         {
             Lance lance = new(team, new BattleTech.Framework.LanceSpawnerRef[] { });
             Guid g = Guid.NewGuid();
@@ -62,6 +62,50 @@ namespace UsedDropshipSalesman.Helper
             //vehicle.PlaceFarAwayFromMap();
             vehicle.GameRep.transform.position = team.OffScreenPosition;
             vehicle.OnPositionUpdate(team.OffScreenPosition, vehicle.CurrentRotation, -1, updateDesignMask: true, null);
+            Mod.Log.Debug?.Log($"Vehicle moved to offMap position: {team.OffScreenPosition} with currentRotation: {vehicle.CurrentRotation}");
+        }
+
+        internal static Turret CreateTurret(Team team, Lance lance, string turretDefId)
+        {
+            // TODO: Pull from mod stats
+            PilotDef pilotDef = team.combat.DataManager.PilotDefs.Get("pilot_d10_sharpshooter");
+            TurretDef turretDef = team.combat.DataManager.TurretDefs.Get(turretDefId);
+            Mod.Log.Debug?.Log($"Refreshing {turretDefId} with pilotDef: {pilotDef}");
+            turretDef.Refresh();
+
+            Turret turret = ActorFactory.CreateTurret(turretDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
+            if (turret == null)
+            {
+                Mod.Log.Error?.Log($"Failed to spawn vehicleDefId: {turretDefId} / pilotDefId: pilot_d10_sharpshooter !");
+            }
+            else
+            {
+                Mod.Log.Debug?.Log($"Created vehicle");
+            }
+
+            turret.Init(Vector3.zero, 0f, false);
+            Mod.Log.Debug?.Log($"Initted turret");
+            turret.InitGameRep(null);
+            Mod.Log.Debug?.Log($"Initted gameRep");
+
+            //Mod.Log.Debug?.Log($"Adding vehicle to team and support units");
+            team.AddUnit(turret);
+            //team.SupportUnits.Add(vehicle);
+
+            //Mod.Log.Debug?.Log($"Adding team and lance to vehicle");
+            turret.AddToTeam(team);
+            turret.AddToLance(lance);
+
+            Mod.Log.Debug?.Log($"Adding behavior tree");
+            turret.BehaviorTree = BehaviorTreeFactory.MakeBehaviorTree(team.Combat.BattleTechGame, turret, BehaviorTreeIDEnum.CoreAITree);
+
+            Mod.Log.Debug?.Log("Moving unit off map");
+            //turret.PlaceFarAwayFromMap();
+            turret.GameRep.transform.position = team.OffScreenPosition;
+            turret.OnPositionUpdate(team.OffScreenPosition, turret.CurrentRotation, -1, updateDesignMask: true, null);
+            Mod.Log.Debug?.Log($"Turret moved to offMap position: {team.OffScreenPosition} with currentRotation: {turret.CurrentRotation}");
+
+            return turret;
         }
 
         internal static void CreateWeaponSupportResource(Team team, Lance lance, string weaponDefId)
@@ -132,7 +176,7 @@ namespace UsedDropshipSalesman.Helper
             //turret.PlaceFarAwayFromMap();
             turret.GameRep.transform.position = team.OffScreenPosition;
             turret.OnPositionUpdate(team.OffScreenPosition, turret.CurrentRotation, -1, updateDesignMask: true, null);
-
+            Mod.Log.Debug?.Log($"Unit moved to offMap position: {team.OffScreenPosition} with currentRotation: {turret.CurrentRotation}");
             return turret;
         }
     }

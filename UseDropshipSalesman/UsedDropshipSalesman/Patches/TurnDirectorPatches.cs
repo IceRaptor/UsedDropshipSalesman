@@ -25,8 +25,10 @@ namespace UsedDropshipSalesman.Patches
             // Get the local player team
             Team team = __instance.Combat.localPlayerTeam;
 
+            List<string> mechsToLoad = new();
+            List<string> turretsToLoad = new();
             List<string> vehiclesToLoad = new();
-            List<string> weaponsToLoad = new();
+            //List<string> weaponsToLoad = new();
             List<string> abilities = new() { "AbilityDefCMD_UDS_Strafe", "AbilityDefCMD_UDS_ActiveProbe_Ping", "AbilityDefCMD_UDS_ArtThumperHE", "AbilityDefCMD_UDS_ArtThumperAP" };
             foreach (string abilityId in abilities)
             {
@@ -35,22 +37,42 @@ namespace UsedDropshipSalesman.Patches
                 Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");
                 team.CommandAbilities.Add(new(abilityDef));
 
-                if (!String.IsNullOrEmpty(abilityDef.ActorResource) && !weaponsToLoad.Contains(abilityDef.ActorResource))
+                if (!String.IsNullOrEmpty(abilityDef.ActorResource))
                 {
                     Mod.Log.Debug?.Log($"Loading actorResource: {abilityDef.ActorResource}' for ability: {abilityId}");
-                    vehiclesToLoad.Add(abilityDef.ActorResource);
+                    if (abilityDef.ActorResource.StartsWith("vehicleDef", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (!vehiclesToLoad.Contains(abilityDef.ActorResource))
+                        {
+                            vehiclesToLoad.Add(abilityDef.ActorResource);
+                        }
+                    }
+                    else if (abilityDef.ActorResource.StartsWith("turretDef", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (!turretsToLoad.Contains(abilityDef.ActorResource))
+                        {
+                            turretsToLoad.Add(abilityDef.ActorResource);
+                        }
+                    }
+                    else if (abilityDef.ActorResource.StartsWith("mechDef", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (!mechsToLoad.Contains(abilityDef.ActorResource))
+                        {
+                            mechsToLoad.Add(abilityDef.ActorResource);
+                        }
+                    }
                 }
 
-                if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !weaponsToLoad.Contains(abilityDef.WeaponResource))
-                {
-                    Mod.Log.Debug?.Log($"Loading weaponResource: {abilityDef.WeaponResource}' for ability: {abilityId}");
-                    weaponsToLoad.Add(abilityDef.WeaponResource);
-                }
+                //if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !weaponsToLoad.Contains(abilityDef.WeaponResource))
+                //{
+                //    Mod.Log.Debug?.Log($"Loading weaponResource: {abilityDef.WeaponResource}' for ability: {abilityId}");
+                //    weaponsToLoad.Add(abilityDef.WeaponResource);
+                //}
             }
 
-            if (vehiclesToLoad.Count > 0 || weaponsToLoad.Count > 0)
+            if (mechsToLoad.Count > 0 || vehiclesToLoad.Count > 0 || turretsToLoad.Count > 0)
             {
-                DataloadHelper.LoadSupportResources(team, new List<string>(), vehiclesToLoad, new List<string>(), weaponsToLoad);
+                DataloadHelper.LoadSupportResources(team, mechsToLoad, vehiclesToLoad, turretsToLoad);
             }
 
         }
@@ -67,38 +89,46 @@ namespace UsedDropshipSalesman.Patches
             Team team = __instance.Combat.localPlayerTeam;
 
             // Assume everything is loaded already
-            List<string> abilityVehicles = new();
-            List<string> abilityWeapons = new();
+            List<string> abilityActorResources = new();
+            List<string> abilityWeaponResources = new();
             List<string> abilities = new() { "AbilityDefCMD_UDS_Strafe", "AbilityDefCMD_UDS_ActiveProbe_Ping", "AbilityDefCMD_UDS_ArtThumperHE", "AbilityDefCMD_UDS_ArtThumperAP" };
             foreach (string abilityId in abilities)
             {
                 // Add the def to the command options
                 bool had_key = __instance.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
 
-                if (!String.IsNullOrEmpty(abilityDef.ActorResource) && !abilityWeapons.Contains(abilityDef.ActorResource))
+                if (!String.IsNullOrEmpty(abilityDef.ActorResource) && !abilityWeaponResources.Contains(abilityDef.ActorResource))
                 {
                     Mod.Log.Debug?.Log($"Loading actorResource: {abilityDef.ActorResource}' for ability: {abilityId}");
-                    abilityVehicles.Add(abilityDef.ActorResource);
+                    abilityActorResources.Add(abilityDef.ActorResource);
                 }
 
-                if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !abilityWeapons.Contains(abilityDef.WeaponResource))
+                if (!String.IsNullOrEmpty(abilityDef.WeaponResource) && !abilityWeaponResources.Contains(abilityDef.WeaponResource))
                 {
                     Mod.Log.Debug?.Log($"Loading weaponResource: {abilityDef.WeaponResource}' for ability: {abilityId}");
-                    abilityWeapons.Add(abilityDef.WeaponResource);
+                    abilityWeaponResources.Add(abilityDef.WeaponResource);
                 }
             }
 
-            if (abilityVehicles.Count > 0 || abilityWeapons.Count > 0)
+            if (abilityActorResources.Count > 0 || abilityWeaponResources.Count > 0)
             {
 
-                Lance supportLance = SpawnHelper.CreateAmbushLance(team);
+                Lance supportLance = SpawnHelper.CreateSupportLance(team);
 
                 // Create vehicle actors and attach them as support to the team
                 try
                 {
-                    foreach (string defId in abilityVehicles)
+                    foreach (string defId in abilityActorResources)
                     {
-                        SpawnHelper.CreateVehicleSupportResource(team, supportLance, defId);
+                        if (defId.StartsWith("vehicleDef", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            SpawnHelper.CreateVehicleSupportResource(team, supportLance, defId);
+                        }
+                        //else if (defId.StartsWith("turretDef", StringComparison.InvariantCultureIgnoreCase))
+                        //{
+                        //    SpawnHelper.CreateTurret(team, supportLance, defId);
+                        //}
+                        
                     }
                 }
                 catch (Exception ex)
@@ -106,17 +136,17 @@ namespace UsedDropshipSalesman.Patches
                     Mod.Log.Error?.Log("Failed to create support vehicles!", ex);
                 }
 
-                try
-                {
-                    foreach (string defId in abilityWeapons)
-                    {
-                        SpawnHelper.CreateWeaponSupportResource(team, supportLance, defId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Mod.Log.Error?.Log("Failed to create support weapons!", ex);
-                }
+                //try
+                //{
+                //    foreach (string defId in abilityWeaponResources)
+                //    {
+                //        SpawnHelper.CreateWeaponSupportResource(team, supportLance, defId);
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    Mod.Log.Error?.Log("Failed to create support weapons!", ex);
+                //}
             }
 
         }

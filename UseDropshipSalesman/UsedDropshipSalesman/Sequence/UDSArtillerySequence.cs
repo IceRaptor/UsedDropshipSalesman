@@ -41,7 +41,7 @@ namespace UsedDropshipSalesman.Sequence
 
         public string TeamGUID { get; private set; }
 
-        public Weapon ArtilleryWeapon { get; private set; }
+        public Turret ArtillerySource { get; private set; }
 
         public Vector3 TargetPos { get; private set; }
 
@@ -59,16 +59,16 @@ namespace UsedDropshipSalesman.Sequence
 
         public override bool IsComplete => state == SequenceState.Finished;
 
-        public UDSArtillerySequence(CombatGameState combat, string teamGUID, Weapon weapon, string explodeFX, Vector3 targetPos, float radius)
+        public UDSArtillerySequence(CombatGameState combat, string teamGUID, Turret artillerySource, string explodeFX, Vector3 targetPos, float radius)
             : base(combat)
         {
-            ArtilleryWeapon = weapon;
+            ArtillerySource = artillerySource;
             ExplodeFX = explodeFX;
             TargetPos = targetPos;
             Radius = radius;
             TeamGUID = base.Combat.LocalPlayerTeamGuid;
             state = SequenceState.None;
-            Mod.Log.Info?.Log($"Created UDSArtillerySequence with weapon: {weapon} at pos: {targetPos} with radius: {radius}");
+            Mod.Log.Info?.Log($"Created UDSArtillerySequence with source: {artillerySource?.DisplayName} at pos: {targetPos} with radius: {radius}");
         }
 
         private void SetState(SequenceState newState)
@@ -154,10 +154,11 @@ namespace UsedDropshipSalesman.Sequence
 
         private void PlaySoundEffect()
         {
-            float cameraShakeIntensity = 10f *
-                (ArtilleryWeapon.DamagePerShot * (float)ArtilleryWeapon.ShotsWhenFired) *
-                base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageRelativeMod +
-                base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageAbsoluteMod;
+            //float cameraShakeIntensity = 10f *
+            //    (ArtilleryWeapon.DamagePerShot * (float)ArtilleryWeapon.ShotsWhenFired) *
+            //    base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageRelativeMod +
+            //    base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageAbsoluteMod;
+            float cameraShakeIntensity = 2000f; // Based off AC20
             Mod.Log.Trace?.Log($"UDSArtillerySequence cameraShakeIntensity of: {cameraShakeIntensity}");
             CameraControl.Instance.AddCameraShake(cameraShakeIntensity, 2f, TargetPos);
             timeSinceLastSound = 0f;
@@ -198,44 +199,49 @@ namespace UsedDropshipSalesman.Sequence
         private void PerformAttack(ICombatant target)
         {
 
-            try
+            foreach (Weapon weapon in ArtillerySource.Weapons)
             {
-                Mod.Log.Info?.Log($"Attacking combatant: {target?.DisplayName} with weapon: {ArtilleryWeapon.Name} from parent: {ArtilleryWeapon?.parent?.DisplayName}");
-                int totalHits = ArtilleryWeapon.ShotsWhenFired;
-                WeaponHitInfo hitInfo = new WeaponHitInfo
+                try
                 {
-                    attackerId = "Artillery",
-                    targetId = target.GUID,
-                    numberOfShots = totalHits,
-                    stackItemUID = base.SequenceGUID,
-                    locationRolls = new float[totalHits],
-                    hitLocations = new int[totalHits]
-                };
+                    Mod.Log.Info?.Log($"Attacking combatant: {target?.DisplayName} with weapon: {weapon?.Name} from parent: {ArtillerySource?.DisplayName}");
+                    int totalHits = weapon.ShotsWhenFired;
+                    WeaponHitInfo hitInfo = new WeaponHitInfo
+                    {
+                        attackerId = "Artillery",
+                        targetId = target.GUID,
+                        numberOfShots = totalHits,
+                        stackItemUID = base.SequenceGUID,
+                        locationRolls = new float[totalHits],
+                        hitLocations = new int[totalHits]
+                    };
 
-                AttackDirection attackDirection = base.Combat.HitLocation.GetAttackDirection(TargetPos, target);
-                hitInfo.attackDirections = new AttackDirection[totalHits];
-                for (int i = 0; i < totalHits; i++)
-                {
-                    hitInfo.attackDirections[i] = attackDirection;
+                    AttackDirection attackDirection = base.Combat.HitLocation.GetAttackDirection(TargetPos, target);
+                    hitInfo.attackDirections = new AttackDirection[totalHits];
+                    hitInfo.hitQualities = new AttackImpactQuality[totalHits];
+                    for (int i = 0; i < totalHits; i++)
+                    {
+                        hitInfo.attackDirections[i] = attackDirection;
+                        hitInfo.hitQualities[i] = AttackImpactQuality.Solid;
+                    }
+
+                    Mod.Log.Debug?.Log($"Resolved individual hit locations against combatant: {target?.DisplayName}");
+                    GetIndividualHits(ref hitInfo, weapon, target);
+                    for (int hitIndex = 0; hitIndex < totalHits; hitIndex++)
+                    {
+                        Mod.Log.Debug?.Log($" -- Applying hit to location: {hitInfo.hitLocations[hitIndex]}");
+                        target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[hitIndex], weapon, weapon.DamagePerShot, 0f, hitIndex, DamageType.Artillery);
+                    }
+
+                    Mod.Log.Debug?.Log($"Resolving weapon damage for sequence: {hitInfo.attackSequenceId}");
+                    target.ResolveWeaponDamage(hitInfo, weapon, MeleeAttackType.NotSet);
+                    target.HandleDeath("Artillery");
                 }
-
-                Mod.Log.Debug?.Log($"Resolved individual hit locations against combatant: {target?.DisplayName}");
-                GetIndividualHits(ref hitInfo, ArtilleryWeapon, target);
-                for (int j = 0; j < totalHits; j++)
+                catch (Exception ex)
                 {
-                    Mod.Log.Debug?.Log($" -- Applying hit to location: {hitInfo.hitLocations[j]}");
-                    target.TakeWeaponDamage(hitInfo, hitInfo.hitLocations[j], ArtilleryWeapon, ArtilleryWeapon.DamagePerShot, 0f, j, DamageType.Artillery);
+                    Mod.Log.Warning?.Log("Failed to perform attack from UDSArtillerySequence!", ex);
                 }
+            }
 
-                Mod.Log.Debug?.Log($"Resolving weapon damage for sequence: {hitInfo.attackSequenceId}");
-                target.ResolveWeaponDamage(hitInfo, ArtilleryWeapon, MeleeAttackType.NotSet);
-                target.HandleDeath("Artillery");
-            }
-            catch (Exception ex)
-            {
-                Mod.Log.Warning?.Log("Failed to perform attack from UDSArtillerySequence!", ex);
-            }
-            
         }
 
         private void GetIndividualHits(ref WeaponHitInfo hitInfo, Weapon weapon, ICombatant target)

@@ -81,6 +81,7 @@ namespace UsedDropshipSalesman
 
             // Initialize modules
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), HarmonyPackage);
+
         }
 
         public static void FinishedLoading(Dictionary<string, Dictionary<string, VersionManifestEntry>> customResources)
