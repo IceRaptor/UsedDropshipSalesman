@@ -24,6 +24,7 @@ namespace UsedDropshipSalesman.Patches.UI
                 $"IsFlashpointCampaignContract: {contract.IsFlashpointCampaignContract}  " +
                 $"maxNumberOfPlayerUnits: {contract?.Override?.maxNumberOfPlayerUnits}" );
         }
+
         static void Postfix(LanceConfiguratorPanel __instance, ref int maxUnits, BattleTech.Contract contract)
         {
             Mod.Log.Trace?.Log("==== LanceConfiguratorPanel_SetData::Postfix- entered.");

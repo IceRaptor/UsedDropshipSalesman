@@ -1,4 +1,6 @@
-﻿using BattleTech.UI;
+﻿using BattleTech.Data;
+using BattleTech.Save.SaveGameStructure;
+using BattleTech.UI;
 using CustomUnits;
 using FluffyUnderware.DevTools.Extensions;
 using HBS.Extensions;
@@ -14,6 +16,65 @@ namespace UsedDropshipSalesman.Helper
 {
     public static class UIHelper
     {
+        public static void BuildDropshipCommandButtons(GameObject parentGO, GameObject commandButtonGO, CombatGameState combat, CombatHUD hud, AbstractActor actor)
+        {
+            if (parentGO == null || commandButtonGO == null || combat == null || hud == null) return;
+
+            Mod.Log.Debug?.Log($"Creating new Dropship Command buttons for actor: {actor?.DisplayName}-{actor?.GetPilot()?.Name}");
+            try
+            {
+                GameObject newButtonGO_activeProbe = UnityEngine.Object.Instantiate(commandButtonGO, parentGO.transform);
+                newButtonGO_activeProbe.transform.localPosition = new Vector3(0, 0, 0);
+                newButtonGO_activeProbe.name = $"UDS_DROPSHIP_CMD_BTN_ACTIVE_PROBE";
+                InitializeCommandButton(newButtonGO_activeProbe, "AbilityDefCMD_UDS_ActiveProbe_Ping", combat, hud, actor);
+
+                GameObject newButtonGO_artThumperAP = UnityEngine.Object.Instantiate(commandButtonGO, parentGO.transform);
+                newButtonGO_artThumperAP.transform.localPosition = new Vector3(100, 0, 0);
+                newButtonGO_artThumperAP.name = $"UDS_DROPSHIP_CMD_BTN_ARTILLERY_AP";
+                InitializeCommandButton(newButtonGO_artThumperAP, "AbilityDefCMD_UDS_ArtThumperAP", combat, hud, null);
+
+                GameObject newButtonGO_artThumperAE = UnityEngine.Object.Instantiate(commandButtonGO, parentGO.transform);
+                newButtonGO_artThumperAE.transform.localPosition = new Vector3(200, 0, 0);
+                newButtonGO_artThumperAE.name = $"UDS_DROPSHIP_CMD_BTN_ARTILLERY_HE";
+                InitializeCommandButton(newButtonGO_artThumperAE, "AbilityDefCMD_UDS_ArtThumperHE", combat, hud, null);
+
+                GameObject newButtonGO_Strafe = UnityEngine.Object.Instantiate(commandButtonGO, parentGO.transform);
+                newButtonGO_Strafe.transform.localPosition = new Vector3(300, 0, 0);
+                newButtonGO_Strafe.name = $"UDS_DROPSHIP_CMD_BTN_STRAFE";
+                InitializeCommandButton(newButtonGO_Strafe, "AbilityDefCMD_UDS_Strafe", combat, hud, null);
+            }
+            catch (Exception e)
+            {
+                Mod.Log.Error?.Log("Failed to initialize all dropship command buttons!", e);
+            }
+
+        }
+
+        public static void InitializeCommandButton(GameObject commandButtonGO, string abilityId, CombatGameState combat, CombatHUD hud, AbstractActor actor)
+        {
+            Mod.Log.Debug?.Log($"Initializing buttonGO: {commandButtonGO.name}  with ability: {abilityId}");
+
+            commandButtonGO.SetActive(true);
+
+            bool had_key = combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
+            Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");
+            Ability ability = new(abilityDef);
+
+            CombatHUDActionButton button1_CHUDAB = commandButtonGO.GetComponent<CombatHUDActionButton>();
+            Mod.Log.Debug?.Log($"button1_CHUDAB is null? {button1_CHUDAB == null}  name: {button1_CHUDAB?.name}");
+
+            button1_CHUDAB.Init(combat, hud, BTInput.Instance.Combat_CommandAbility());
+
+            SelectionType abilitySelectionType = CombatHUDMechwarriorTray.GetSelectionTypeFromTargeting(ability.Def.Targeting, warnAboutUnsupportedTypes: false);
+            button1_CHUDAB.InitButton(abilitySelectionType,ability, ability.Def.AbilityIcon, ability.Def.Description.Id, ability.Def.Description.Name, actor);
+            Mod.Log.Debug?.Log($"Initialized button with ability: {ability?.Def?.Description?.Id}:{ability?.Def?.Description?.Name} with" +
+                $"selectionType: {abilitySelectionType}  activationCooldown: {ability?.Def?.ActivationCooldown}  activationETA: {ability?.Def?.ActivationETA}");
+
+            button1_CHUDAB.RefreshActive();
+
+            Mod.Log.Debug?.Log($"Initialized command button for ability: {abilityId}");
+        }
+
         public static void UpdateHangerConfig(DropshipConfig config, SimGameState sgs)
         {
             Mod.Log.Trace?.Log("==== UpgradeHelper_UpdateHangerConfig - entered.");
