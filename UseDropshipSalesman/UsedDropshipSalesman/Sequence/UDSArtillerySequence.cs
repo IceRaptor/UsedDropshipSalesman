@@ -104,7 +104,7 @@ namespace UsedDropshipSalesman.Sequence
         {
             Attacker.PlaceFarAwayFromMap();
             Attacker.GetPilot()?.KillPilot(Combat.Constants, "", 0, DamageType.Unknown, null, null);
-            Attacker.FlagForDeath("Death after strike!", DeathMethod.Unknown, DamageType.Unknown, -1, -1, "", isSilent: true);
+            Attacker.FlagForDeath("Death after strike!", DeathMethod.DespawnedNoMessage, DamageType.Unknown, -1, -1, "", isSilent: true);
             Attacker.HandleDeath("0");
         }
 
@@ -114,7 +114,7 @@ namespace UsedDropshipSalesman.Sequence
             switch (state)
             {
                 case SequenceState.Incoming:
-                    if (timeInCurrentState > 3f)
+                    if (timeInCurrentState > 2f)
                     {
                         SetState(SequenceState.Shelling);
                     }

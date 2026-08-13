@@ -56,31 +56,43 @@ namespace UsedDropshipSalesman.Patches.UI
 
             if (IsInitialized) return;
 
-            Mod.Log.Trace?.Log("==== CombatHUDMechwarriorTray_InitAbilityButtons - entered.");
+            //Mod.Log.Trace?.Log("==== CombatHUDMechwarriorTray_InitAbilityButtons - entered.");
 
-            // Looking for: UIRoot / uixPrfPanl_HUD(Clone) / Representation / BottomHUD_LayoutGroup / MechWarriorTray
-            Mod.Log.Debug?.Log("CREATING CombatHUDRetreatEscMenu - new layout group");
-            GameObject UIRootGO = __instance.gameObject.transform.parent.parent.parent.parent.gameObject;
-            Mod.Log.Debug?.Log($"UIRootGO is null? {UIRootGO == null}  name: {UIRootGO?.name}");
-            GameObject EscMenuGO = UIRootGO.FindFirstChildNamed("uixPrfPanl_COM_RetreatEscMenu(Clone)");
-            Mod.Log.Debug?.Log($"EscMenuGO is null? {EscMenuGO == null}  name: {EscMenuGO?.name}");
-            GameObject layoutGroupGO = EscMenuGO.FindFirstChildNamed("LayoutGroup");
-            Mod.Log.Debug?.Log($"layoutGroupGO is null? {layoutGroupGO == null}  name: {layoutGroupGO?.name}");
-            GameObject newLayoutGroupGO = UnityEngine.Object.Instantiate(layoutGroupGO, layoutGroupGO.transform.parent);
-            newLayoutGroupGO.transform.localPosition = new Vector3(-120, -80, 0);
+            //// Looking for: UIRoot / uixPrfPanl_HUD(Clone) / Representation / BottomHUD_LayoutGroup / MechWarriorTray
+            //Mod.Log.Debug?.Log("CREATING CombatHUDRetreatEscMenu - new layout group");
+            //GameObject UIRootGO = __instance.gameObject.transform.parent.parent.parent.parent.gameObject;
+            //Mod.Log.Debug?.Log($"UIRootGO is null? {UIRootGO == null}  name: {UIRootGO?.name}");
+            //GameObject EscMenuGO = UIRootGO.FindFirstChildNamed("uixPrfPanl_COM_RetreatEscMenu(Clone)");
+            //Mod.Log.Debug?.Log($"EscMenuGO is null? {EscMenuGO == null}  name: {EscMenuGO?.name}");
+            //GameObject layoutGroupGO = EscMenuGO.FindFirstChildNamed("LayoutGroup");
+            //Mod.Log.Debug?.Log($"layoutGroupGO is null? {layoutGroupGO == null}  name: {layoutGroupGO?.name}");
+            //GameObject newLayoutGroupGO = UnityEngine.Object.Instantiate(layoutGroupGO, layoutGroupGO.transform.parent);
+            //newLayoutGroupGO.transform.localPosition = new Vector3(-120, -80, 0);
 
-            Mod.Log.Debug?.Log("CREATING creating new GO");
-            GameObject udsRootGO = new()
-            {
-                name = "UDS_DROPSHIP_ROOT"
-            };
-            udsRootGO.transform.parent = newLayoutGroupGO.transform;
-            udsRootGO.transform.position = newLayoutGroupGO.transform.position;
-            udsRootGO.transform.localPosition = Vector3.zero;
+            //// Remove the buttons that were added during the clone operation
+            ////   - RetreatButton, EscButton, MenuButton, HelpButton
+            //foreach (Transform child in newLayoutGroupGO.transform)
+            //{
+            //    child.gameObject.SetActive(false);
+            //}
 
-            UIHelper.BuildDropshipCommandButtons(udsRootGO, __instance.CommandButton.gameObject, __instance.Combat, __instance.HUD, actor);
+            //// Create the root GO to hang everything under
+            //Mod.Log.Debug?.Log("CREATING creating new GO");
+            //GameObject udsRootGO = new()
+            //{
+            //    name = "UDS_DROPSHIP_ROOT"
+            //};
+            //udsRootGO.transform.parent = newLayoutGroupGO.transform;
+            //udsRootGO.transform.position = newLayoutGroupGO.transform.position;
+            //udsRootGO.transform.localPosition = Vector3.zero;
 
-            IsInitialized = true;
+            //UIHelper.BuildDropshipActionButtons(udsRootGO, __instance.MoveButton.gameObject, __instance.Combat, __instance.HUD, actor);
+            ////UIHelper.BuildDropshipCommandButtons(udsRootGO, __instance.CommandButton.gameObject, __instance.Combat, __instance.HUD, actor);
+
+            //IsInitialized = true;
+
+            // UIRoot / uixPrfPanl_HUD(Clone) / Representation / BottomHUD_LayoutGroup / MechWarriorTray /
+            //     mwt_ActionButtonsLayout / ActionTray2 / actionButton_Holder2 / uixPrfBttn_actionButton-MANAGED
 
             //Mod.Log.Debug?.Log("ADDED RectTransform");
             //RectTransform button1_RT = newButtonGO.AddComponent<RectTransform>();

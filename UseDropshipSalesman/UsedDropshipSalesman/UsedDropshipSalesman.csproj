@@ -119,7 +119,6 @@
 
   <ItemGroup>
     <Folder Include="Objects\" />
-    <Folder Include="UI\" />
   </ItemGroup>
 
   <ItemGroup>

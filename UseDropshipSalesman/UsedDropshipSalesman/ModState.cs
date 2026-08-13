@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UsedDropshipSalesman.Helper;
+using UsedDropshipSalesman.UI;
 
 namespace UsedDropshipSalesman
 {
@@ -22,13 +23,15 @@ namespace UsedDropshipSalesman
         internal static bool HasCustomUpgradeScreen = false;
 
         internal static Lance SeqSupportLance = null;
+        internal static UDSButtonTray UDSButtonTray = null;
 
         internal static void Reset(bool afterCombat)
         {
             if (afterCombat)
             {
                 SeqSupportLance = null;
-            }
+                UDSButtonTray = null;
+    }
             else
             {
                 // Reinitialize state

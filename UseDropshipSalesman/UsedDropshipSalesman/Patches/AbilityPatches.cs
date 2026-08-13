@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UsedDropshipSalesman.Helper;
 using UsedDropshipSalesman.Sequence;
@@ -17,17 +18,7 @@ using UsedDropshipSalesman.Sequence;
 namespace UsedDropshipSalesman.Patches
 {
 
-    [HarmonyPatch(typeof(Ability), "ActivateSpecialAbility")]
-    [HarmonyPatch(new Type[] { typeof(Team), typeof(Vector3)})]
-    static class Ability_ActivateSpecialAbility
-    {
-        static void Prefix(Ability __instance, Team team, Vector3 targetPos)
-        {
-            Mod.Log.Trace?.Log("==== Ability_ActivateSpecialAbility:POSTFIX- entered.");
 
-            Mod.Log.Debug?.Log($"ActivateArtilleryStrike for team: {team}  targetPos: {targetPos}");
-        }
-    }
 
     // We only patch the team effect, not the actor effect.
     [HarmonyPatch(typeof(Ability), "ActivateArtilleryStrike")]

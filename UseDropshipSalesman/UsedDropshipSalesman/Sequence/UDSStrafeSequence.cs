@@ -110,7 +110,7 @@ namespace UsedDropshipSalesman.Sequence
                     break;
                 case SequenceState.Finished:
                     {
-                        UDSFlyAwaySequence sequence = new UDSFlyAwaySequence(Attacker, Velocity, 150f);
+                        UDSFlyAwaySequence sequence = new(Attacker, Velocity, 150f);
                         base.Combat.MessageCenter.PublishMessage(new AddParallelSequenceToStackMessage(sequence));
                         Mod.Log.Trace?.Log($"UDSStrafeSequence::Finished");
                         break;
