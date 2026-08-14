@@ -18,7 +18,24 @@ using UsedDropshipSalesman.Sequence;
 namespace UsedDropshipSalesman.Patches
 {
 
+    [HarmonyPatch(typeof(Ability), "IsAvailable", MethodType.Getter)]
+    static class Ability_IsAvailable_GETTER
+    {
+        static void Prefix(Ability __instance, ref bool __result)
+        {
+            Mod.Log.Trace?.Log("==== Ability_IsAvailable_GETTER:PREFIX- entered.");
 
+            if (__instance.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Mod.Log.Debug?.Log($"Ability: {__instance.Def.Description.Id} has" +
+                    $"  CurrentCooldown: {__instance.CurrentCooldown} < 1" +
+                    $"  def.ActivationCooldown: {__instance.Def.ActivationCooldown}  " +
+                    $"  NumUsesLeft: {__instance.NumUsesLeft} > 0" +
+                    $"  def.NumberOfUses: {__instance.Def.NumberOfUses} < 1" +
+                    $"  parentComponent == null ? {__instance.parentComponent == null}");
+            } 
+        }
+    }
 
     // We only patch the team effect, not the actor effect.
     [HarmonyPatch(typeof(Ability), "ActivateArtilleryStrike")]

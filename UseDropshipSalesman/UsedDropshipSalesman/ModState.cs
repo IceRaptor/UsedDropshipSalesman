@@ -23,15 +23,15 @@ namespace UsedDropshipSalesman
         internal static bool HasCustomUpgradeScreen = false;
 
         internal static Lance SeqSupportLance = null;
-        internal static UDSButtonTray UDSButtonTray = null;
+        internal static UDSDropshipCombatFrame UDSCombatFrame = null;
 
         internal static void Reset(bool afterCombat)
         {
             if (afterCombat)
             {
                 SeqSupportLance = null;
-                UDSButtonTray = null;
-    }
+                UDSCombatFrame = null;
+            }
             else
             {
                 // Reinitialize state
