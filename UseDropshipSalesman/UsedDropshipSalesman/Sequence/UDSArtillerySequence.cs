@@ -102,6 +102,7 @@ namespace UsedDropshipSalesman.Sequence
 
         private void CleanupAttacker()
         {
+            Mod.Log.Trace?.Log($"UDSArtillerySequence::CleanupAttacker");
             Attacker.PlaceFarAwayFromMap();
             Attacker.GetPilot()?.KillPilot(Combat.Constants, "", 0, DamageType.Unknown, null, null);
             Attacker.FlagForDeath("Death after strike!", DeathMethod.DespawnedNoMessage, DamageType.Unknown, -1, -1, "", isSilent: true);
@@ -195,6 +196,7 @@ namespace UsedDropshipSalesman.Sequence
 
         private void CollectTargets()
         {
+            Mod.Log.Trace?.Log($"UDSArtillerySequence::CollectTargets");
             AllTargets = new List<ICombatant>();
             List<AbstractActor> allActors = base.Combat.AllActors;
             foreach (AbstractActor actor in allActors) 
@@ -215,7 +217,7 @@ namespace UsedDropshipSalesman.Sequence
 
         private void PerformAttack(ICombatant target)
         {
-
+            Mod.Log.Trace?.Log($"UDSArtillerySequence::PerformAttack");
             foreach (Weapon weapon in Attacker.Weapons)
             {
                 try
@@ -223,7 +225,7 @@ namespace UsedDropshipSalesman.Sequence
                     Mod.Log.Info?.Log($"Attacking combatant: {target?.DisplayName} with weapon: {weapon?.Name} from parent: {Attacker?.DisplayName}");
                     weapon.PreFireWeapon(base.SequenceGUID); // Prevent the weapon ahs not prefired error
                     int totalHits = weapon.ShotsWhenFired;
-                    WeaponHitInfo hitInfo = new WeaponHitInfo
+                    WeaponHitInfo hitInfo = new()
                     {
                         attackerId = Attacker.GUID,
                         targetId = target.GUID,

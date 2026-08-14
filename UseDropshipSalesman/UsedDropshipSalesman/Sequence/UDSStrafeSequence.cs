@@ -152,6 +152,7 @@ namespace UsedDropshipSalesman.Sequence
 
         private void SetPosition(Vector3 position, Quaternion rotation)
         {
+            //Mod.Log.Trace?.Log($"UDSStrafeSequence::SetPosition");
             Attacker.GameRep.thisTransform.position = position;
             Attacker.GameRep.thisTransform.rotation = rotation;
             Attacker.OnPositionUpdate(position, rotation, base.SequenceGUID, updateDesignMask: false, null, skipAbilityLogging: true);
@@ -159,6 +160,7 @@ namespace UsedDropshipSalesman.Sequence
 
         private void CalcTargets()
         {
+            //Mod.Log.Trace?.Log($"UDSStrafeSequence::CalcTargets");
             AllTargets = new List<AbstractActor>();
             List<AbstractActor> allActors = base.Combat.AllActors;
             for (int i = 0; i < allActors.Count; i++)
@@ -202,6 +204,8 @@ namespace UsedDropshipSalesman.Sequence
 
         private void AttackNextTarget()
         {
+            //Mod.Log.Trace?.Log($"UDSStrafeSequence::AttackNextTarget");
+
             timeSinceLastAttack += Time.deltaTime;
             if (!(timeSinceLastAttack > 0.35f) || base.Combat.AttackDirector.IsAnyAttackSequenceActive)
             {
@@ -209,15 +213,25 @@ namespace UsedDropshipSalesman.Sequence
             }
             while (AllTargets.Count > 0 && !(Vector3.Distance(Attacker.CurrentPosition, AllTargets[0].CurrentPosition) > MinWeaponRange * 0.95f))
             {
+                Mod.Log.Info?.Log($"UDSStrafeSequence - resolving attack against target: {Attacker.DisplayName}");
                 if (!Attacker.HasLOFToTargetUnit(AllTargets[0], StrafeWeapons[0]))
                 {
                     AllTargets.RemoveAt(0);
+                    Mod.Log.Info?.Log($"  No LOF, skipping");
                     continue;
                 }
+
+
                 CombatGameState.gameInfoLogger.LogWarning("attacking");
                 AttackDirector attackDirector = base.Combat.AttackDirector;
                 AttackDirector.AttackSequence attackSequence = attackDirector.CreateAttackSequence(base.SequenceGUID, Attacker, AllTargets[0], Attacker.CurrentPosition, Attacker.CurrentRotation, AllTargets.Count, StrafeWeapons, MeleeAttackType.NotSet, 0, isMoraleAttack: false);
                 attackSequence.ResetWeapons();
+
+                foreach (Weapon weapon in StrafeWeapons)
+                {
+                    weapon.PreFireWeapon(base.SequenceGUID);
+                }
+
                 attackDirector.PerformAttack(attackSequence);
                 AllTargets.RemoveAt(0);
                 timeSinceLastAttack = 0f;

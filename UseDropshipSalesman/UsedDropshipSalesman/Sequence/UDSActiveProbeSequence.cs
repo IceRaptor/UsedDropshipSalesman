@@ -72,7 +72,7 @@ namespace UsedDropshipSalesman.Sequence
             Radius = radius;
             TeamGUID = base.Combat.LocalPlayerTeamGuid;
             state = SequenceState.None;
-            Mod.Log.Info?.Log($"Created UDSArtillerySequence with source: {attacker?.DisplayName} at pos: {targetPos} with radius: {radius}");
+            Mod.Log.Info?.Log($"Created UDSActiveProbeSequence with source: {attacker?.DisplayName} at pos: {targetPos} with radius: {radius}");
         }
 
         private void Update()

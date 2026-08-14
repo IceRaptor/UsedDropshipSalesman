@@ -22,8 +22,10 @@ namespace UsedDropshipSalesman
         // Upgrades state
         internal static bool HasCustomUpgradeScreen = false;
 
+        // Combat state
         internal static Lance SeqSupportLance = null;
         internal static UDSDropshipCombatFrame UDSCombatFrame = null;
+        internal static Ability ActivatedTeamAbility = null;
 
         internal static void Reset(bool afterCombat)
         {
@@ -31,6 +33,7 @@ namespace UsedDropshipSalesman
             {
                 SeqSupportLance = null;
                 UDSCombatFrame = null;
+                ActivatedTeamAbility = null;
             }
             else
             {

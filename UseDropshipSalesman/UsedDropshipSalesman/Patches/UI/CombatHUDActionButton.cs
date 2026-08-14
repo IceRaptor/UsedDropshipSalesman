@@ -68,13 +68,13 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         static void Postfix(CombatHUDActionButton __instance, AbstractActor actor, ColorOverrides overrides = null)
         {
-            if (__instance == null || actor == null || __instance.Ability?.Def?.Description?.Id == null ) return;
+            if (__instance == null || __instance.Ability?.Def?.Description?.Id == null ) return;
             if (!__instance.Ability.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase)) return; // nothing to do
 
             // Should be a _UDS_ ability here
 
             Mod.Log.Trace?.Log("==== CombatHUDActionButton_RefreshColors:Postfix- entered.");
-            Mod.Log.Debug?.Log($"RefreshColors for actor: {actor.DisplayName}  overrides: {overrides}  abilityDef: {__instance.Ability.Def.Description.Id}" +
+            Mod.Log.Debug?.Log($"RefreshColors for actor: {actor?.DisplayName}  overrides: {overrides}  abilityDef: {__instance.Ability.Def.Description.Id}" +
                 $"  state: {__instance.state}  isClickable: {__instance.isClickable}  mouseHover: {__instance.mouseHover}  mouseDown: {__instance.mouseDown}");
 
             //__instance.RefreshColors(actor);
@@ -119,14 +119,14 @@ namespace UsedDropshipSalesman.Patches.UI
             else if (__instance.state == CombatHUDActionButton.ButtonState.Active)
             {
                 Mod.Log.Trace?.Log("CombatHUDActionButton_RefreshColors => Using ButtonState.ACTIVE");
-                __instance.SetColors(Color.black, Color.white, Color.white, Color.clear);
+                __instance.SetColors(Color.black, Color.gray, Color.gray, Color.clear);
                 //__instance.SetColors(Color.black, activeColor, activeColor, activeColor);
                 //__instance.SetColors(overrides.bgSelectedColor, overrides.outlineSelectedColor, overrides.iconSelectedColor, tooltipColor);
             }
             else
             {
                 Mod.Log.Trace?.Log("CombatHUDActionButton_RefreshColors => Using FALLTHROUGH colors");
-                __instance.SetColors(Color.black, Color.white, Color.white, Color.clear);
+                __instance.SetColors(Color.black, Color.gray, Color.gray, Color.clear);
             }
 
             if (!__instance.isClickable)
@@ -141,24 +141,40 @@ namespace UsedDropshipSalesman.Patches.UI
     }
     }
 
-    //[HarmonyPatch(typeof(CombatHUDActionButton), "UpdateColors")]
-    //[HarmonyPatch(new Type[] {})]
-    //static class CombatHUDActionButton_UpdateColors
-    //{
-    //    static void Prefix(CombatHUDActionButton __instance)
-    //    {
-    //        if (__instance == null || __instance.Ability?.Def?.Description?.Id == null) return;
-    //        if (!__instance.Ability.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase)) return; // nothing to do
+    [HarmonyPatch(typeof(CombatHUDActionButton), "ShowAbilityTiming")]
+    [HarmonyPatch(new Type[] { })]
+    static class CombatHUDActionButton_ShowAbilityTiming
+    {
+        static void Prefix(CombatHUDActionButton __instance, ref bool __runOriginal)
+        {
+            if (__instance == null || __instance.Ability == null | __instance.Ability?.Def?.Description?.Id == null) return;
+            if (!__instance.Ability.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase)) return; // nothing to do
 
-    //        // Should be a _UDS_ ability here
+            __runOriginal = false;
+            Mod.Log.Trace?.Log($"==== CombatHUDActionButton_ShowAbilityTiming:Prefix- entered for: {__instance.Ability.Def.Description.Id}");
 
-    //        Mod.Log.Trace?.Log("==== CombatHUDActionButton_UpdateColors:Prefix- entered.");
-    //        Mod.Log.Debug?.Log($"UpdateColors =>  tooltipTargetColor: {__instance.tooltipTargetColor.ToString()}  " +
-    //            $"iconTargetColor: {__instance.iconTargetColor.ToString()}  " +
-    //            $"colorsAreLerping: {__instance.colorsAreLerping}  isClickable: {__instance.isClickable}  " +
-    //            $"mouseHover: {__instance.mouseHover}  mouseDown: {__instance.mouseDown}");
-    //    }
-    //}
+            if (__instance.Ability.CurrentCooldown > 0)
+            {
+                // Should be disabled, so just show the time remaining
+                __instance.CooldownTimer.SetText($"{__instance.Ability.CurrentCooldown}");
+                __instance.CooldownTimer.gameObject.SetActive(true);
+            }
+            else
+            {
+                __instance.CooldownTimer.gameObject.SetActive(false);
+            }
+
+            if (__instance.Ability.Def.NumberOfUses > 0)
+            {
+                __instance.UsesLeftCounter.SetText($"{__instance.Ability.NumUsesLeft} / {__instance.Ability.Def.NumberOfUses}");
+                __instance.UsesLeftCounter.gameObject.SetActive(true);
+            }
+            else
+            {
+                __instance.UsesLeftCounter.gameObject.SetActive(false);
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(CombatHUDActionButton), "ActivateCommandAbility")]
     [HarmonyPatch(new Type[] { typeof(string), typeof(Vector3) })]
@@ -171,6 +187,14 @@ namespace UsedDropshipSalesman.Patches.UI
 
             if (!String.IsNullOrEmpty(__instance?.Ability?.Def?.Description?.Id) && __instance.Ability.Def.Description.Id.Contains("_UDS_"))
             {
+                // Temporarily add the ability into the team's command ability. This is needed to keep the cooldown and turns synced,
+                //      but we don't want this messing up other added command abilities so make it transient for this call
+                Team team = __instance.Combat.Teams.Find((Team x) => x.GUID == teamGUID);
+
+                Mod.Log.Debug?.Log($"Adding ability {__instance.Ability.Def.Description.Id} to team command ability and ActivatedTeamAbility");
+                team.CommandAbilities.Add(__instance.Ability);
+                ModState.ActivatedTeamAbility = __instance.Ability;
+
                 MessageCenterMessage messageCenterMessage = new AbilityInvokedMessage(teamGUID, teamGUID, __instance.Ability.Def.Id, targetPosition, Vector3.zero)
                 {
                     IsNetRouted = true
@@ -199,6 +223,14 @@ namespace UsedDropshipSalesman.Patches.UI
 
             if (!String.IsNullOrEmpty(__instance?.Ability?.Def?.Description?.Id) && __instance.Ability.Def.Description.Id.Contains("_UDS_"))
             {
+                // Temporarily add the ability into the team's command ability. This is needed to keep the cooldown and turns synced,
+                //      but we don't want this messing up other added command abilities so make it transient for this call
+                Team team = __instance.Combat.Teams.Find((Team x) => x.GUID == teamGUID);
+
+                Mod.Log.Debug?.Log($"Adding ability {__instance.Ability.Def.Description.Id} to team command ability and ActivatedTeamAbility");
+                team.CommandAbilities.Add(__instance.Ability);
+                ModState.ActivatedTeamAbility = __instance.Ability;
+
                 MessageCenterMessage messageCenterMessage = new AbilityInvokedMessage(teamGUID, teamGUID, __instance.Ability.Def.Id, positionA, positionB)
                 {
                     IsNetRouted = true

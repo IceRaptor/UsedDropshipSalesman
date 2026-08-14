@@ -21,19 +21,40 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(Ability), "IsAvailable", MethodType.Getter)]
     static class Ability_IsAvailable_GETTER
     {
-        static void Prefix(Ability __instance, ref bool __result)
+        static void Postfix(Ability __instance, ref bool __result)
         {
-            Mod.Log.Trace?.Log("==== Ability_IsAvailable_GETTER:PREFIX- entered.");
+            Mod.Log.Trace?.Log($"==== Ability_IsAvailable_GETTER:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
 
             if (__instance.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase))
             {
-                Mod.Log.Debug?.Log($"Ability: {__instance.Def.Description.Id} has" +
+                Mod.Log.Debug?.Log($"Ability: {__instance.Def.Description.Id} isAvailable: {__result}" +
                     $"  CurrentCooldown: {__instance.CurrentCooldown} < 1" +
-                    $"  def.ActivationCooldown: {__instance.Def.ActivationCooldown}  " +
-                    $"  NumUsesLeft: {__instance.NumUsesLeft} > 0" +
                     $"  def.NumberOfUses: {__instance.Def.NumberOfUses} < 1" +
-                    $"  parentComponent == null ? {__instance.parentComponent == null}");
+                    $"  NumUsesLeft: {__instance.NumUsesLeft} > 0" +
+                    $"  parentComponent == null ? {__instance.parentComponent == null}" +
+                    $"  def.ActivationCooldown: {__instance.Def.ActivationCooldown}"
+                    );
             } 
+        }
+    }
+
+    [HarmonyPatch(typeof(Ability), "Activate")]
+    [HarmonyPatch(new Type[] { typeof(Team), typeof(Vector3) })]
+    static class Ability_Activate_Team_Vector3
+    {
+        static void Postfix(Ability __instance, Team team, Vector3 position)
+        {
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
+        }
+    }
+
+    [HarmonyPatch(typeof(Ability), "Activate")]
+    [HarmonyPatch(new Type[] { typeof(Team), typeof(Vector3), typeof(Vector3) })]
+    static class Ability_Activate_Team_Vector3_Vector3
+    {
+        static void Postfix(Ability __instance, Team team, Vector3 positionA, Vector3 positionB)
+        {
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3_Vector3:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
         }
     }
 
@@ -56,9 +77,10 @@ namespace UsedDropshipSalesman.Patches
 
                 Turret turret = SpawnHelper.CreateTurretForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
                 UDSArtillerySequence eventSequence = new(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
+
                 TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
                 __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
-                
+
                 if (__instance.Def.IntParam1 > 0)
                 {
                     SpawnHelper.SpawnFlares(__instance.Combat, __instance.Def, targetPos, targetPos, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
@@ -86,7 +108,8 @@ namespace UsedDropshipSalesman.Patches
                 __runOriginal = false;
 
                 Vehicle strafingUnit = SpawnHelper.CreateVehicleForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
-                StrafeSequence eventSequence = new(strafingUnit, positionA, positionB, radius);
+                UDSStrafeSequence eventSequence = new(strafingUnit, positionA, positionB, radius);
+
                 TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
                 __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
 

@@ -19,11 +19,11 @@ namespace UsedDropshipSalesman.Patches
 
                 //Mod.Log.Trace?.Log("==== GameRepresentation_Update - entered.");
 
-                if (__instance._parentActor != null && __instance._parentActor.IsTeleportedOffScreen && EncounterLayerParent.encounterBegan)
-                {
-                    Mod.Log.Trace?.Log($"Will cause safety teleport for actor: {__instance._parentActor?.DisplayName}  " +
-                        $"with spawnerGUID: {__instance._parentActor?.spawnerGUID}");
-                }
+                //if (__instance._parentActor != null && __instance._parentActor.IsTeleportedOffScreen && EncounterLayerParent.encounterBegan)
+                //{
+                //    Mod.Log.Trace?.Log($"Will cause safety teleport for actor: {__instance._parentActor?.DisplayName}  " +
+                //        $"with spawnerGUID: {__instance._parentActor?.spawnerGUID}");
+                //}
             }
         }
     }

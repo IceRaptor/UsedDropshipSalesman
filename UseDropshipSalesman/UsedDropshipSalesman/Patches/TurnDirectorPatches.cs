@@ -35,7 +35,6 @@ namespace UsedDropshipSalesman.Patches
                 // Add the def to the command options
                 bool had_key = __instance.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
                 Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");
-                team.CommandAbilities.Add(new(abilityDef));
 
                 if (!String.IsNullOrEmpty(abilityDef.ActorResource))
                 {

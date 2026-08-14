@@ -36,7 +36,7 @@ namespace UsedDropshipSalesman.UI
             this.Combat = Combat;
             this.HUD = HUD;
 
-            this.gameObject.transform.localPosition = new Vector3(-550, -50, 0);
+            this.gameObject.transform.localPosition = new Vector3(-520, -50, 0);
 
             GameObject trayLabelGO = new("UDS_DROPSHIP_BTN_LABEL_ROW");
             trayLabelGO.transform.parent = this.gameObject.transform;
@@ -87,34 +87,33 @@ namespace UsedDropshipSalesman.UI
             ButtonTray.Init(Combat, HUD);
 
             SubscribeMessages(true);
+
+            this.gameObject.SetActive(true);
+            this.ButtonTrayGO.SetActive(true);
         }
 
         internal void SubscribeMessages(bool subscribe = false)
         {
-            Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnTurnActorActivate, OnTurnActorActivated, subscribe);
+            Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorSelectedMessage, OnActorSelected, subscribe);
+            Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorDeselectedMessage, OnActorDeselected, subscribe);
+            Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnEncounterBegin, OnEncounterBegin, subscribe);
         }
 
-        public void OnTurnActorActivated(MessageCenterMessage message)
+        private void OnActorSelected(MessageCenterMessage message)
         {
-            Mod.Log.Trace?.Log("UDSDropshipCombatFrame::OnTurnActorActivated");
-
-            if (message is not TurnActorActivateMessage msg) return;
-
-
-            if (!Combat.TurnDirector.IsInterleaved)
-            {
-                Mod.Log.Trace?.Log("Disabling the UDS_DROPSHIP_BTN_ROOT");
-                this.gameObject.SetActive(false);
-                this.ButtonTrayGO.SetActive(false);
-                return;
-            }
-
-            Team team = Combat.Teams.Find((Team x) => x.GUID == msg.TurnActorGUID);
-            if (msg.TurnActorGUID == Combat.LocalPlayerTeam.GUID)
+            ActorSelectedMessage actorSelectedMessage = message as ActorSelectedMessage;
+            AbstractActor actor = Combat.FindActorByGUID(actorSelectedMessage.affectedObjectGuid);
+            if (actor != null && actor.team != null && actor.team.IsLocalPlayer && Combat.TurnDirector.IsInterleaved)
             {
                 Mod.Log.Trace?.Log("Enabling the UDS_DROPSHIP_BTN_ROOT");
+
+                Mod.Log.Trace?.Log($"   -- DROPSHIP_COMMAND_IMG_COLOR_PRE : {DropshipCommandLabelImage.color}");
+                DropshipCommandLabelImage.color = ActiveColor;
+
                 this.gameObject.SetActive(true);
                 this.ButtonTrayGO.SetActive(true);
+
+                Mod.Log.Trace?.Log($"   -- DROPSHIP_COMMAND_IMG_COLOR_POST: {DropshipCommandLabelImage.color}");
             }
             else
             {
@@ -122,10 +121,25 @@ namespace UsedDropshipSalesman.UI
                 this.gameObject.SetActive(false);
                 this.ButtonTrayGO.SetActive(false);
             }
-
-            Mod.Log.Trace?.Log($"UDSDropshipCombatFrame::OnTurnActorActivated - setting color to: {ActiveColor}");
-            DropshipCommandLabelImage.color = ActiveColor;
         }
+
+        private void OnActorDeselected(MessageCenterMessage message)
+        {
+            ActorSelectedMessage actorSelectedMessage = message as ActorSelectedMessage;
+        }
+
+
+        private void OnEncounterBegin(MessageCenterMessage message)
+        {
+            this.gameObject.SetActive(false);
+            this.ButtonTrayGO.SetActive(false);
+        }
+
+
+        //public void Update()
+        //{
+        //    Mod.Log.Trace?.Log($"DROPSHIP CMD IMG COLOR: {DropshipCommandLabelImage?.color}");
+        //}
 
         public void OnCombatGameDestroyed()
         {

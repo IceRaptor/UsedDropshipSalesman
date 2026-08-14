@@ -71,7 +71,6 @@ namespace UsedDropshipSalesman.UI
             GameObject outline_GO = button.gameObject.FindFirstChildNamed("action_Outline");
             RectTransform outline_RT = outline_GO.GetComponent<RectTransform>();
             outline_RT.sizeDelta = new Vector2(45, 45);
-            outline_RT.anchoredPosition = new Vector2(0, 0);
 
             GameObject uses_left_GO = button.gameObject.FindFirstChildNamed("action_UsesLeftCounter");
             LocalizableText uses_left_LT = uses_left_GO.GetComponent<LocalizableText>();
@@ -81,11 +80,12 @@ namespace UsedDropshipSalesman.UI
 
             GameObject background_GO = button.gameObject.FindFirstChildNamed("action_Background");
             RectTransform background_RT = background_GO.GetComponent<RectTransform>();
-            background_RT.sizeDelta = new Vector2(40, 40);
-            background_RT.anchoredPosition = new Vector2(2, 2);
+            background_RT.sizeDelta = new Vector2(45, 45);
 
             GameObject numbertext_GO = button.gameObject.FindFirstChildNamed("action_numberText");
             numbertext_GO.SetActive(false);
+
+            GameObject cooldown_GO = button.gameObject.FindFirstChildNamed("action_CooldownTimer");
 
         }
 
@@ -93,10 +93,17 @@ namespace UsedDropshipSalesman.UI
         {
             if (actor == null)
             {
+                Mod.Log.Debug?.Log($"Disabling Dropship butttons as actor is null");
+
                 Button1.DisableButton();
                 Button2.DisableButton();
                 Button3.DisableButton();
                 Button4.DisableButton();
+
+                Button1.RefreshColors(null, null);
+                Button2.RefreshColors(null, null);
+                Button3.RefreshColors(null, null);
+                Button4.RefreshColors(null, null);
             }
             else
             {
@@ -112,31 +119,58 @@ namespace UsedDropshipSalesman.UI
                 }
 
                 // Check cooldowns and num uses on the buttons before enabling.
-                if (Button1.IsAvailable) 
+                if (Button1.Ability.IsAvailable) 
                 {
                     Button1.isClickable = true;
                     Button1.setState(CombatHUDActionButton.ButtonState.Active, actor);
                 }
-                if (Button2.IsAvailable)
+                else
+                {
+                    Button1.isClickable = false;
+                    Button1.ShowAbilityTiming();
+                    Button1.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
+                }
+
+                if (Button2.Ability.IsAvailable)
                 {
                     Button2.isClickable = true;
                     Button2.setState(CombatHUDActionButton.ButtonState.Active, actor);
                 }
-                if (Button3.IsAvailable)
+                else
+                {
+                    Button2.isClickable = false;
+                    Button2.ShowAbilityTiming();
+                    Button2.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
+                }
+
+                if (Button3.Ability.IsAvailable)
                 {
                     Button3.isClickable = true;
                     Button3.setState(CombatHUDActionButton.ButtonState.Active, actor);
                 }
-                if (Button4.IsAvailable)
+                else
+                {
+                    Button3.isClickable = false;
+                    Button3.ShowAbilityTiming();
+                    Button3.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
+                }
+
+                if (Button4.Ability.IsAvailable)
                 {
                     Button4.isClickable = true;
                     Button4.setState(CombatHUDActionButton.ButtonState.Active, actor);
                 }
+                else
+                {
+                    Button4.isClickable = false;
+                    Button4.ShowAbilityTiming();
+                    Button4.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
+                }
 
-                Button1.RefreshUIColors();
-                Button2.RefreshUIColors();
-                Button3.RefreshUIColors();
-                Button4.RefreshUIColors();
+                Button1.RefreshColors(actor, null);
+                Button2.RefreshColors(actor, null);
+                Button3.RefreshColors(actor, null);
+                Button4.RefreshColors(actor, null);
             }
         }
 
@@ -145,11 +179,12 @@ namespace UsedDropshipSalesman.UI
             bool had_key = this.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
             Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");
             Ability ability = new(abilityDef);
+            ability.Init(actor.Combat);
+            Mod.Log.Trace?.Log($"Ability: {ability.Def.Description.Id} initialized  NumUsesLeft: {ability.NumUsesLeft}  CurrentCooldow: {ability.CurrentCooldown}");
 
-            // TODO: Probably need to track these across initializations
-            ability.NumUsesLeft = ability.Def.NumberOfUses;
             SelectionType abilitySelectionType = CombatHUDMechwarriorTray.GetSelectionTypeFromTargeting(ability.Def.Targeting, warnAboutUnsupportedTypes: false);
             button.InitButton(abilitySelectionType, ability, ability?.Def?.AbilityIcon, ability?.Def?.Description?.Id, ability?.Def?.Description?.Name, actor);
+            Mod.Log.Trace?.Log($"Initialized CHUDActionButton: {button.name} with ability: {ability.Def.Description.Id} and selectionType: {abilitySelectionType}");
         }
 
         private void OnActorSelected(MessageCenterMessage message)
@@ -183,11 +218,23 @@ namespace UsedDropshipSalesman.UI
             }
         }
 
+        public void OnRoundBegin(MessageCenterMessage message)
+        {
+            RoundBeginMessage msg = message as RoundBeginMessage;
+            if (msg == null) return;
+
+            Button1.Ability.OnNewRound();
+            Button2.Ability.OnNewRound();
+            Button3.Ability.OnNewRound();
+            Button4.Ability.OnNewRound();
+        }
+
         internal void SubscribeMessages(bool subscribe = false)
         {
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorSelectedMessage, OnActorSelected, subscribe);
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorDeselectedMessage, OnActorDeselected, subscribe);
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnTurnActorActivate, OnTurnActorActivated, subscribe);
+            Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnRoundBegin, OnRoundBegin, subscribe);
         }
 
         public void OnCombatGameDestroyed()
