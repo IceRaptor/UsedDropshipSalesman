@@ -95,6 +95,42 @@
           "optionalUpgrades": [
             "argoUpgrade_uds_overlord_combat_drop_tonnage_2"
           ]
+        },
+        {
+          "systemId": "aerospace_bay_1",
+          "headerText": "Aerospace Bay 1",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_aerospace_bay1_1",
+            "argoUpgrade_uds_overlord_aerospace_bay1_2",
+            "argoUpgrade_uds_overlord_aerospace_bay1_3",
+            "argoUpgrade_uds_overlord_aerospace_bay1_4"
+          ]
+        },
+        {
+          "systemId": "aerospace_bay_2",
+          "headerText": "Aerospace Bay 2",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_aerospace_bay2_1",
+            "argoUpgrade_uds_overlord_aerospace_bay2_2",
+            "argoUpgrade_uds_overlord_aerospace_bay2_3",
+            "argoUpgrade_uds_overlord_aerospace_bay2_4"
+          ]
+        },
+        {
+          "systemId": "aerospace_bay_3",
+          "headerText": "Aerospace Bay 3",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_aerospace_bay3_1",
+            "argoUpgrade_uds_overlord_aerospace_bay3_2",
+            "argoUpgrade_uds_overlord_aerospace_bay3_3",
+            "argoUpgrade_uds_overlord_aerospace_bay3_4"
+          ]
         }
       ]
     },

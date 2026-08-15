@@ -120,6 +120,8 @@ namespace UsedDropshipSalesman.Defs
     public record DropshipDropBays
     {
         public String[] Labels;
+
+        public int BaseTonnage;
         public int MaxTonnage;
         public String[][] Slots;
     }

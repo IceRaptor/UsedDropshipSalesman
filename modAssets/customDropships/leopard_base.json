@@ -63,6 +63,35 @@
       ]
     },
     {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+            "argoUpgrade_uds_union_combat_drop_tonnage_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_union_combat_drop_tonnage_2"
+          ]
+        },
+       {
+          "systemId": "aerospace_bay_1",
+          "headerText": "Aerospace Bay 1",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_aerospace_bay1_1",
+            "argoUpgrade_uds_overlord_aerospace_bay1_2",
+            "argoUpgrade_uds_overlord_aerospace_bay1_3",
+            "argoUpgrade_uds_overlord_aerospace_bay1_4"
+          ]
+        }
+      ]
+    },
+    {
       "categoryId": "maintenance",
       "headerText": "Maintenance",
       "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",

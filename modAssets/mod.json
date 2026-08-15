@@ -20,10 +20,10 @@
         { "Type": "CustomDropshipDef", "Path": "customDropships" },
         { "Type": "ShipModuleUpgrade", "Path": "shipUpgrades" },
         { "Type": "SVGAsset", "Path": "icons" },
-        { "Type": "TurretDef", "Path": "artillery" },
-        { "Type": "TurretChassisDef", "Path": "artillerychassis" },
-        { "Type": "VehicleDef", "Path": "aerospace" },
-        { "Type": "VehicleChassisDef", "Path": "aerospacechassis" },
+        { "Type": "TurretDef", "Path": "turrets" },
+        { "Type": "TurretChassisDef", "Path": "turretschassis" },
+        { "Type": "VehicleDef", "Path": "vehicles" },
+        { "Type": "VehicleChassisDef", "Path": "vehicleschassis" },
         { "Type": "AdvancedJSONMerge", "Path": "advancedJsonMerges" }
     ]
 }
