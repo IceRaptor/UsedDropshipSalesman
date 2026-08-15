@@ -1,0 +1,21 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Strafe_Light",
+		"Name" : "STRAFE-L",
+		"Details" : "Calls in a strafing run from a light areofighter",
+		"Icon" : "uixSvgIcon_genericDiamond"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 2,
+	"ActivationETA" : 2,
+	"SpecialRules" : "Strafe",
+	"Targeting" : "CommandTargetTwoPoints",
+	"FloatParam1" : 50.0,
+	"FloatParam2" : 100.0,
+	"IntParam1" : 5,
+	"IntParam2": 600,
+	"ActorResource" : "vehicledef_CENTURION_AERO",
+	"weaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_smokeStackPlume_sm_loop"
+}

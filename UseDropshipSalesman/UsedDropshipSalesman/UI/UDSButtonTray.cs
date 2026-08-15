@@ -19,12 +19,8 @@ namespace UsedDropshipSalesman.UI
         CombatGameState Combat;
         CombatHUD HUD;
 
-        CombatHUDActionButton Button1;
-        CombatHUDActionButton Button2;
-        CombatHUDActionButton Button3;
-        CombatHUDActionButton Button4;
-
-        bool ButtonsInitialized = false;
+        CombatHUDActionButton[] Buttons = new CombatHUDActionButton[4];
+        bool[] ButtonsInitialized = new bool[4];
 
         internal void Init(CombatGameState combat, CombatHUD HUD)
         {
@@ -33,36 +29,26 @@ namespace UsedDropshipSalesman.UI
             GameObject buttonPrefab = HUD.MechWarriorTray.FireButton.gameObject;
 
             // Create 4 buttons
-            GameObject button_1 = UnityEngine.Object.Instantiate(buttonPrefab, this.gameObject.transform);
-            button_1.name = "UDS_DROPSHIP_CMD_BTN_1";
-            this.Button1 = button_1.GetComponent<CombatHUDActionButton>();
-            this.Button1.Init(Combat, HUD, BTInput.Instance.Key_None());
-            AdjustButtonPrefabs(this.Button1);
-
-            GameObject button_2 = UnityEngine.Object.Instantiate(buttonPrefab, this.gameObject.transform);
-            button_2.name = "UDS_DROPSHIP_CMD_BTN_2";
-            this.Button2 = button_2.GetComponent<CombatHUDActionButton>();
-            this.Button2.Init(Combat, HUD, BTInput.Instance.Key_None());
-            AdjustButtonPrefabs(this.Button2);
-
-            GameObject button_3 = UnityEngine.Object.Instantiate(buttonPrefab, this.gameObject.transform);
-            button_3.name = "UDS_DROPSHIP_CMD_BTN_3";
-            this.Button3 = button_3.GetComponent<CombatHUDActionButton>();
-            this.Button3.Init(Combat, HUD, BTInput.Instance.Key_None());
-            AdjustButtonPrefabs(this.Button3);
-
-            GameObject button_4 = UnityEngine.Object.Instantiate(buttonPrefab, this.gameObject.transform);
-            button_4.name = "UDS_DROPSHIP_CMD_BTN_4";
-            this.Button4 = button_4.GetComponent<CombatHUDActionButton>();
-            this.Button4.Init(Combat, HUD, BTInput.Instance.Key_None());
-            AdjustButtonPrefabs(this.Button4);
+            for (int i = 0; i < 4; i++)
+            {
+                var buttonGO = UnityEngine.Object.Instantiate(buttonPrefab, this.gameObject.transform);
+                buttonGO.name = $"UDS_DROPSHIP_CMD_BTN_{i}";
+                var button = buttonGO.GetComponent<CombatHUDActionButton>();
+                button.Init(Combat, HUD, BTInput.Instance.Key_None());
+                AdjustButtonPrefabs(button);
+                this.Buttons[i] = button;
+            }
 
             SubscribeMessages(true);
-            // UIHelper.BuildDropshipActionButtons(udsRootGO, __instance.MoveButton.gameObject, Combat, __instance);
-            // UIHelper.BuildDropshipCommandButtons(udsRootGO, __instance.CommandButton.gameObject, __instance.Combat, __instance.HUD, actor);
+        }
 
-            // UIRoot / uixPrfPanl_HUD(Clone) / Representation / BottomHUD_LayoutGroup / MechWarriorTray /
-            //     mwt_ActionButtonsLayout / ActionTray2 / actionButton_Holder2 / uixPrfBttn_actionButton-MANAGED
+        public bool HasActiveButtons()
+        {
+            foreach (var button in Buttons)
+            {
+                if (button.gameObject.activeSelf) return true;
+            }
+            return false;
         }
 
         // Make any changes we want the prefab to show
@@ -91,94 +77,73 @@ namespace UsedDropshipSalesman.UI
 
         internal void ResetMechwarriorButtons(AbstractActor actor)
         {
+            ResetDropshipButton(0, actor, ModState.CombatButton_1_AbilityDefId);
+            ResetDropshipButton(1, actor, ModState.CombatButton_2_AbilityDefId);
+            ResetDropshipButton(2, actor, ModState.CombatButton_3_AbilityDefId);
+            ResetDropshipButton(3, actor, ModState.CombatButton_4_AbilityDefId);
+        }
+
+        private void ResetDropshipButton(int buttonIdx, AbstractActor actor, string abilityDefId)
+        {
+
+            CombatHUDActionButton button = this.Buttons[buttonIdx];
+            if (!this.ButtonsInitialized[buttonIdx])
+            {
+                Ability ability = null;
+                if ((ability = GetAbility(abilityDefId)) != null)
+                {
+                    InitButtonFromAbility(button, ability, actor);
+                }
+                else
+                {
+                    button.gameObject.SetActive(false);
+                }
+                this.ButtonsInitialized[buttonIdx] = true;
+            }
+
+            // If we've disabled ourself, just skip processing
+            if (!button.gameObject.activeSelf) return;
+
             if (actor == null)
             {
-                Mod.Log.Debug?.Log($"Disabling Dropship butttons as actor is null");
-
-                Button1.DisableButton();
-                Button2.DisableButton();
-                Button3.DisableButton();
-                Button4.DisableButton();
-
-                Button1.RefreshColors(null, null);
-                Button2.RefreshColors(null, null);
-                Button3.RefreshColors(null, null);
-                Button4.RefreshColors(null, null);
+                Mod.Log.Debug?.Log($"Disabling Dropship buttton: '{button.gameObject.name}' as actor is null");
+                button.DisableButton();
+                button.RefreshColors(null, null);
             }
             else
             {
-                Mod.Log.Debug?.Log($"Enabling Dropship butttons for actor: {actor.DisplayName}");
-
-                if (!this.ButtonsInitialized)
-                {
-                    InitButtonFromAbilityDef(Button1, "AbilityDefCMD_UDS_ActiveProbe_Ping", actor);
-                    InitButtonFromAbilityDef(Button2, "AbilityDefCMD_UDS_ArtThumperAP", actor);
-                    InitButtonFromAbilityDef(Button3, "AbilityDefCMD_UDS_ArtThumperHE", actor);
-                    InitButtonFromAbilityDef(Button4, "AbilityDefCMD_UDS_Strafe", actor);
-                    this.ButtonsInitialized = true;
-                }
-
+                Mod.Log.Debug?.Log($"Enabling Dropship butttons: '{button.gameObject.name}' for actor: {actor.DisplayName}");
                 // Check cooldowns and num uses on the buttons before enabling.
-                if (Button1.Ability.IsAvailable) 
+                if (button.Ability.IsAvailable)
                 {
-                    Button1.isClickable = true;
-                    Button1.setState(CombatHUDActionButton.ButtonState.Active, actor);
+                    button.isClickable = true;
+                    button.setState(CombatHUDActionButton.ButtonState.Active, actor);
                 }
                 else
                 {
-                    Button1.isClickable = false;
-                    Button1.ShowAbilityTiming();
-                    Button1.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
+                    button.isClickable = false;
+                    button.ShowAbilityTiming();
+                    button.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
                 }
 
-                if (Button2.Ability.IsAvailable)
-                {
-                    Button2.isClickable = true;
-                    Button2.setState(CombatHUDActionButton.ButtonState.Active, actor);
-                }
-                else
-                {
-                    Button2.isClickable = false;
-                    Button2.ShowAbilityTiming();
-                    Button2.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
-                }
-
-                if (Button3.Ability.IsAvailable)
-                {
-                    Button3.isClickable = true;
-                    Button3.setState(CombatHUDActionButton.ButtonState.Active, actor);
-                }
-                else
-                {
-                    Button3.isClickable = false;
-                    Button3.ShowAbilityTiming();
-                    Button3.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
-                }
-
-                if (Button4.Ability.IsAvailable)
-                {
-                    Button4.isClickable = true;
-                    Button4.setState(CombatHUDActionButton.ButtonState.Active, actor);
-                }
-                else
-                {
-                    Button4.isClickable = false;
-                    Button4.ShowAbilityTiming();
-                    Button4.setState(CombatHUDActionButton.ButtonState.Disabled, actor);
-                }
-
-                Button1.RefreshColors(actor, null);
-                Button2.RefreshColors(actor, null);
-                Button3.RefreshColors(actor, null);
-                Button4.RefreshColors(actor, null);
+                button.RefreshColors(actor, null);
             }
+
         }
 
-        private void InitButtonFromAbilityDef(CombatHUDActionButton button, string abilityId, AbstractActor actor)
+        private Ability GetAbility(string abilityId)
         {
+            if (String.IsNullOrEmpty(abilityId)) return null;
+
             bool had_key = this.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
             Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");
             Ability ability = new(abilityDef);
+
+            return ability;
+        }
+
+        private void InitButtonFromAbility(CombatHUDActionButton button, Ability ability, AbstractActor actor)
+        {
             ability.Init(actor.Combat);
             Mod.Log.Trace?.Log($"Ability: {ability.Def.Description.Id} initialized  NumUsesLeft: {ability.NumUsesLeft}  CurrentCooldow: {ability.CurrentCooldown}");
 
@@ -204,36 +169,24 @@ namespace UsedDropshipSalesman.UI
             ResetMechwarriorButtons(null);
         }
 
-        public void OnTurnActorActivated(MessageCenterMessage message)
-        {
-            TurnActorActivateMessage msg = message as TurnActorActivateMessage;
-            if (msg == null) return;
-            if (!Combat.TurnDirector.IsInterleaved) return;
-
-            Team team = Combat.Teams.Find((Team x) => x.GUID == msg.TurnActorGUID);
-            if (msg.TurnActorGUID == Combat.LocalPlayerTeam.GUID)
-            {
-                Mod.Log.Trace?.Log("Updating defs for availability");
-                // TODO: Update defs
-            }
-        }
-
         public void OnRoundBegin(MessageCenterMessage message)
         {
             RoundBeginMessage msg = message as RoundBeginMessage;
             if (msg == null) return;
 
-            Button1.Ability.OnNewRound();
-            Button2.Ability.OnNewRound();
-            Button3.Ability.OnNewRound();
-            Button4.Ability.OnNewRound();
+            foreach (var button in this.Buttons)
+            {
+                if (button != null && button.Ability != null && button.gameObject.activeSelf)
+                {
+                    button.Ability.OnNewRound();
+                }
+            }
         }
 
         internal void SubscribeMessages(bool subscribe = false)
         {
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorSelectedMessage, OnActorSelected, subscribe);
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.ActorDeselectedMessage, OnActorDeselected, subscribe);
-            Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnTurnActorActivate, OnTurnActorActivated, subscribe);
             Combat.MessageCenter.Subscribe(MessageCenterMessageType.OnRoundBegin, OnRoundBegin, subscribe);
         }
 
@@ -242,9 +195,5 @@ namespace UsedDropshipSalesman.UI
             SubscribeMessages(subscribe: false);
         }
 
-        public void Update()
-        {
-
-        }
     }
 }

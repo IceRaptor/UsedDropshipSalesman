@@ -13,9 +13,12 @@
     "attachesRunningLights": []
   },
   "Costs": {
-    "purchase": 30000.0,
-    "upkeep": 3000.0,
-    "drop": 300.0
+    "purchase": 30000,
+    "upkeep": 45000,
+    "drop": 10000
+  },
+  "Berths" : {
+    "MaxPilots" : 12
   },
   "Requirements": {
     "eventTag": "uds_require_dropship_union",
@@ -30,7 +33,7 @@
   },
   "DropBays": {
     "labels": [ "Lance Alpha", "Lance Beta" ],
-    "maxTonnage": 200,
+    "maxTonnage": 120,
     "slots": [
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]
@@ -38,35 +41,46 @@
   },
   "Upgrades": [
     {
-      "categoryId": "movement",
-      "headerText": "Movement",
+      "categoryId": "core_systems",
+      "headerText": "Core Systems",
       "icon": "lv_brass-eye",
       "systems": [
+        {
+          "systemId": "structure",
+          "headerText": "Dropship Structure",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_union_structure_1",
+            "argoUpgrade_uds_union_structure_2",
+            "argoUpgrade_uds_union_structure_3"
+          ]
+        },
         {
           "systemId": "main_engine",
           "headerText": "Main Engines",
           "innateUpgrades": [
-            "argoUpgrade_uds_union_base_engine_1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_uds_union_base_engine_2",
-            "argoUpgrade_uds_union_base_engine_3",
-            "argoUpgrade_uds_union_base_engine_4"
+            "argoUpgrade_uds_union_thrust_1",
+            "argoUpgrade_uds_union_thrust_2",
+            "argoUpgrade_uds_union_thrust_3"
           ]
         },
         {
-          "systemId": "maneuver_jets",
-          "headerText": "Maneuvering",
+          "systemId": "power_plant",
+          "headerText": "Power Plant",
           "innateUpgrades": [
-            "argoUpgrade_power1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_power2",
-            "argoUpgrade_power3"
+            "argoUpgrade_uds_union_power_1",
+            "argoUpgrade_uds_union_power_2",
+            "argoUpgrade_uds_union_power_3",
+            "argoUpgrade_uds_union_power_4"
           ]
         }
       ]
-    },
+    }, 
     {
       "categoryId": "combat",
       "headerText": "Combat",
@@ -76,12 +90,10 @@
           "systemId": "drop_tonnage",
           "headerText": "Drop Tonnage",
           "innateUpgrades": [
-            "argoUpgrade_uds_union_base_drop_tonnage_1"
+            "argoUpgrade_uds_union_combat_drop_tonnage_1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_uds_union_base_drop_tonnage_2",
-            "argoUpgrade_uds_union_base_drop_tonnage_3",
-            "argoUpgrade_uds_union_base_drop_tonnage_4"
+            "argoUpgrade_uds_union_combat_drop_tonnage_2"
           ]
         }
       ]
@@ -92,26 +104,16 @@
       "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
       "systems": [
         {
-          "systemId": "mech_bays",
-          "headerText": "Mech Bays",
-          "innateUpgrades": [
-            "argoUpgrade_mechBay1"
-          ],
-          "optionalUpgrades": [
-            "argoUpgrade_mechBay2",
-            "argoUpgrade_mechBay3"
-          ]
-        },
-        {
-          "systemId": "repair_support",
-          "headerText": "Repair Support",
+          "systemId": "maintenance_repair",
+          "headerText": "Unit Repair",
           "innateUpgrades": [
           ],
           "optionalUpgrades": [
-            "argoUpgrade_mechBay_automation1",
-            "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_refitHarness"
+            "argoUpgrade_uds_union_repair_cranes",
+            "argoUpgrade_uds_union_repair_elevator",
+            "argoUpgrade_uds_generic_repair_exoskeletons_1",
+            "argoUpgrade_uds_generic_repair_exoskeletons_2",
+            "argoUpgrade_uds_generic_repair_expert_system"
           ]
         }
       ]
@@ -127,20 +129,21 @@
           "innateUpgrades": [
           ],
           "optionalUpgrades": [
-            "argoUpgrade_medBay1",
-            "argoUpgrade_medBay2",
-            "argoUpgrade_medBay3",
-            "argoUpgrade_medBay_hospital"
+            "argoUpgrade_uds_union_medbay_1",
+            "argoUpgrade_uds_union_medbay_2",
+            "argoUpgrade_uds_union_medbay_3",
+            "argoUpgrade_uds_generic_medbay_expert_system"            
           ]
         },
         {
-          "systemId": "training",
-          "headerText": "Training",
+          "systemId": "personnel_morale",
+          "headerText": "Ameneties",
           "innateUpgrades": [
           ],
           "optionalUpgrades": [
-            "argoUpgrade_trainingModule1",
-            "argoUpgrade_trainingModule2"
+            "argoUpgrade_uds_union_morale_gym",
+            "argoUpgrade_uds_union_morale_library",
+            "argoUpgrade_uds_union_morale_lounge"
           ]
         }
       ]

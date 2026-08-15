@@ -1,0 +1,21 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Strafe_Medium",
+		"Name" : "STRAFE-M",
+		"Details" : "Calls in a strafing run from a medium areofighter",
+		"Icon" : "uixSvgIcon_genericDiamond"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 3,
+	"ActivationETA" : 3,
+	"SpecialRules" : "Strafe",
+	"Targeting" : "CommandTargetTwoPoints",
+	"FloatParam1" : 50.0,
+	"FloatParam2" : 200.0,
+	"IntParam1" : 5,
+	"IntParam2": 600,
+	"ActorResource" : "vehicledef_LIGHTNING_AERO",
+	"weaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_smokeStackPlume_sm_loop"
+}

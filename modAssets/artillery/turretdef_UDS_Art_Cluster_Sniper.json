@@ -1,8 +1,8 @@
 {
    "Version" : 1,
    "Description" : {
-      "Id" : "turretdef_UDS_Artillery_Light",
-      "Name" : "Light Artillery Strike",
+      "Id" : "turretdef_UDS_Art_Cluster_Sniper",
+      "Name" : "Sniper Cluster Artillery Strike",
       "Details" : "",
       "Icon" : "",
       "Cost" : 993,
@@ -23,13 +23,25 @@
    "DamageLevel" : "Functional",
    "inventory" : [
     {
-      "ComponentDefID": "Weapon_Autocannon_AC20_0-STOCK",
+      "ComponentDefID": "Weapon_SRM_SRM4_0-STOCK",
       "ComponentDefType": "Weapon",
-      "HardpointSlot": 0,
+      "HardpointSlot": 1,
 	  "DamageLevel" : "Functional"
     },
     {
-      "ComponentDefID": "Weapon_SRM_SRM6_0-STOCK",
+      "ComponentDefID": "Weapon_SRM_SRM4_0-STOCK",
+      "ComponentDefType": "Weapon",
+      "HardpointSlot": 1,
+	  "DamageLevel" : "Functional"
+    },
+    {
+      "ComponentDefID": "Weapon_SRM_SRM4_0-STOCK",
+      "ComponentDefType": "Weapon",
+      "HardpointSlot": 1,
+	  "DamageLevel" : "Functional"
+    },
+    {
+      "ComponentDefID": "Weapon_SRM_SRM4_0-STOCK",
       "ComponentDefType": "Weapon",
       "HardpointSlot": 1,
 	  "DamageLevel" : "Functional"
@@ -39,13 +51,7 @@
       "ComponentDefType": "AmmunitionBox",
       "HardpointSlot": -1,
 	  "DamageLevel" : "Functional"
-    },
-	    {
-      "ComponentDefID": "Ammo_AmmunitionBox_Generic_AC20",
-      "ComponentDefType": "AmmunitionBox",
-      "HardpointSlot": -1,
-	  "DamageLevel" : "Functional"
-    } 
+    }
           
    ]
 }

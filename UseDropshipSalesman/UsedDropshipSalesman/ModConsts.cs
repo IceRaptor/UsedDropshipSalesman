@@ -9,6 +9,10 @@ namespace UsedDropshipSalesman
         public const string CUSTOM_RESOURCE_DROPSHIP_CONFIG = "CustomDropshipDef";
 
         public const string STAT_CURRENT_DROPSHIP = "UDS_CURRENT_DROPSHIP";
+        public const string STAT_COMBAT_BTN_1_ABILITYDEF_ID = "UDS_COMBAT_BTN_1_ABILITYDEF_ID";
+        public const string STAT_COMBAT_BTN_2_ABILITYDEF_ID = "UDS_COMBAT_BTN_2_ABILITYDEF_ID";
+        public const string STAT_COMBAT_BTN_3_ABILITYDEF_ID = "UDS_COMBAT_BTN_3_ABILITYDEF_ID";
+        public const string STAT_COMBAT_BTN_4_ABILITYDEF_ID = "UDS_COMBAT_BTN_4_ABILITYDEF_ID";
 
         public const string HBS_PREFAB_LEOPARD = "HBS_LEOPARD";
         public const string HBS_PREFAB_ARGO = "HBS_ARGO";

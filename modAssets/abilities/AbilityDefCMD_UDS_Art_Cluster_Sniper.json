@@ -1,0 +1,23 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Art_Cluster_Sniper",
+		"Name" : "Sniper Cluster",
+		"Details" : "Cluster artillery strike from the Sniper attached to your Dropship.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 3,
+	"ActivationETA" : 2,
+	"SpecialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 50.0,
+	"IntParam1" : 100,
+    "IntParam1" : 0,
+	"IntParam2": 600,
+	"NumberOfUses" : 2,
+    "ActorResource" : "turretdef_UDS_Art_Cluster_Longtom",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

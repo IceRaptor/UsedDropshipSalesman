@@ -2,26 +2,28 @@
     "Name": "UsedDropshipSalesman",
     "Enabled": true,
     "Hidden": true,
-    "Version": "0.6.0",
+    "Version": "0.7.0",
     "Description": "Allows for a progression of dropship types.",
     "Author": "IceRaptor",
     "Website": "https://github.com/IceRaptor/UsedDropshipSalesman",
     "Contact": "",
     "DLL": "UsedDropshipSalesman.dll",
     "DLLEntryPoint" : "UsedDropshipSalesman.Mod.Init",
-    "DependsOn" : [ "IRBTModUtils", "Custom Ammo Categories", "CustomUnits", "JwTweaks" ],
+    "DependsOn" : [ "Custom Ammo Categories", "CustomUnits", "JwTweaks" ],
     "ConflictsWith" : [ "BiggerDrops" ],
     "CustomResourceTypes": [
         "CustomDropshipDef"
     ],
     "Manifest" : [
         { "Type": "AssetBundle", "Path": "assetbundles" },
+        { "Type": "AbilityDef", "Path": "abilities" },
         { "Type": "CustomDropshipDef", "Path": "customDropships" },
         { "Type": "ShipModuleUpgrade", "Path": "shipUpgrades" },
         { "Type": "SVGAsset", "Path": "icons" },
-        { "Type": "VehicleDef", "Path": "vehicles" },
-        { "Type": "TurretDef", "Path": "turret" },
-        { "Type": "AbilityDef", "Path": "abilities" },
+        { "Type": "TurretDef", "Path": "artillery" },
+        { "Type": "TurretChassisDef", "Path": "artillerychassis" },
+        { "Type": "VehicleDef", "Path": "aerospace" },
+        { "Type": "VehicleChassisDef", "Path": "aerospacechassis" },
         { "Type": "AdvancedJSONMerge", "Path": "advancedJsonMerges" }
     ]
 }

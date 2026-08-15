@@ -12,6 +12,7 @@ namespace UsedDropshipSalesman.Data
         public String CurrentDropshipId = ModConsts.FALLBACK_DROPSHIP_ID;
         public List<String> PurchasedPersistentUpgrades = new List<String>();
 
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

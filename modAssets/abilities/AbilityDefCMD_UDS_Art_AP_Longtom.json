@@ -1,0 +1,23 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Art_PE_Longtom",
+		"Name" : "Longtom AP",
+		"Details" : "Armor piercing artillery strike from the Longtom attached to your Dropship.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 4,
+	"ActivationETA" : 2,
+	"SpecialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 30.0,
+	"IntParam1" : 100,
+	"IntParam1" : 1,
+	"IntParam2": 600,
+	"NumberOfUses" : 2,
+    "ActorResource" : "turretdef_UDS_Art_AP_Longtom",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

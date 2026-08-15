@@ -27,6 +27,11 @@ namespace UsedDropshipSalesman
         internal static UDSDropshipCombatFrame UDSCombatFrame = null;
         internal static Ability ActivatedTeamAbility = null;
 
+        internal static string CombatButton_1_AbilityDefId = null;
+        internal static string CombatButton_2_AbilityDefId = null;
+        internal static string CombatButton_3_AbilityDefId = null;
+        internal static string CombatButton_4_AbilityDefId = null;
+
         internal static void Reset(bool afterCombat)
         {
             if (afterCombat)
@@ -34,6 +39,10 @@ namespace UsedDropshipSalesman
                 SeqSupportLance = null;
                 UDSCombatFrame = null;
                 ActivatedTeamAbility = null;
+                CombatButton_1_AbilityDefId = null;
+                CombatButton_2_AbilityDefId = null;
+                CombatButton_3_AbilityDefId = null;
+                CombatButton_4_AbilityDefId = null;
             }
             else
             {

@@ -9,8 +9,6 @@ using UsedDropshipSalesman.Helper;
 namespace UsedDropshipSalesman.Patches
 {
 
-
-
     [HarmonyPatch(typeof(SGNavigationList), "RefreshButtonStates")]
     static class SGNavigationList_RefreshButtonStates
     {

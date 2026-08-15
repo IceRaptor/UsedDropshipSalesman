@@ -1,0 +1,23 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Art_HE_Longtom",
+		"Name" : "Longtom HE",
+		"Details" : "High Explosive artillery strike from the Longtom attached to your Dropship.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 4,
+	"ActivationETA" : 2,
+	"SpecialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 80.0,
+	"IntParam1" : 100,
+    "IntParam1" : 0,
+	"IntParam2": 600,
+	"NumberOfUses" : 2,
+    "ActorResource" : "turretdef_UDS_Art_HE_Longtom",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

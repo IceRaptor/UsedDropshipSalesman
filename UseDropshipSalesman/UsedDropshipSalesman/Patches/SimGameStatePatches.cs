@@ -24,6 +24,10 @@ namespace UsedDropshipSalesman.Patches
         {
             Mod.Log.Trace?.Log("==== SimGameState_InitCompanyStats - entered.");
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, null);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
 
             // Force there to be 3 full mechbays for all ships, and let CU constraints handle the rest
             __instance.companyStats.Set<int>(__instance.Constants.Story.MechBayPodsID, 3);
@@ -41,6 +45,11 @@ namespace UsedDropshipSalesman.Patches
                 Mod.Log.Debug?.Log($"Game without UDS stats loaded, initializing to default dropship: {Mod.Config.FallbackDropship}");
                 __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
                 __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, null);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
 
                 // Save the dropship state
                 Mod.ModSaveData.CurrentDropshipId = Mod.Config.FallbackDropship;
@@ -336,5 +345,23 @@ namespace UsedDropshipSalesman.Patches
     //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(TagSet, List): {__result} for idList: [{idList}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
     //    }
     //}
+
+    [HarmonyPatch(typeof(SimGameState), "StartContract")]
+    static class SimGameState_StartContract
+    {
+        static void Postfix(SimGameState __instance, Contract contract)
+        {
+            Mod.Log.Trace?.Log("==== SimGameState_StartContract - entered.");
+
+            // Sync the combat button state between the simgame and combat boundaries
+            ModState.CombatButton_1_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID);
+            ModState.CombatButton_2_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID);
+            ModState.CombatButton_3_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID);
+            ModState.CombatButton_4_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID);
+            Mod.Log.Info?.Log($"Synced CombatButton AbilitryDefs:" +
+                $"combatButton1: {ModState.CombatButton_1_AbilityDefId}  combatButton2: {ModState.CombatButton_2_AbilityDefId}  " +
+                $"combatButton3: {ModState.CombatButton_3_AbilityDefId}  combatButton4: {ModState.CombatButton_4_AbilityDefId}  ");
+        }
+    }
 
 }

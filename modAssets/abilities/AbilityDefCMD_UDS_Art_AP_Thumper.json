@@ -1,0 +1,23 @@
+{
+	"Description" : {
+		"Id" : "AbilityDefCMD_UDS_Art_PE_Thumper",
+		"Name" : "Thumper AP",
+		"Details" : "Armor piercing artillery strike from the Thumper attached to your Dropship.",
+		"Icon" : "uixSvgIcon_artillery"
+	},
+	"ActivationTime" : "NotSet",
+	"Resource" : "NotSet",
+	"ActivationCooldown" : 3,
+	"ActivationETA" : 4,
+	"SpecialRules" : "Artillery",
+	"Targeting" : "CommandTargetSinglePoint",
+	"FloatParam1" : 15.0,
+	"IntParam1" : 100,
+	"IntParam1" : 1,
+	"IntParam2": 600,
+	"NumberOfUses" : 2,
+    "ActorResource" : "turretdef_UDS_Art_AP_Thumper",
+	"WeaponResource" : "pilot_d10_sharpshooter",
+    "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
+    "StringParam2" : "vfxPrfPrtl_thumperImpact"
+}

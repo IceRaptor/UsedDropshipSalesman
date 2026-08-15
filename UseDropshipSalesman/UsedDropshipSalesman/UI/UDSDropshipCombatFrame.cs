@@ -101,19 +101,24 @@ namespace UsedDropshipSalesman.UI
 
         private void OnActorSelected(MessageCenterMessage message)
         {
+            if (!ButtonTray.HasActiveButtons()) 
+            {
+                Mod.Log.Trace?.Log("No active buttons, disabling the UDS_DROPSHIP_BTN_ROOT");
+                this.gameObject.SetActive(false);
+                this.ButtonTrayGO.SetActive(false);
+                return;
+            }
+
             ActorSelectedMessage actorSelectedMessage = message as ActorSelectedMessage;
             AbstractActor actor = Combat.FindActorByGUID(actorSelectedMessage.affectedObjectGuid);
             if (actor != null && actor.team != null && actor.team.IsLocalPlayer && Combat.TurnDirector.IsInterleaved)
             {
                 Mod.Log.Trace?.Log("Enabling the UDS_DROPSHIP_BTN_ROOT");
-
-                Mod.Log.Trace?.Log($"   -- DROPSHIP_COMMAND_IMG_COLOR_PRE : {DropshipCommandLabelImage.color}");
                 DropshipCommandLabelImage.color = ActiveColor;
 
                 this.gameObject.SetActive(true);
                 this.ButtonTrayGO.SetActive(true);
 
-                Mod.Log.Trace?.Log($"   -- DROPSHIP_COMMAND_IMG_COLOR_POST: {DropshipCommandLabelImage.color}");
             }
             else
             {
@@ -129,17 +134,15 @@ namespace UsedDropshipSalesman.UI
         }
 
 
+        // This is necessary to allow the label's color to be changed when the player first sees it.
+        //  No matter what I do, the very first time the label is drawn the color of the label is white.
+        //  We enable the GO during the briefing slide, then immediately hide it as the encounter starts. 
+        //  This is key to letting our color changes appear when the first actor is selected.
         private void OnEncounterBegin(MessageCenterMessage message)
         {
             this.gameObject.SetActive(false);
             this.ButtonTrayGO.SetActive(false);
         }
-
-
-        //public void Update()
-        //{
-        //    Mod.Log.Trace?.Log($"DROPSHIP CMD IMG COLOR: {DropshipCommandLabelImage?.color}");
-        //}
 
         public void OnCombatGameDestroyed()
         {

@@ -8,6 +8,12 @@
         "Pilpala" : "argo"
 
     },
+    "PersistentUpgrades" : [
+        "argoUpgrade_uds_generic_medbay_expert_system",
+        "argoUpgrade_uds_generic_repair_exoskeletons_1",
+        "argoUpgrade_uds_generic_repair_exoskeletons_2",
+        "argoUpgrade_uds_generic_repair_expert_system"
+    ],
     "Colors" : {
         "Upgrades": {
             "Purchased"             : [ [ 0.253, 1.0, 0.0, 0.5 ],   [ 0.253, 1.0, 0.0, 1.0 ] ],
@@ -16,9 +22,6 @@
             "Innate"                : [ [ 0.0, 0.65, 1.0, 0.5 ],    [ 1.0, 1.0, 1.0, 1.0 ] ]
         }
     },
-    "PersistentUpgrades" : [
-        "argoUpgrade_medBay1", "argoUpgrade_medBay2", "argoUpgrade_medBay3", "argoUpgrade_medBay_hospital"
-    ],
     "LocalizedText" : {
         "FT_IED_DEFAULT" : "Explosive IED",
         "FT_IED_HE" : "High Explosive IED",

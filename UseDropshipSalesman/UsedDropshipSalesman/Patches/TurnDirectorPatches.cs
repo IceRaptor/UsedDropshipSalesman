@@ -29,9 +29,19 @@ namespace UsedDropshipSalesman.Patches
             List<string> turretsToLoad = new();
             List<string> vehiclesToLoad = new();
             List<string> pilotsToLoad = new();
-            List<string> abilities = new() { "AbilityDefCMD_UDS_Strafe", "AbilityDefCMD_UDS_ActiveProbe_Ping", "AbilityDefCMD_UDS_ArtThumperHE", "AbilityDefCMD_UDS_ArtThumperAP" };
+
+            List<string> abilities = new() { 
+                ModState.CombatButton_1_AbilityDefId, 
+                ModState.CombatButton_2_AbilityDefId,
+                ModState.CombatButton_3_AbilityDefId,
+                ModState.CombatButton_4_AbilityDefId
+            };
+
+
             foreach (string abilityId in abilities)
             {
+                if (String.IsNullOrEmpty(abilityId)) continue; // nothing to do
+
                 // Add the def to the command options
                 bool had_key = __instance.Combat.DataManager.abilityDefs.TryGet(abilityId, out AbilityDef abilityDef);
                 Mod.Log.Trace?.Log($"AbilityDef with id: {abilityId} was found: {had_key}?");

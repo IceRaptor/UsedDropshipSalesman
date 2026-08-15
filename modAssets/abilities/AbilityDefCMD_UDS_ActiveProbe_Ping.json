@@ -5,8 +5,8 @@
 		"Details" : "ACTION: Perform a Sensor Lock on all enemies within [FloatParam1] meters, and generates [FloatParam2] Heat for the user. There is a [ActivationCooldown] round cooldown.",
 		"Icon" : "uixSvgIcon_action_sensorlock"
 	},
-	"ActivationTime" : "ConsumedByFiring",
-    "Targeting" : "ActiveProbe",
+	"ActivationTime" : "NotSet",
+    "Targeting" : "NotSet",
     "ActivationCooldown" : 4,
 	"FloatParam1": 250.0,
 	"FloatParam2": 50.0,

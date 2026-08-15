@@ -13,9 +13,12 @@
     "attachesRunningLights": []
   },
   "Costs": {
-    "purchase": 50000.0,
-    "upkeep": 5000.0,
-    "drop": 500.0
+    "purchase": 50000,
+    "upkeep": 120000,
+    "drop": 25000
+  },
+  "Berths" : {
+    "MaxPilots" : 18
   },
   "Requirements": {
     "eventTag": "uds_require_dropship_overlord",
@@ -29,42 +32,53 @@
     "battle_armor_bays": 0
   },
   "DropBays": {
-    "labels": [ "Lance Alpha", "Lance Beta" ],
-    "maxTonnage": 200,
+    "labels": [ "Lance Alpha", "Lance Beta", "Lance Gamma" ],
+    "maxTonnage": 150,
     "slots": [
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]
     ]
   },
   "Upgrades": [
     {
-      "categoryId": "movement",
-      "headerText": "Movement",
+      "categoryId": "core_systems",
+      "headerText": "Core Systems",
       "icon": "lv_brass-eye",
       "systems": [
+        {
+          "systemId": "structure",
+          "headerText": "Dropship Structure",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_structure_1",
+            "argoUpgrade_uds_overlord_structure_2",
+            "argoUpgrade_uds_overlord_structure_3"
+          ]
+        },        
         {
           "systemId": "main_engine",
           "headerText": "Main Engines",
           "innateUpgrades": [
-            "argoUpgrade_uds_overlord_base_engine_1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_uds_overlord_base_engine_2",
-            "argoUpgrade_uds_overlord_base_engine_3",
-            "argoUpgrade_uds_overlord_base_engine_4"
+            "argoUpgrade_uds_overlord_thrust_1",
+            "argoUpgrade_uds_overlord_thrust_2"
           ]
         },
         {
-          "systemId": "maneuver_jets",
-          "headerText": "Maneuvering",
+          "systemId": "power_plant",
+          "headerText": "Power Plant",
           "innateUpgrades": [
-            "argoUpgrade_power1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_power2",
-            "argoUpgrade_power3"
+            "argoUpgrade_uds_overlord_power_1",
+            "argoUpgrade_uds_overlord_power_2",
+            "argoUpgrade_uds_overlord_power_3",
+            "argoUpgrade_uds_overlord_power_4"
           ]
-        }
+        }        
       ]
     },
     {
@@ -76,12 +90,10 @@
           "systemId": "drop_tonnage",
           "headerText": "Drop Tonnage",
           "innateUpgrades": [
-            "argoUpgrade_uds_overlord_base_drop_tonnage_1"
+            "argoUpgrade_uds_overlord_combat_drop_tonnage_1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_uds_overlord_base_drop_tonnage_2",
-            "argoUpgrade_uds_overlord_base_drop_tonnage_3",
-            "argoUpgrade_uds_overlord_base_drop_tonnage_4"
+            "argoUpgrade_uds_overlord_combat_drop_tonnage_2"
           ]
         }
       ]
@@ -92,31 +104,23 @@
       "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
       "systems": [
         {
-          "systemId": "mech_bays",
-          "headerText": "Mech Bays",
-          "innateUpgrades": [
-            "argoUpgrade_mechBay1"
-          ],
-          "optionalUpgrades": [
-            "argoUpgrade_mechBay2",
-            "argoUpgrade_mechBay3"
-          ]
-        },
-        {
-          "systemId": "repair_support",
-          "headerText": "Repair Support",
+          "systemId": "maintenance_repair",
+          "headerText": "Unit Repair",
           "innateUpgrades": [
           ],
           "optionalUpgrades": [
-            "argoUpgrade_mechBay_automation1",
-            "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_refitHarness"
+            "argoUpgrade_uds_overlord_repair_cranes",
+            "argoUpgrade_uds_overlord_repair_elevator_1",
+            "argoUpgrade_uds_overlord_repair_elevator_2",
+            "argoUpgrade_uds_overlord_repair_trolly",
+            "argoUpgrade_uds_generic_repair_exoskeletons_basic",
+            "argoUpgrade_uds_generic_repair_exoskeletons_advanced",
+            "argoUpgrade_uds_generic_repair_expert_system"
           ]
         }
       ]
     },
-    {
+     {
       "categoryId": "personnel",
       "headerText": "Personnel",
       "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
@@ -125,22 +129,26 @@
           "systemId": "med_bays",
           "headerText": "Med Bays",
           "innateUpgrades": [
+            "argoUpgrade_uds_generic_medbay_expert_system"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_medBay1",
-            "argoUpgrade_medBay2",
-            "argoUpgrade_medBay3",
-            "argoUpgrade_medBay_hospital"
+            "argoUpgrade_uds_overlord_medbay_1",
+            "argoUpgrade_uds_overlord_medbay_2",
+            "argoUpgrade_uds_overlord_medbay_3",
+            "argoUpgrade_uds_overlord_medbay_4"
           ]
         },
         {
-          "systemId": "training",
-          "headerText": "Training",
+          "systemId": "personnel_morale",
+          "headerText": "Ameneties",
           "innateUpgrades": [
           ],
           "optionalUpgrades": [
-            "argoUpgrade_trainingModule1",
-            "argoUpgrade_trainingModule2"
+            "argoUpgrade_uds_overlord_morale_gym",
+            "argoUpgrade_uds_overlord_morale_library_1",
+            "argoUpgrade_uds_overlord_morale_library_2",
+            "argoUpgrade_uds_overlord_morale_lounge_1",
+            "argoUpgrade_uds_overlord_morale_lounge_2"
           ]
         }
       ]

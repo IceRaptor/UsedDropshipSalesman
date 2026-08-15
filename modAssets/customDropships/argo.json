@@ -7,9 +7,12 @@
     "assetBundleId": "HBS_ARGO"
   },
   "Costs": {
-    "purchase": 99999.0,
-    "upkeep": 99000.0,
-    "drop": 9900.0
+    "purchase": 99999,
+    "upkeep": 99000,
+    "drop": 9900
+  },
+  "Berths" : {
+    "MaxPilots" : 36
   },
   "Requirements": {
     "eventTag": "uds_require_dropship_argo",
@@ -32,6 +35,35 @@
   },
   "Upgrades": [
     {
+      "categoryId": "structure",
+      "headerText": "Structure",
+      "icon": "lv_brass-eye",
+      "systems": [
+        {
+          "systemId": "core_structure",
+          "headerText": "Infrastructure",
+          "innateUpgrades": [
+            "argoUpgrade_structure0"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_structure1",
+            "argoUpgrade_structure2"
+          ]
+        },
+        {
+          "systemId": "pods",
+          "headerText": "Pods",
+          "innateUpgrades": [
+            "argoUpgrade_pod1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_pod2",
+            "argoUpgrade_pod3"
+          ]
+        }
+      ]
+    },    
+    {
       "categoryId": "movement",
       "headerText": "Movement",
       "icon": "lv_brass-eye",
@@ -40,12 +72,11 @@
           "systemId": "main_engine",
           "headerText": "Main Engines",
           "innateUpgrades": [
-            "argoUpgrade_uds_leopard_base_engine_1"
+            "argoUpgrade_drive0"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_uds_leopard_base_engine_2",
-            "argoUpgrade_uds_leopard_base_engine_3",
-            "argoUpgrade_uds_leopard_base_engine_4"
+            "argoUpgrade_drive1",
+            "argoUpgrade_drive2"
           ]
         },
         {
@@ -57,25 +88,6 @@
           "optionalUpgrades": [
             "argoUpgrade_power2",
             "argoUpgrade_power3"
-          ]
-        }
-      ]
-    },
-    {
-      "categoryId": "combat",
-      "headerText": "Combat",
-      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
-      "systems": [
-        {
-          "systemId": "drop_tonnage",
-          "headerText": "Drop Tonnage",
-          "innateUpgrades": [
-            "argoUpgrade_uds_leopard_base_drop_tonnage_1"
-          ],
-          "optionalUpgrades": [
-            "argoUpgrade_uds_leopard_base_drop_tonnage_2",
-            "argoUpgrade_uds_leopard_base_drop_tonnage_3",
-            "argoUpgrade_uds_leopard_base_drop_tonnage_4"
           ]
         }
       ]
@@ -104,8 +116,9 @@
           "optionalUpgrades": [
             "argoUpgrade_mechBay_automation1",
             "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_automation2",
-            "argoUpgrade_mechBay_refitHarness"
+            "argoUpgrade_mechBay_machineShop",
+            "argoUpgrade_mechBay_refitHarness",
+            "argoUpgrade_mechBay_scaffolding"
           ]
         }
       ]
@@ -119,9 +132,9 @@
           "systemId": "med_bays",
           "headerText": "Med Bays",
           "innateUpgrades": [
+            "argoUpgrade_medBay1"
           ],
           "optionalUpgrades": [
-            "argoUpgrade_medBay1",
             "argoUpgrade_medBay2",
             "argoUpgrade_medBay3",
             "argoUpgrade_medBay_hospital"
@@ -134,9 +147,26 @@
           ],
           "optionalUpgrades": [
             "argoUpgrade_trainingModule1",
-            "argoUpgrade_trainingModule2"
+            "argoUpgrade_trainingModule2",
+            "argoUpgrade_trainingModule3"
           ]
-        }
+        },
+        {
+          "systemId": "recreation",
+          "headerText": "Recreation",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_rec_arcade",
+            "argoUpgrade_rec_gym",
+            "argoUpgrade_rec_hydroponics",
+            "argoUpgrade_rec_library1",
+            "argoUpgrade_rec_library2",
+            "argoUpgrade_rec_lounge1",
+            "argoUpgrade_rec_lounge2",
+            "argoUpgrade_rec_pool"
+          ]
+        }        
       ]
     }
   ]
