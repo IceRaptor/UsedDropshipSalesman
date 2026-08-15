@@ -12,6 +12,7 @@
     "drop": 9900
   },
   "Berths" : {
+    "BasePilots" : 12,
     "MaxPilots" : 36
   },
   "Requirements": {
@@ -27,6 +28,7 @@
   },
   "DropBays": {
     "labels": [ "Lance Alpha", "Lance Beta" ],
+    "baseTonnage": 200,
     "maxTonnage": 200,
     "slots": [
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
