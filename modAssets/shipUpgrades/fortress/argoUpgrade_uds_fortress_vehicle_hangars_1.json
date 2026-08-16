@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_fortress_vehicle_hangars_1",
+        "Name" : "Restore vehicle bays",
+        "Details" : "As with the mech bay, most of the vehicle bay has been stripped or damaged over time. We can get 4 of them back to work easily enough.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+      
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 15,
+    "PurchaseCost" : 15000,
+    "AdditionalCost" : 2500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_HANGARS_vehicle_bays",
+			"value" : 4,
+			"valueConstant" : ""
+		}
+    ]
+}

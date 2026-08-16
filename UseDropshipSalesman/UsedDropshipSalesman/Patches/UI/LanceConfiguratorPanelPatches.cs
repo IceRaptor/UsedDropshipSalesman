@@ -44,7 +44,16 @@ namespace UsedDropshipSalesman.Patches.UI
                     return;
                 }
 
-                __instance.lanceMaxTonnage = config.CustomDropship.DropBays.MaxTonnage;
+                var additionalTonnage = __instance.Sim.CompanyStats.GetValue<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE);
+                var currentTonnageMax = config.CustomDropship.DropBays.BaseTonnage + additionalTonnage;
+                if (currentTonnageMax > config.CustomDropship.DropBays.MaxTonnage)
+                {
+                    currentTonnageMax = config.CustomDropship.DropBays.MaxTonnage;
+                }
+                Mod.Log.Debug?.Log($"CurrentTonnageMax: {currentTonnageMax}  " +
+                    $"baseTonnage: {config.CustomDropship.DropBays.BaseTonnage} + additionalTonnage: {additionalTonnage}");
+
+                __instance.lanceMaxTonnage = currentTonnageMax;
             }
 
             Mod.Log.Debug?.Log($"Final lanceConfigState:  maxUnits: {__instance.maxUnits}  lanceMinTonnage: {__instance.lanceMinTonnage}  " +

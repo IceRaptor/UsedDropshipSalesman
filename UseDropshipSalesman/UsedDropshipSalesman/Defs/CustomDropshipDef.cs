@@ -21,7 +21,7 @@ namespace UsedDropshipSalesman.Defs
         public DropshipCosts Costs { get; set; }
         public DropshipBerths Berths { get; set;  }
         public DropshipRequirements Requirements { get; set; }
-        public Dictionary<string, int> HangarBays { get; set; }
+        public List<DropshipHangarBay> HangarBays { get; set; }
         public DropshipDropBays DropBays { get; set; }
         [JsonRequired]
         public List<DropshipUpgradeCategory> Upgrades { get; set; }
@@ -105,6 +105,13 @@ namespace UsedDropshipSalesman.Defs
         public String[] PlanetTags = Array.Empty<String>();
     }
 
+    public record DropshipHangarBay
+    {
+        public String bayId;
+        public int baseBays;
+        public int maxBays;
+    }
+
     public record DropshipCosts
     {
         public int Purchase;
@@ -114,13 +121,13 @@ namespace UsedDropshipSalesman.Defs
 
     public record DropshipBerths
     {
+        public int BasePilots;
         public int MaxPilots;
     }
 
     public record DropshipDropBays
     {
         public String[] Labels;
-
         public int BaseTonnage;
         public int MaxTonnage;
         public String[][] Slots;

@@ -21,11 +21,11 @@
     "mustBeAllied": false,
     "planetTags": [ "planet_industry_electronics", "planet_pop_large" ]
   },
-  "HangarBays": {
-    "BASE_HANGER": 18,
-    "vehicle_bays": 18,
-    "battle_armor_bays": 18
-  },
+  "HangarBays": [
+    { "bayId" : "BASE_HANGER", "baseBays": 12, "maxBays": 18 },
+    { "bayId" : "vehicle_bays", "baseBays": 12, "maxBays" : 18 },
+    { "bayId" : "battle_armor_bays", "baseBays": 12, "maxBays" : 18 }
+  ],
   "DropBays": {
     "labels": [ "Lance Alpha", "Lance Beta" ],
     "baseTonnage": 200,

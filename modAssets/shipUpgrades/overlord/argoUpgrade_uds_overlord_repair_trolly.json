@@ -4,7 +4,7 @@
         "Rarity" : 0,
         "Purchasable" : true,
         "UIName" : "",
-        "Id" : "argoUpgrade_uds_union_repair_trolly",
+        "Id" : "argoUpgrade_uds_overlord_repair_trolly",
         "Name" : "Internal Cargo Hauler",
         "Details" : "Looks like the cargo movers that should have been with the ship are missing. Getting some replacements will help us move gear around the ship much easier.",
         "Icon" : "uixSvgIcon_shipUpgrade_refitharness"

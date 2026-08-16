@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_optionstest_power_4",
+        "Name" : "New Core Conduit",
+        "Details" : "The exchange conduit between primary and secondary cores started failing under the new load. We need to replace it.",
+        "Icon" : "uixSvgIcon_shipUpgrade_power0"
+    },
+    "Illustration" : "uixTxrSpot_EngineeringInnards",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "POWER_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+		    "argoUpgrade_uds_optionstest_power_3"
+		],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 500000,
+    "AdditionalCost" : 2500,
+    "Tags" : {
+        "items" : [
+            "uds_optionstest_power_4"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        
+    ],
+	"Actions" : [
+
+	]
+}

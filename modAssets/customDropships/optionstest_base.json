@@ -1,0 +1,240 @@
+{
+  "Description": {
+    "Id": "optionstest_base",
+    "Name": "OPTIONS TEST BASE - DO NOT USE"
+  },
+  "Visuals": {
+    "assetBundleId": "chrprfvhcl_uds_optionstest",
+    "prefabPath": "assets/character/vehicle/prefabs/uds/chrprfvhcl_uds_optionstest.prefab",
+    "attachEngineGlow": "ap_engine_lights_1",
+    "attachDecal": "ap_decal",
+    "attachesEngines": [ "ap_engine_jets_1", "ap_engine_jets_2", "ap_engine_jets_3", "ap_engine_jets_4" ],
+    "attachesSpotLights": [],
+    "attachesRunningLights": []
+  },
+  "Costs": {
+    "purchase": 30000,
+    "upkeep": 45000,
+    "drop": 10000
+  },
+  "Berths" : {
+    "BasePilots" : 8,
+    "MaxPilots" : 12
+  },
+  "Requirements": {
+    "eventTag": "uds_require_dropship_optionstest",
+    "factionReputation": 100,
+    "mustBeAllied": false,
+    "planetTags": [ "planet_industry_electronics", "planet_pop_large" ]
+  },
+  "HangarBays": [
+    { "bayId" : "BASE_HANGER", "baseBays": 4, "maxBays": 18 },
+    { "bayId" : "vehicle_bays", "baseBays": 7, "maxBays" : 18 },
+    { "bayId" : "battle_armor_bays", "baseBays": 0, "maxBays" : 18 }
+  ],
+  "DropBays": {
+    "labels": [ "Lance Alpha", "Lance Beta" ],
+    "baseTonnage": 120,
+    "maxTonnage": 120,
+    "slots": [
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]
+    ]
+  },
+  "Upgrades": [
+    {
+      "categoryId": "core_systems",
+      "headerText": "Core Systems",
+      "icon": "lv_brass-eye",
+      "systems": [
+        {
+          "systemId": "structure",
+          "headerText": "Dropship Structure",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_structure_1",
+            "argoUpgrade_uds_optionstest_structure_2",
+            "argoUpgrade_uds_optionstest_structure_3"
+          ]
+        },
+        {
+          "systemId": "main_engine",
+          "headerText": "Main Engines",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_thrust_1",
+            "argoUpgrade_uds_optionstest_thrust_2",
+            "argoUpgrade_uds_optionstest_thrust_3"
+          ]
+        },
+        {
+          "systemId": "power_plant",
+          "headerText": "Power Plant",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_power_1",
+            "argoUpgrade_uds_optionstest_power_2",
+            "argoUpgrade_uds_optionstest_power_3",
+            "argoUpgrade_uds_optionstest_power_4"
+          ]
+        }
+      ]
+    }, 
+    {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+            "argoUpgrade_uds_optionstest_combat_drop_tonnage_1"
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_combat_drop_tonnage_2"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "aerospace",
+      "headerText": "Aerospace",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+       {
+          "systemId": "aerospace_bay_1",
+          "headerText": "Aerospace Bay 1",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_aerospace_bay1_1",
+            "argoUpgrade_uds_optionstest_aerospace_bay1_2",
+            "argoUpgrade_uds_optionstest_aerospace_bay1_3",
+            "argoUpgrade_uds_optionstest_aerospace_bay1_4"
+          ]
+        },
+        {
+          "systemId": "aerospace_bay_2",
+          "headerText": "Aerospace Bay 2",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_aerospace_bay2_1",
+            "argoUpgrade_uds_optionstest_aerospace_bay2_2",
+            "argoUpgrade_uds_optionstest_aerospace_bay2_3",
+            "argoUpgrade_uds_optionstest_aerospace_bay2_4"
+          ]
+        },
+        {
+          "systemId": "aerospace_bay_3",
+          "headerText": "Aerospace Bay 3",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_aerospace_bay3_1",
+            "argoUpgrade_uds_optionstest_aerospace_bay3_2",
+            "argoUpgrade_uds_optionstest_aerospace_bay3_3",
+            "argoUpgrade_uds_optionstest_aerospace_bay3_4"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "artillery",
+      "headerText": "Artillery",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+       {
+          "systemId": "artillery_1",
+          "headerText": "Longtom Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_artillery_1_1",
+            "argoUpgrade_uds_optionstest_artillery_1_2",
+            "argoUpgrade_uds_optionstest_artillery_1_3"
+          ]
+        },
+        {
+          "systemId": "artillery_2",
+          "headerText": "Sniper Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_artillery_2_1",
+            "argoUpgrade_uds_optionstest_artillery_2_2",
+            "argoUpgrade_uds_optionstest_artillery_2_3"
+          ]
+        },
+        {
+          "systemId": "artillery_3",
+          "headerText": "Thumper Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_artillery_3_1",
+            "argoUpgrade_uds_optionstest_artillery_3_2",
+            "argoUpgrade_uds_optionstest_artillery_3_3"
+          ]
+        }
+      ]
+      ]
+    },
+    {
+      "categoryId": "maintenance",
+      "headerText": "Maintenance",
+      "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
+      "systems": [
+        {
+          "systemId": "maintenance_repair",
+          "headerText": "Unit Repair",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_repair_cranes",
+            "argoUpgrade_uds_optionstest_repair_elevator",
+            "argoUpgrade_uds_generic_repair_exoskeletons_1",
+            "argoUpgrade_uds_generic_repair_exoskeletons_2",
+            "argoUpgrade_uds_generic_repair_expert_system"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "personnel",
+      "headerText": "Personnel",
+      "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
+      "systems": [
+        {
+          "systemId": "med_bays",
+          "headerText": "Med Bays",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_medbay_1",
+            "argoUpgrade_uds_optionstest_medbay_2",
+            "argoUpgrade_uds_optionstest_medbay_3",
+            "argoUpgrade_uds_generic_medbay_expert_system"            
+          ]
+        },
+        {
+          "systemId": "personnel_morale",
+          "headerText": "Ameneties",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_optionstest_morale_gym",
+            "argoUpgrade_uds_optionstest_morale_library",
+            "argoUpgrade_uds_optionstest_morale_lounge"
+          ]
+        }
+      ]
+    }
+  ]
+
+
+}

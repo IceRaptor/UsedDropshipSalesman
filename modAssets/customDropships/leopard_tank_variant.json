@@ -1,7 +1,7 @@
 {
   "Description": {
     "Id": "leopard_tank_variant",
-    "Name": "Leopard (Vehicles)"
+    "Name": "Leopard-VEH"
   },
   "Visuals": {
     "assetBundleId": "HBS_LEOPARD"
@@ -21,18 +21,18 @@
     "mustBeAllied": false,
     "planetTags": [ "planet_industry_electronics", "planet_pop_large" ]
   },
-  "HangarBays": {
-    "BASE_HANGER": 4,
-    "vehicle_bays": 2,
-    "battle_armor_bays": 0
-  },
+  "HangarBays": [
+    { "bayId" : "BASE_HANGER", "baseBays": 4, "maxBays": 6 },
+    { "bayId" : "vehicle_bays", "baseBays": 2, "maxBays": 4 },
+    { "bayId" : "battle_armor_bays", "baseBays": 0, "maxBays": 0 }
+  ],
   "DropBays": {
     "labels": [ "Lance Alpha", "Lance Beta" ],
-    "baseTonnage" : 80,
-    "maxTonnage": 200,
+    "baseTonnage" : 100,
+    "maxTonnage": 300,
     "slots": [
       [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
-      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]
+      [ "default_vehicle_slot", "default_vehicle_slot", "default_vehicle_slot", "default_vehicle_slot" ]
     ]
   },
   "Upgrades": [
@@ -66,10 +66,38 @@
       ]
     },
     {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_leopard_drop_tonnage_1",
+            "argoUpgrade_uds_leopard_drop_tonnage_2"
+          ]
+        }
+      ]
+    },
+    {
       "categoryId": "maintenance",
       "headerText": "Maintenance",
       "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
       "systems": [
+        {
+          "systemId": "maintenance_hangars",
+          "headerText": "Hangar Expansion",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_leopard_vehicle_hangars_1",
+            "argoUpgrade_uds_leopard_vehicle_hangars_2"
+          ]
+        },
         {
           "systemId": "maintenance_repair",
           "headerText": "Unit Repair",
@@ -90,6 +118,16 @@
       "headerText": "Personnel",
       "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
       "systems": [
+        {
+          "systemId": "personnel_crew_berths",
+          "headerText": "Crew Berths",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_leopard_crew_berths_1",
+            "argoUpgrade_uds_leopard_crew_berths_2"
+          ]
+        },
         {
           "systemId": "personnel_med_bays",
           "headerText": "Med Bays",

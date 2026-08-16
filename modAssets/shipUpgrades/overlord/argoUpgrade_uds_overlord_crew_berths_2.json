@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_overlord_crew_berths_2",
+        "Name" : "Crew Berths Expansion",
+        "Details" : "We think we can reroute the life-support systems to give us a bit more space in the crew sectrion.",
+        "Icon" : "uixSvgIcon_shipUpgrade_gym"
+    },
+    "Illustration" : "uixTxrSpot_Gym",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_DariusDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_overlord_crew_berths_1",
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 25000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_BERTHS",
+			"value" : 8,
+			"valueConstant" : ""
+		}
+    ]
+}

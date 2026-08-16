@@ -45,13 +45,13 @@ namespace UsedDropshipSalesman.Sequence
 
         public float Radius { get; private set; }
 
-        private float timeSinceLastWave;
+        //private float timeSinceLastWave;
 
         private int numWavesFired;
 
         private ParticleSystem probeParticles;
 
-        private bool playedVO;
+        //private bool playedVO;
 
         public List<AbstractActor> Targets { get; private set; }
 
@@ -164,7 +164,7 @@ namespace UsedDropshipSalesman.Sequence
             CameraControl.Instance.ClearTargets();
             WwiseManager.PostEvent(AudioEventList_ui.ui_target_sensor_lock_hard, WwiseManager.GlobalAudioObject);
             numWavesFired++;
-            timeSinceLastWave = 0f;
+            //timeSinceLastWave = 0f;
         }
 
         private void FireWave(AbstractActor Target)

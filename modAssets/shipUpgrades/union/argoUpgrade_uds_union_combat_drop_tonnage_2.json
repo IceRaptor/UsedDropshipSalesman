@@ -5,8 +5,8 @@
         "Purchasable" : true,
         "UIName" : "",
         "Id" : "argoUpgrade_uds_union_combat_drop_tonnage_2",
-        "Name" : "Drop Tonnage Increase 1",
-        "Details" : "TBD: Needs implemented",
+        "Name" : "Drop Automation",
+        "Details" : "Adding a series of drop computers will help stabilize drops",
         "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
     },
     "Illustration" : "uixTxrSpot_YangWorking",
@@ -23,16 +23,20 @@
     "Requirements" : [
 
     ],
-    "TechCost" : 20,
+    "TechCost" : 10,
     "PurchaseCost" : 100000,
     "AdditionalCost" : 5000,
     "Tags" : {
         "items" : [
-            "uds_union_combat_drop_tonnage_2"
         ],
         "tagSetSourceFile" : ""
     },
     "Stats" : [
-
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDTIONAL_DROP_TONNAGE",
+			"value" : 250,
+			"valueConstant" : ""
+		}
     ]
 }

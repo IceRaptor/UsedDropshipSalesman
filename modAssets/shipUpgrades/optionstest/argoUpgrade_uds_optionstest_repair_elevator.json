@@ -1,0 +1,43 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_optionstest_repair_elevator",
+        "Name" : "Repair Mech Elevator",
+        "Details" : "The access elevator between drop and mech bays is currently broken, fixing it would allow us to cycle units much more efficiently.",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_optionstest_power_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 20,
+    "PurchaseCost" : 300000,
+    "AdditionalCost" : 2000,
+    "Tags" : {
+        "items" : [
+            "uds_optionstest_repair_elevator"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+        {
+            "typeString": "System.Int32",
+            "name": "MechTechSkill",
+            "value": 2,
+            "valueConstant": ""
+        }        
+    ]
+}

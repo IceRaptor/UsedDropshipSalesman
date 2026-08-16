@@ -127,15 +127,15 @@ namespace UsedDropshipSalesman
                 Mod.Log.Info?.Log($" factionRep: {customDropship.Requirements.FactionReputation}  mustBeAllied: {customDropship.Requirements.MustBeAllied}");
                 Mod.Log.Info?.Log($" planetTags       : {String.Join(",", customDropship.Requirements.PlanetTags)}");
                 Mod.Log.Info?.Log("  ---- BERTHS");
-                Mod.Log.Info?.Log($" maxPilots: {customDropship.Berths.MaxPilots}");
+                Mod.Log.Info?.Log($" basePilots: {customDropship.Berths.BasePilots}  maxPilots: {customDropship.Berths.MaxPilots}");
 
                 Mod.Log.Info?.Log("  ---- HANGAR BAYS");
-                foreach (KeyValuePair<string, int> kvpRB in customDropship?.HangarBays)
+                foreach (DropshipHangarBay dropshipHangarBay in customDropship?.HangarBays)
                 {
-                    Mod.Log.Info?.Log($"   hangarBay: {kvpRB.Key}  value: {kvpRB.Value}");
+                    Mod.Log.Info?.Log($"   hangarBay => bayId: {dropshipHangarBay.bayId}  base: {dropshipHangarBay.baseBays}  max: {dropshipHangarBay.maxBays}");
                 }
                 Mod.Log.Info?.Log("  ---- DROP BAYS");
-                Mod.Log.Info?.Log($" maxTonnage: {customDropship?.DropBays?.MaxTonnage}");
+                Mod.Log.Info?.Log($" baseTonnage: {customDropship?.DropBays?.BaseTonnage}  maxTonnage: {customDropship?.DropBays?.MaxTonnage}");
                 for (int i = 0; i < customDropship?.DropBays?.Labels?.Length; i++)
                 {
                     Mod.Log.Info?.Log($"Lance: '{customDropship?.DropBays?.Labels[i]}' => [{String.Join(",", customDropship?.DropBays?.Slots[i])}]");

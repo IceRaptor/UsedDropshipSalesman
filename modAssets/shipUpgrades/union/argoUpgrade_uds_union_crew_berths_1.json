@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_union_crew_berths_1",
+        "Name" : "Crew Berths Expansion",
+        "Details" : "If we eliminate some of the fire-prevention bulkheads, we can probably cram another bunk into the crew quarters.",
+        "Icon" : "uixSvgIcon_shipUpgrade_gym"
+    },
+    "Illustration" : "uixTxrSpot_Gym",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_DariusDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 25000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_BERTHS",
+			"value" : 2,
+			"valueConstant" : ""
+		}
+    ]
+}

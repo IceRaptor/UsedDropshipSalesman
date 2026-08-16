@@ -29,11 +29,19 @@ namespace UsedDropshipSalesman.Patches.UI
                 return;
             }
 
-
             RectTransform rectTransform = __instance.simLanceTonnageText.gameObject.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(300, 56);
 
-            __instance.simLanceTonnageText.SetText("{0} of {1} TONS", (int)combinedTonnage, (int)config.CustomDropship.DropBays.MaxTonnage);
+            var additionalTonnage = __instance.LC.Sim.CompanyStats.GetValue<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE);
+            var currentTonnageMax = config.CustomDropship.DropBays.BaseTonnage + additionalTonnage;
+            if (currentTonnageMax > config.CustomDropship.DropBays.MaxTonnage)
+            {
+                currentTonnageMax = config.CustomDropship.DropBays.MaxTonnage;
+            }
+            Mod.Log.Debug?.Log($"CurrentTonnageMax: {currentTonnageMax}  " +
+                $"baseTonnage: {config.CustomDropship.DropBays.BaseTonnage} + additionalTonnage: {additionalTonnage}");
+
+            __instance.simLanceTonnageText.SetText("{0} of {1} TONS", (int)combinedTonnage, currentTonnageMax);
         }
     }
 }

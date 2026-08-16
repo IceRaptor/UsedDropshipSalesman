@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_drop_tonnage_1",
+        "Name" : "Drop Computer Upgrade",
+        "Details" : "By upgrading the combat nav software we'll be better balanced with heavier loads",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "MOAR POWER",
+    "RequiredModules" : {
+        "items" : [
+
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 2,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 5000,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDTIONAL_DROP_TONNAGE",
+			"value" : 100,
+			"valueConstant" : ""
+		}
+    ]
+}

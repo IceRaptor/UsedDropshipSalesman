@@ -1,6 +1,7 @@
 ﻿using BattleTech.Save;
 using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
+using CustAmmoCategories;
 using CustomUnits;
 using CustomUnits.CustomHangars;
 using HBS.Collections;
@@ -24,10 +25,21 @@ namespace UsedDropshipSalesman.Patches
         {
             Mod.Log.Trace?.Log("==== SimGameState_InitCompanyStats - entered.");
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
+
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, null);
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
+
+            __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE, 0);
+            __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_BERTHS, 0);
+            foreach (CustomHangarDef customHangarDef in CustomHangarHelper.listHangars)
+            {
+                String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef.Description.Id);
+                String customStat = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarLabel}";
+                Mod.Log.Debug?.Log($"Adding statistic for customHangar: {hangarLabel} as: {customStat}");
+                __instance.companyStats.AddStatistic<String>(customStat, null);
+            }
 
             // Force there to be 3 full mechbays for all ships, and let CU constraints handle the rest
             __instance.companyStats.Set<int>(__instance.Constants.Story.MechBayPodsID, 3);
@@ -50,6 +62,16 @@ namespace UsedDropshipSalesman.Patches
                 __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
                 __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
                 __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
+
+                __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE, 0);
+                __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_BERTHS, 0);
+                foreach (CustomHangarDef customHangarDef in CustomHangarHelper.listHangars)
+                {
+                    String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef.Description.Id);
+                    String customStat = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarLabel}";
+                    Mod.Log.Debug?.Log($"Adding statistic for customHangar: {hangarLabel} as: {customStat}");
+                    __instance.companyStats.AddStatistic<String>(customStat, null);
+                }
 
                 // Save the dropship state
                 Mod.ModSaveData.CurrentDropshipId = Mod.Config.FallbackDropship;
@@ -104,7 +126,7 @@ namespace UsedDropshipSalesman.Patches
                 EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, newConfig);
 
                 UpgradeHelper.UpdateDropConfig(newConfig);
-                UpgradeHelper.UpdateHangarConfig(newConfig);
+                UpgradeHelper.UpdateHangarConfig(newConfig, __instance);
                 UIHelper.UpdateHangerConfig(newConfig, __instance);
 
                 Mod.ModSaveData.CurrentDropshipId = currDropshipId;
@@ -262,7 +284,7 @@ namespace UsedDropshipSalesman.Patches
             Mod.Config.Dropships.TryGetValue(startingDropshipId, out DropshipConfig newConfig);
             UpgradeHelper.ApplyUpgrades(newConfig, SimGameState_Debug.sim);
             UpgradeHelper.UpdateDropConfig(newConfig);
-            UpgradeHelper.UpdateHangarConfig(newConfig);
+            UpgradeHelper.UpdateHangarConfig(newConfig, __instance);
 
             Mod.Log.Debug?.Log($"Current dropship is: {__instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP)}");
             Mod.Log.Debug?.Log($"SaveState is: {Mod.ModSaveData}");
@@ -280,7 +302,7 @@ namespace UsedDropshipSalesman.Patches
             // Update CAC settings on save load
             Mod.Config.Dropships.TryGetValue(Mod.ModSaveData.CurrentDropshipId, out DropshipConfig newConfig);
             UpgradeHelper.UpdateDropConfig(newConfig);
-            UpgradeHelper.UpdateHangarConfig(newConfig);
+            UpgradeHelper.UpdateHangarConfig(newConfig, __instance);
         }
     }
 
@@ -303,7 +325,14 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
 
-            Mod.Log.Debug?.Log($"Returning {dropshipConfig.CustomDropship.Berths.MaxPilots} for max pilots.");
+            int additionalBerths = __instance.companyStats.GetValue<int>(ModConsts.STAT_ADDITIONAL_BERTHS);
+            int currentBerthMax = dropshipConfig.CustomDropship.Berths.BasePilots + additionalBerths;
+            if (currentBerthMax > dropshipConfig.CustomDropship.Berths.MaxPilots)
+            {
+                currentBerthMax = dropshipConfig.CustomDropship.Berths.MaxPilots;
+            }
+
+            Mod.Log.Debug?.Log($"CurrentBerthMax = {currentBerthMax}  baseBerths: {dropshipConfig.CustomDropship.Berths.BasePilots} + additionalBerths: {additionalBerths}");
             __result = dropshipConfig.CustomDropship.Berths.MaxPilots;
         }
     }

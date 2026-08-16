@@ -1,0 +1,35 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_optionstest_aerospace_bay1_1",
+        "Name" : "Aerospace Bay 1",
+        "Details" : "Aerospace Bay 1 restored to functional use",
+        "Icon" : "uixSvgIcon_shipUpgrade_library"
+    },
+    "Illustration" : "uixTxrSpot_Library",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [	
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_fortress_artillery_3_2",
+        "Name" : "Longtom AP",
+        "Details" : "Longtom Artillery fitted with AP rounds",
+        "Icon" : "uixSvgIcon_shipUpgrade_library"
+    },
+    "Illustration" : "uixTxrSpot_Library",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [	
+            "argoUpgrade_uds_fortress_artillery_3_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.String",
+			"name" : "UDS_COMBAT_BTN_3_ABILITYDEF_ID",
+			"value" : "AbilityDefCMD_UDS_Art_AP_Longtom",
+			"valueConstant" : ""
+		}
+    ]
+}

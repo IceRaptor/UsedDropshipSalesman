@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_optionstest_artillery_3_1",
+        "Name" : "Thumper HE",
+        "Details" : "Thumper Artillery fitted with HE rounds",
+        "Icon" : "uixSvgIcon_shipUpgrade_library"
+    },
+    "Illustration" : "uixTxrSpot_Library",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [	
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 200000,
+    "AdditionalCost" : 150000,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.String",
+			"name" : "UDS_COMBAT_BTN_3_ABILITYDEF_ID",
+			"value" : "AbilityDefCMD_UDS_Art_HE_Thumper",
+			"valueConstant" : ""
+		}
+    ]
+}

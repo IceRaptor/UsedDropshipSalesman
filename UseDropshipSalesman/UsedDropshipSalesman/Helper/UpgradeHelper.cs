@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMPro;
+using UsedDropshipSalesman.Defs;
 using static CustomUnits.CustomHangars.CustomHangarHelper;
 
 namespace UsedDropshipSalesman.Helper
@@ -33,16 +34,22 @@ namespace UsedDropshipSalesman.Helper
             CustomLanceHelper.PushDropLayout(config.CustomDropship.Description.Id, layout, totalUnits, labels);
         }
 
-        public static void UpdateHangarConfig(DropshipConfig config)
+        public static void UpdateHangarConfig(DropshipConfig config, SimGameState sgs)
         {
             Mod.Log.Info?.Log($"Updating CU hangarConfig to support hangars: ");
-            foreach (KeyValuePair<string, int> kvp in config.CustomDropship.HangarBays)
+            Dictionary<string, CustomHangarConstraint> constraints = new();
+            foreach (DropshipHangarBay bay in config.CustomDropship.HangarBays)
             {
-                Mod.Log.Info?.Log($" -- bay: {kvp.Key}  value: {kvp.Value}");
-            }
+                Mod.Log.Info?.Log($" -- bay: {bay.bayId}  base: {bay.baseBays}  max: {bay.maxBays}");
 
-            Dictionary<string, CustomHangarConstraint> constraints;
-            constraints = config.CustomDropship.HangarBays.ToDictionary(x => x.Key, y => new CustomHangarConstraint() { MaxAvailableUnits= y.Value });
+                string statName = ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX + bay.bayId;
+                int additionalBays = sgs.companyStats.GetValue<int>(statName);
+                int currentMax = bay.baseBays + additionalBays;
+                if (currentMax > bay.maxBays) { currentMax = bay.maxBays; }
+                Mod.Log.Debug?.Log($"CurrentMax for Hangars: {currentMax} => base: {bay.baseBays} + additional: {additionalBays}");
+
+                constraints.Add(bay.bayId, new CustomHangarConstraint() { MaxAvailableUnits = currentMax });
+            }
 
             CustomHangarHelper.SetConstraints(constraints, Mod.LogName);
         }
@@ -200,7 +207,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Check for hangarbay storage delta
-            Dictionary<string, int> countByHangarId = new Dictionary<string, int>();
+            Dictionary<string, int> currentUnitCountPerHangar = new Dictionary<string, int>();
             Mod.Log.Debug?.Log($" Counting current active mechs.");
             foreach (KeyValuePair<int, MechDef> kvp in sgs.ActiveMechs)
             {
@@ -212,8 +219,8 @@ namespace UsedDropshipSalesman.Helper
                 string hangarId = customHangarDef?.Description?.Id ?? CustomHangarHelper.BASE_HANGAR_ID;
                 Mod.Log.Debug?.Log($"Adding {kvp.Key} active units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
 
-                if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
-                else { countByHangarId.Add(hangarId, 1); }
+                if (currentUnitCountPerHangar.ContainsKey(hangarId)) { currentUnitCountPerHangar[hangarId] += 1; }
+                else { currentUnitCountPerHangar.Add(hangarId, 1); }
             }
             Mod.Log.Debug?.Log($" Counting current readying mechs.");
             foreach (KeyValuePair<int, MechDef> kvp in sgs.ReadyingMechs)
@@ -225,24 +232,32 @@ namespace UsedDropshipSalesman.Helper
                 string hangarId = customHangarDef?.Description?.Id ?? CustomHangarDef.DEFAULT_VEHICLE_HANGAR_ID;
                 Mod.Log.Debug?.Log($"Adding {kvp.Key} readying units with chassis: {kvp.Value.ChassisID} to hangerDefId: {hangarId}");
 
-                if (countByHangarId.ContainsKey(hangarId)) { countByHangarId[hangarId] += 1; }
-                else { countByHangarId.Add(hangarId, 1); }
+                if (currentUnitCountPerHangar.ContainsKey(hangarId)) { currentUnitCountPerHangar[hangarId] += 1; }
+                else { currentUnitCountPerHangar.Add(hangarId, 1); }
             }
 
             List<string> allHangars = allHangars = CustomHangarHelper.listHangars.Select(chd => chd.Description.Id).ToList();
             allHangars.Insert(0, CustomHangarHelper.BASE_HANGAR_ID);
+            Dictionary<string, DropshipHangarBay> newHangarConfigs = newConfig.CustomDropship.HangarBays.ToList()
+                .Distinct().ToDictionary(bayCfg => bayCfg.bayId);
             foreach (string hangarId in allHangars)
             {
                 Mod.Log.Debug?.Log($"Evaluating count on hangarDef: {hangarId}");
-                if (countByHangarId.ContainsKey(hangarId) && newConfig.CustomDropship.HangarBays.ContainsKey(hangarId))
+                if (currentUnitCountPerHangar.ContainsKey(hangarId) && newHangarConfigs.ContainsKey(hangarId))
                 {
-                    int newConstraintSize = newConfig.CustomDropship.HangarBays.ContainsKey(hangarId) ? 
-                        newConfig.CustomDropship.HangarBays[hangarId] : 0;
-                    if (countByHangarId[hangarId] > newConstraintSize) 
+                    DropshipHangarBay dropshipHangarBay = newHangarConfigs[hangarId];
+                    string additionalHangarsStatName = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarId}";
+                    int additionalHangars = sgs.companyStats.GetValue<int>(additionalHangarsStatName);
+                    int newConstraintSize = dropshipHangarBay.baseBays = additionalHangars;
+                    if (newConstraintSize > dropshipHangarBay.maxBays) { newConstraintSize = dropshipHangarBay.maxBays; }
+                    Mod.Log.Debug?.Log($"New constraint siz for hangar: {hangarId} is {newConstraintSize} => " +
+                        $"base: {newHangarConfigs[hangarId].baseBays} + additional: {additionalHangars}");
+
+                    if (currentUnitCountPerHangar[hangarId] > newConstraintSize) 
                     {
-                        Mod.Log.Info?.Log($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
+                        Mod.Log.Info?.Log($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {currentUnitCountPerHangar[hangarId]} units active or readying.");
                         // TODO: LOCALIZE 
-                        blockedReasons.Add($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {countByHangarId[hangarId]} units active or readying.");
+                        blockedReasons.Add($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {currentUnitCountPerHangar[hangarId]} units active or readying.");
                         hasBlockingIssues = true;
                     }
                 }
@@ -258,10 +273,10 @@ namespace UsedDropshipSalesman.Helper
 
             // Check for pilot limits
             int currentPilotCount = sgs.PilotRoster.Count;
-            Mod.Log.Debug?.Log($"New dropship has {newConfig.CustomDropship.Berths.MaxPilots} berths for {currentPilotCount} pilots");
-            if (currentPilotCount > newConfig.CustomDropship.Berths.MaxPilots)
+            Mod.Log.Debug?.Log($"New dropship has {sgs.GetMaxMechWarriors()} berths for {currentPilotCount} pilots");
+            if (currentPilotCount > sgs.GetMaxMechWarriors())
             {
-                blockedReasons.Add($"New dropship berth limit is {newConfig.CustomDropship.Berths.MaxPilots}, but there are {currentPilotCount} active pilots.");
+                blockedReasons.Add($"New dropship berth limit is {sgs.GetMaxMechWarriors()}, but there are {currentPilotCount} active pilots.");
                 hasBlockingIssues = true;
             }
 

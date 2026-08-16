@@ -5,8 +5,8 @@
         "Purchasable" : true,
         "UIName" : "",
         "Id" : "argoUpgrade_uds_overlord_combat_drop_tonnage_1",
-        "Name" : "Drop Tonnage Increase 1",
-        "Details" : "TBD: Needs implemented",
+        "Name" : "Drop Attitude Improvement",
+        "Details" : "Improved thrusters will help us stabilize the dropship during a drop",
         "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
     },
     "Illustration" : "uixTxrSpot_YangWorking",
@@ -22,16 +22,20 @@
     "Requirements" : [
 
     ],
-    "TechCost" : 20,
+    "TechCost" : 5,
     "PurchaseCost" : 50000,
     "AdditionalCost" : 2000,
     "Tags" : {
         "items" : [
-            "uds_overlord_combat_drop_tonnage_1"
         ],
         "tagSetSourceFile" : ""
     },
     "Stats" : [
-
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDTIONAL_DROP_TONNAGE",
+			"value" : 400,
+			"valueConstant" : ""
+		}
     ]
 }

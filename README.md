@@ -200,15 +200,15 @@ Gameplay
 - [X] OnCareerStart - allow defaultDropship by startID, fix dropship
 - [X] Implement listener for dropship upgrade from event
 - [X] Implement upgrade logic XX - need cleanup logic, persistence logic handled
-- [ ] Validate that persistentUpgrades are carried forward across dropships. 
-- [ ] Persist persistentUpgrades in save game state
+- [X] Validate that persistentUpgrades are carried forward across dropships. 
+- [X] Persist persistentUpgrades in save game state
 - [ ] Persist per-variant ugprades in save game state
-- [ ] Implement costs - upkeep
-- [ ] Implement costs - drop
+- [X] Implement costs - upkeep
+- [X] Implement costs - drop
 - [ ] Implement costs - jump
 - [ ] Implement costs - purchase (plus item?)
 - [ ] Localize Upgrade category, system text
-- [ ] Fix reversion logic for persistent upgrades; only those defined on the new ship should be kept, not all of them.
+- [X] Fix reversion logic for persistent upgrades; only those defined on the new ship should be kept, not all of them.
 
 - [X] HangerBays fix - adjust size by dropship 
 - [X] Check build from storage for hanger limits
@@ -219,9 +219,15 @@ Gameplay
 - [X] Implement mechbay handling for changed dropships w/ less bay sizes
 - [X] OnChange - dialog prompting for storing mechs, stopping argo upgrades, etc
 
+- [X] Implement Dropship Command: Artillery Strikes
+- [X] Implement Dropship Command: Aerospace Strafe
+- [] Implement Dropship Command: Aerospace Sensor Lock
+- [] Implement Dropship Command: Satellite View
+- [] Implement Dropship Command: Unit Drop
+
 StratOps integration
 - [ ] Allow granting items / itemCollections on receiving dropship (StratOps integration)
-- [ ] Allow for artillery strike (Fortress)
+- [X] Allow for artillery strike (Fortress)
 - [ ] Implement dropship specific tag at change time
 - [ ] Implement tag-based restrictions for events
 
@@ -233,9 +239,6 @@ BiggerDrops Features
 ### Ideas
 
 * Create 'select dropship' option in command center
-* Create option to auto-magically grant airsrike beacons for dropships that have bays
-* Create option for mechtech, medtech multiplers on units (cramped conditions)
-* Create option to limit pilots size by dropship
 * Add upgrade stats for mechbays?
 * Add animator for spheriods to rotate during briefing / simgaem?
 

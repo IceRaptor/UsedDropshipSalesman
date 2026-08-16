@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_overlord_mech_hangars_2",
+        "Name" : "Restore final mech hangars",
+        "Details" : "It won't be easy, but we can refit the last 6 bays to get them functional again.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_overlord_mech_hangars_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 25,
+    "PurchaseCost" : 250000,
+    "AdditionalCost" : 5000,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_HANGARS_BASE_HANGER",
+			"value" : 6,
+			"valueConstant" : ""
+		}
+    ]
+}

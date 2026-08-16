@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_drop_tonnage_2",
+        "Name" : "Hover Thruster Upgrade",
+        "Details" : "By upgrading the hover jets used for drop operations, we can stabilize the ship better during drop operations",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "MOAR POWER",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_leopard_drop_tonnage_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 250000,
+    "AdditionalCost" : 10000,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDTIONAL_DROP_TONNAGE",
+			"value" : 100,
+			"valueConstant" : ""
+		}
+    ]
+}

@@ -1,0 +1,45 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_optionstest_aerospace_bay3_2",
+        "Name" : "Bay 3 - Light Aerofighters",
+        "Details" : "Aerospace bay 3 filled with a wing of Centurion aerofighters",
+        "Icon" : "uixSvgIcon_shipUpgrade_library"
+    },
+    "Illustration" : "uixTxrSpot_Library",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [	
+            "argoUpgrade_uds_optionstest_aerospace_bay1_1",
+            "argoUpgrade_uds_optionstest_aerospace_bay2_1",
+            "argoUpgrade_uds_optionstest_aerospace_bay3_1"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 25000,
+    "Tags" : {
+        "items" : [
+            "uds_optionstest_aerospace_wing_light"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.String",
+			"name" : "UDS_COMBAT_BTN_3_ABILITYDEF_ID",
+			"value" : "AbilityDefCMD_UDS_Strafe_Light",
+			"valueConstant" : ""
+		}        
+    ]
+}

@@ -1,0 +1,41 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_fortress_combat_drop_tonnage_1",
+        "Name" : "Drop Attitude Improvement",
+        "Details" : "Improved thrusters will help us stabilize the dropship during a drop",
+        "Icon" : "uixSvgIcon_shipUpgrade_refitharness"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "MOAR POWER",
+    "RequiredModules" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 50000,
+    "AdditionalCost" : 2000,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDTIONAL_DROP_TONNAGE",
+			"value" : 250,
+			"valueConstant" : ""
+		}
+    ]
+}

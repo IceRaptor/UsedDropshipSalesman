@@ -1,0 +1,48 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_leopard_mech_hangars_1",
+        "Name" : "Partial Midline Bay",
+        "Details" : "We can put another mech into repair rotation between bays 1 and 3, but it will get hard to move around.",
+        "Icon" : "uixSvgIcon_shipUpgrade_medbay1"
+    },
+    "Illustration" : "uixTxrSpot_YangWorking",
+    "Location" : "MECH_BAY",
+    "shipUpgradeCategoryID" : "REPAIR_REFIT",
+    "AssignedCastDefId": "castDef_YangDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+      
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 0,
+    "PurchaseCost" : 15000,
+    "AdditionalCost" : 2500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_HANGARS_BASE_HANGER",
+			"value" : 1,
+			"valueConstant" : ""
+		},
+        {
+			"typeString" : "System.Int32",
+			"name" : "MedTechSkill",
+			"value" : -2,
+			"valueConstant" : ""
+		}
+    ]
+}

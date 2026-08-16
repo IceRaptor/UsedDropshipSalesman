@@ -1,0 +1,54 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_fortress_thrust_2",
+        "Name" : "Refurbished Interchange",
+        "Details" : "The fusion to propellant interchange has been worked too many times. We need to replace it to get a full thrust profile.",
+        "Icon" : "uixSvgIcon_shipUpgrade_power0"
+    },
+    "Illustration" : "uixTxrSpot_EngineeringInnards",
+    "Location" : "ENGINEERING",
+    "shipUpgradeCategoryID" : "DRIVE_SYSTEM",
+    "AssignedCastDefId": "castDef_FarahDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_fortress_thrust_1"
+		],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+        
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 90000,
+    "AdditionalCost" : 0,
+    "Tags" : {
+        "items" : [
+            "uds_fortress_thrust_2"
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Single",
+			"name" : "DriveTravelMultiplier",
+			"value" : 0.8,
+			"set" : true,
+			"valueConstant" : ""
+		},
+		{
+			"typeString" : "System.Single",
+			"name" : "DriveTravelMultiplier_Display",
+			"value" : 20,
+			"set" : true,
+			"valueConstant" : ""
+		} 		
+    ],
+	"Actions" : [
+
+	]
+}
