@@ -24,6 +24,7 @@
         { "Type": "TurretChassisDef", "Path": "turretschassis" },
         { "Type": "VehicleDef", "Path": "vehicles" },
         { "Type": "VehicleChassisDef", "Path": "vehicleschassis" },
-        { "Type": "AdvancedJSONMerge", "Path": "advancedJsonMerges" }
+        { "Type": "AdvancedJSONMerge", "Path": "advancedJsonMerges" },
+        { "Type": "SimGameStatDescDef", "Path": "simGameStatDesc", "AddToDB": true },
     ]
 }

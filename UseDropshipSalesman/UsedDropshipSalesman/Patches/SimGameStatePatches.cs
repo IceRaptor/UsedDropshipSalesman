@@ -1,4 +1,5 @@
-﻿using BattleTech.Save;
+﻿using BattleTech.Data;
+using BattleTech.Save;
 using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using CustAmmoCategories;
@@ -159,7 +160,7 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(SimGameState), "CompleteArgoUpgrade")]
     static class SimGameState_CompleteArgoUpgrade
     {
-        static void Postfix(SimGameState __instance)
+        static void Postfix(SimGameState __instance, WorkOrderEntry_ArgoUpgradeGeneric order)
         {
             Mod.Log.Trace?.Log("==== SimGameState_CompleteArgoUpgrade - entered.");
             if (__instance == null || __instance?.RoomManager?.EngineeringRoom?.engineeringScreen == null) return; // Nothing to do
@@ -173,6 +174,27 @@ namespace UsedDropshipSalesman.Patches
                 return;
             }
             EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
+
+            // Sync constraints
+            bool refreshConstraints = false;
+            ShipModuleUpgrade upgrade = __instance.DataManager.ShipUpgradeDefs.Get(order.upgradeID);
+            if (upgrade != null && upgrade.Stats != null && upgrade.Stats.Length > 0)
+            {
+                foreach (SimGameStat stat in upgrade.Stats)
+                {
+                    if (!String.IsNullOrEmpty(stat.name) && stat.name.StartsWith(ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX))
+                    {
+                        Mod.Log.Info?.Log($"Hangar upgrade stat: {stat.name} found, refreshing constraints.");
+                        refreshConstraints = true;
+                    }
+                }
+            }
+
+            if (refreshConstraints)
+            {
+                UpgradeHelper.UpdateHangarConfig(config, __instance);
+            }
+            
         }
     }
 
@@ -333,7 +355,7 @@ namespace UsedDropshipSalesman.Patches
             }
 
             Mod.Log.Debug?.Log($"CurrentBerthMax = {currentBerthMax}  baseBerths: {dropshipConfig.CustomDropship.Berths.BasePilots} + additionalBerths: {additionalBerths}");
-            __result = dropshipConfig.CustomDropship.Berths.MaxPilots;
+            __result = currentBerthMax;
         }
     }
 

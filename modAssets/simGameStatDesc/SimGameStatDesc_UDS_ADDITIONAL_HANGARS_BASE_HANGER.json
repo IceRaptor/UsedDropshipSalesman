@@ -1,0 +1,22 @@
+{
+    "Description" : {
+        "Id" : "SimGameStatDesc_UDS_ADDITIONAL_HANGARS_BASE_HANGER",
+        "Name" : "Additional Base Hangar Slots",
+        "Details" : "This adds additional repair bay hangars, up to the dropship maximum.",
+        "Icon" : null
+    },
+    "setResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]] are set to {RES_VALUE.ToString}",
+    "positiveResult" : "+{RES_VALUE.ToString} permanent change to [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]]",
+    "negativeResult" : "-{RES_VALUE.ToString} permanent change to [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]]",
+
+    "temporalSetResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]] are set to {RES_VALUE.ToString} for {RES_DURATION.ToString} days",
+    "temporalPositiveResult" : "The company gains a +{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] boost for {RES_DURATION.ToString} days",
+    "temporalNegativeResult" : "The company suffers a -{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] penalty for {RES_DURATION.ToString} days",
+
+	"temporalPositiveResultEnd" : "The +{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] boost has expired",
+    "temporalNegativeResultEnd" : "The -{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] penalty has expired",
+
+    "infinitiveSetResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]] are set to {RES_VALUE.ToString}",
+    "infinitivePositiveResult" : "+{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]]",
+    "infinitiveNegativeResult" : "-{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Base Hangar Capacity]]"
+}

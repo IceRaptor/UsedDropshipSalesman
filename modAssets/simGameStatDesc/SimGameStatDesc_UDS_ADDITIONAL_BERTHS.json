@@ -1,0 +1,22 @@
+{
+    "Description" : {
+        "Id" : "SimGameStatDesc_UDS_ADDITIONAL_BERTHS",
+        "Name" : "Additional Crew Berths",
+        "Details" : "Crew berths limit how many MechWarriors and support crew that you can hire..",
+        "Icon" : null
+    },
+    "setResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]] are set to {RES_VALUE.ToString}",
+    "positiveResult" : "+{RES_VALUE.ToString} permanent change to [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]]",
+    "negativeResult" : "-{RES_VALUE.ToString} permanent change to [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]]",
+
+    "temporalSetResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]] are set to {RES_VALUE.ToString} for {RES_DURATION.ToString} days",
+    "temporalPositiveResult" : "The company gains a +{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] boost for {RES_DURATION.ToString} days",
+    "temporalNegativeResult" : "The company suffers a -{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] penalty for {RES_DURATION.ToString} days",
+
+	"temporalPositiveResultEnd" : "The +{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] boost has expired",
+    "temporalNegativeResultEnd" : "The -{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Tech Point]] penalty has expired",
+
+    "infinitiveSetResult" : "[[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]] are set to {RES_VALUE.ToString}",
+    "infinitivePositiveResult" : "+{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]]",
+    "infinitiveNegativeResult" : "-{RES_VALUE.ToString} [[DM.SimGameStatDescDefs[SimGameStatDesc_UDS_ADDTIONAL_DROP_TONNAGE], Crew Berths]]"
+}
