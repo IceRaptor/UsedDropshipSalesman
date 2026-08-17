@@ -75,7 +75,7 @@ assume 'dropship variant' refers to a specific CustomDropshipDef (i.e. either `l
 
 | Setting | Example | Description |
 | ------- | ------- | ----------- | 
-| assetBundleId | `chrprfvhcl_uds_union` | The assetbundle of the dropship that should be shown on the main screen. This should be just the assetbundle name listed in the manifest. | 
+| assetBundleId | `chrprfvhcl_uds_union` | The assetbundle of the dropship that should be shown on the main screen. This should be just the assetbundle name listed in the manifest. Use `HBS_LEOPARD` and `HBS_ARGO` for the HBS models. If you use the HBS models, the remainder of the values in this section should be empty / unset. | 
 | prefabPath | `assets/character/vehicle/prefabs/uds/chrprfvhcl_uds_union.prefab` | The prefab that will be overlayed on the existing HBS meshes. This should be a full path within the assetbundle, as described in the manfiest. |
 | attachEngineGlow | `ap_engine_lights_1` | A Tranform within the prefab that indicates where the engine glow should emanate from. See the Modeling section below |
 | attachDecal | `ap_decal` | A Tranform within the prefab that indicates where player company logo decal should attach. See the Modeling section below |
@@ -85,11 +85,9 @@ assume 'dropship variant' refers to a specific CustomDropshipDef (i.e. either `l
 
 **Costs**
 
-:warning: NOT IMPLEMENTED YET
-
 | Setting | Example | Description |
 | ------- | ------- | ----------- | 
-| purchase | 30000.0 | The amount of c-bills required to purchase this dropship. TBD |
+| purchase | 30000.0 | The amount of c-bills required to purchase this dropship. :warning: NOT IMPLEMENTED YET - likely will be removed |
 | upkeep | 3000.0 | The amount of c-bills required each month for this dropship. Will be shown on the monthly upkeep screen in the commander's office. |
 | drop | 300.0 | The amount of c-bills required for each combat drop with this dropship. Will be shown in the after-combat screen. |
 
@@ -105,21 +103,39 @@ assume 'dropship variant' refers to a specific CustomDropshipDef (i.e. either `l
 | mustBeAllied | `true` | If true, the player can only purchase the dropship if they are allied with the faction that owns the planet. |
 | planetTags | `[ "planet_industry_electronics", "planet_pop_large" ]` | If present, the dropship can only be purchased on a planet with these tags. |
 
+**Berths**
+
+These valude determine the maximum number of units available in the Barracks screen (i.e. Mechwarriors). 
+
+| Setting | Example | Description |
+| ------- | ------- | ----------- | 
+| BasePilots | 4 | The initial barracks capacity of the dropship, before any upgrades are applied. |
+| MaxPilots | 6 | The maxiumum barracks capacity of the dropship. Upgrades that increase the berths count will be capped to this value. |
+
+*Statistic*: The company statistic `UDS_ADDITIONAL_BERTHS` can be set to modify the current berth count. You can set this through a `ShipUpgradeDef` to adjust the `basePilot` value above. While negatives are possible they have not been tested; use at your own risk.
+
 **HangarBays**
 
-This value defines the maximum amount of units available in hangar bays. It relies upon the CustomUnits CustomHangarDef configuration. 
-For each hangar defined in *Mods/CustomUnits/hangardefs* (or your own location) should have it's key and value listed in this dictionary. 
-The keys below should work for both RogueTech and BTAU:
+This value defines the maximum amount of units available in hangar (repair) bays. It relies upon the CustomUnits CustomHangarDef configuration. Each hangar defined in *Mods/CustomUnits/hangardefs* (or your own location) should be defined per the object below in the HangarBays list. 
 
-| Key | Example| Description | 
+```
+HangarBays = [
+    { "bayId: "BASE_HANGAR", "baseBays": 4, "maxBays": 8 }
+]
+```
+
+| Attribute | Example| Description | 
 | --- | ----- | ----------- |
-| `BASE_HANGER` | 8 | The base hangar is the 'vanilla' hangar, whose label is controlled by CustomUnits' `MechBayDefaultLabel`. This is typically the mechbay. The example value of 8 means 8 total Mechs can be active or readied. |
-| `vehicle_bays` | 2 | Configured in RT and BTA as the 'vehicle bays', the example value of 2 means two vehicles can be active or readied |
-| `battle_armor_bays` | 0 | Configured in RT and BTA as the 'battle armor bays', the example value of 0 means no battle armor can be active or ready on this dropship.
+| `bayId` | 'BASE_HANGER`, 'vehicle_bays', 'battle_armor_bays' | The custom hangar ID for the specified hangar. The `BASE_HANGAR` is the 'vanilla' hangar, whose label is controlled by CustomUnits' `MechBayDefaultLabel`. This is typically the mechbay. 
+| `baseBays` | 4 | The initial amount of hangar bays available when the dropship is first gained. |
+| `maxBays` | 8 | The maximum amount of hangar bays available to the dropship. If upgrades increase the hangar count above this limit, they will be capped to this value |
+
+*Statistic*: The company statistic `UDS_ADDITIONAL_HANGARS_<BAY_ID>` can be set to modify the current hangar count. You can set this through a `ShipUpgradeDef` to adjust the `baseBays` value above. While negatives are possible they have not been tested; use at your own risk. As an example, increasing the base bay requires setting `UDS_ADDITIONAL_HANGARS_BASE_HANGAR` while the vehicle_bay requires `UDS_ADDITIONAL_HANGARS_vehicle_bays`.
+
+*simGameStatDesc*: If your CustomHangarDef is different than the above, you will need to add new `simGameStatDescDef` to the /simGameStatDesc location for each hangar that you use. These are used during the upgrade process to describe the effect. If you omit them, the players will receive an 'ERROR' in the dialog.
 
 :information_source: Note that the HBS bays system has been completely replaced by this approach. 
-You MUST NOT change the `Constants.Story.MechBayPodsID` value while using this mod, as it expects the value to be 3 at all times. This is done to allow CU to function normally without this mod, 
-but implement our constrained hangars for our purposes. If this value gets set to anything other than 3, odd things are very likely to occur!
+You MUST NOT change the `Constants.Story.MechBayPodsID` value while using this mod, as it expects the value to be 3 at all times. This is done to allow CU to function normally without this mod, but implement our constrained hangars for our purposes. If this value gets set to anything other than 3, odd things are very likely to occur!
 
 **DropBays**
 
