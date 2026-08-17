@@ -139,13 +139,18 @@ You MUST NOT change the `Constants.Story.MechBayPodsID` value while using this m
 
 **DropBays**
 
+These values control the player's experience on the Lance configuration screen, immediately before committing to a combat drop. As with BiggerDrops, you can configure the maximum tonnage for the lance. Most of this functionalty comes from KMission's [CustomUnits](https://github.com/battletechmodders/CustomAmmoCategories) which gives the ability to customize the slot types and lance names. The values below are simply convenience passthroughs to that configuration.
+
 | Setting | Example | Description |
 | ------- | ------- | ----------- | 
 | labels | `[ "Lance Alpha", "Lance Beta" ]` | The labeled names you want to display on the drop screen. The count of labels MUST match the count of arrays in the `slots` value! |
-| maxTonnage | 200 | The maximum amount of tonnage you want available for drop purposes. :warning: NOT YET IMPLEMENTED
+| baseTonnage | 200 | The inital drop tonnage limit that is set when the dropship is first obtained. |
+| maxTonnage | 400 | The maximum drop tonnage that can be set on the dropship. If upgrades increase drop tonnage above this value, they will be capped to this value. |
 | slots | `[ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ]` | The CustomUnits config labels that define what units can be assocaited with a specific drop slot. You can have multiple arrays representing multiple squads. The count of arrays must match the `labels` value above. |
 
-**Upgrades**
+*Statistic*: The company statistic `UDS_ADDTIONAL_DROP_TONNAGE` can be set to modify the dop tonnage count. You can set this through a `ShipUpgradeDef` to adjust the `baseTonnage` value above. While negatives are possible they have not been tested; use at your own risk.
+
+**Upgrades**    
 
 UDS allows you to completely customize the upgrade screen for each dropship. There are three entities involved in the configuration of the screen:
 
@@ -189,6 +194,67 @@ current mod config, AND also present in the new dropship config will be retained
 :warning: Currently persistent upgrades don't intersect with the new dropship config, this can leave upgrades in place that should be reverted. 
 
 There is currently no way to stop an upgrade once it's begun. 
+
+## Dropship Command Actions
+
+This allows you to give players 'Dropship Command Actions'. When in a mission and the turn becomes interleaved, an tray of 4 buttons will appear in the top left of the screen between the 'Player Turn' and 'Phase Track Indicator'. This will be labled as 'Dropship Command' and can have up to 4 buttons. Each button reads from a companyStat to determine the AbilityDef that will be associated with the button. Each statistic links to a single button:
+
+* `UDS_COMBAT_BTN_1_ABILITYDEF_ID`
+* `UDS_COMBAT_BTN_2_ABILITYDEF_ID`
+* `UDS_COMBAT_BTN_3_ABILITYDEF_ID`
+* `UDS_COMBAT_BTN_4_ABILITYDEF_ID`
+
+Each statistic can be set to a 'Command Ability', a selection of which is provided by the mod in the `abilities/` directory. Setting a statistic to the `CommandAbility.Descripion.Id` will link it to the button. For instance, setting `UDS_COMBAT_BTN_1_ABILITYDEF_ID` to `AbilityDefCMD_UDS_Strafe_Light` will allow the first button to be used to call a basic strafe during combat. 
+
+Buttons that are unset will not appear in the command tray. If no buttons are set, the command tray will be hidden turning combat. If you set the same AbilityDefId to multiple buttons, each *should* be a unique instance with theor own countdown, activationETA, etc. 
+
+### Command Abilities
+
+This mod re-purposes several vanilla 'Command Actions' but twists them heavily, providing the following sequences:
+
+* Artillery Strike
+* Aerospace Strafe
+* ~Active Probe Sweep~ :warning: Not yet implemented
+* ~Satellite Snapshot~ :warning: Not yet implemented
+* ~Unit Drop~ :warning: Not yet implemented
+
+All are configured as AbilityDefs, and are highly customizable. You can freely create new abilityDefs to provide variations on a theme, and each type has specific configuration rules discussed below. Values general to all abilities include:
+
+* `ActivationTime`: This MUST be set to 'NotSet', or the vanilla Command system will try to take over. Never change this value!
+* `Resource`: This MUST be set to 'NotSet', or the vanilla Command system will try to take over. Never change this value!
+* `ActorResource`: Most abilities will spawn a temporary unit to use the source of the attacks or actions. This minimizes the code needed, and makes other mods work smoother with UDS. Sequences that rely upon a unit will define the turretDef or vehicleDef used during the action in this value. You are *STRONGLY* encouraged to use special-purpose units for this mod.
+* `WeaponResource`: As per ActorResource, sequences that rely on a unit will define the pilotDef they want to use in this value. Keep in mind that many pilot abilities will not be useful to these temporary units, as don't have an actual turn.
+* `ActivationCooldown`: The cooldown for the action, in *turns* (not phases). 
+* `NumberOfUses`: The total number of uses allowed within the combat mission. Once the uses are consumed, the button should become unavailable.
+
+:information_source: Note that while some of sequences are similar to Strategic Operations, we don't rely upon that mod for this functionality. We've used the base HBS sequences instead, to give some flexibility to modders. StratOps should work perfectly fine alongside this mod, if you prefer to use their airstrikes instead.
+
+*Artillery Strike*
+
+A UDS Artillery strike sequence allows the player to choose a target location, then after a small delay every unit within the radius of the effect will be damaged. This is NOT using the CAC artillery effects, but SHOULD be able to use any CAC weapon effects. The exact logic for the attack is:
+
+* Find every unit within the radius of effect
+* For each weapon on the `ActorResource`
+* -- Resolve a random location on the to-hit table based upon the artillery strike position and the target
+* -- Apply the weapon damage immediately, without making an attack roll 
+
+Configuration: 
+
+* `ActorResource` must be a turretDef
+* `Targeting` MUST be `CommandTargetSinglePoint`
+* `FloatParam1` 
+* `FloatParam2` the *radius* of the targeting reticle 
+* `IntParam1` the minimum distance from the selected actor for the targeting circle
+* `IntParam2` the maxiumum distance from the selected actor for the targeting circle
+* `StringParam1` is the VFX that will be used to mark the spot until the attack resolves. I'm using `vfxPrfPrtl_artillerySmokeSignal_loop` but you do you
+* `StringParam2`is the `vfxPrfPrtl_thumperImpact` that will be applied after the attack. 
+
+As an example, if you have an SRM_6 on the turretDef associated with the attack, it will resolve 6 hits against the target. All of those hits will come from the point selected for the artillery strike. 
+
+*Aerospace Strafe*
+
+An 
+
 
 ## Modeling Dropships
 
