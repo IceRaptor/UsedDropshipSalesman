@@ -238,22 +238,50 @@ A UDS Artillery strike sequence allows the player to choose a target location, t
 * -- Resolve a random location on the to-hit table based upon the artillery strike position and the target
 * -- Apply the weapon damage immediately, without making an attack roll 
 
-Configuration: 
+*Configuration* for the sequence is listed below. Note HBS chose to overload the AbilityDef and use the same values for two different purposes. They configure the actual strike, but also how the strike is selected. The first values given are for the strike, the second set are the same values used for selection. 
+
+_For instance, IntParam1 is used to configure the number of flares displayed while waiting for the strike. It's also used to determine how far from the source actor the artillery strike can be targeted._
 
 * `ActorResource` must be a turretDef
 * `Targeting` MUST be `CommandTargetSinglePoint`
-* `FloatParam1` 
-* `FloatParam2` the *radius* of the targeting reticle 
-* `IntParam1` the minimum distance from the selected actor for the targeting circle
-* `IntParam2` the maxiumum distance from the selected actor for the targeting circle
+* `FloatParam1` the *radius* for target selection
+* `FloatParam2` unused
+* `IntParam1` the number of flares that will be displayed while waiting for the strike
+* `IntParam2` unused
 * `StringParam1` is the VFX that will be used to mark the spot until the attack resolves. I'm using `vfxPrfPrtl_artillerySmokeSignal_loop` but you do you
 * `StringParam2`is the `vfxPrfPrtl_thumperImpact` that will be applied after the attack. 
+
+**Selection Overrides**
+
+* `FloatParam1` the *radius* of the targeting reticle 
+* `IntParam1` the minimum distance from the selected actor for the targeting circle
+* `IntParam2` the maxiumum distance from the selected actor for the targeting circle
 
 As an example, if you have an SRM_6 on the turretDef associated with the attack, it will resolve 6 hits against the target. All of those hits will come from the point selected for the artillery strike. 
 
 *Aerospace Strafe*
 
-An 
+A UDS Airstroke sequences allows a player to choose two target locations, then after a small delay a single aerospace fighter will move between those points and attack any targets along that path. For each target, the attacking unit will make a normal attack roll for each weapon that it's carrying. Individual weapons can miss, and the aerofighter can run out of ammo, just like a normal unit could. 
+
+:information_note: At this time, only energy weapons are supported on strafes. This will be fixed in the future.
+
+*Configuration* for the sequence is listed below. Note HBS chose to overload the AbilityDef and use the same values for two different purposes. They configure the actual strike, but also how the strike is selected. The first values given are for the strike, the second set are the same values used for selection. 
+
+* `ActorResource` must be a turretDef
+* `Targeting` MUST be `CommandTargetSinglePoint`
+* `FloatParam1` the *radius* for target selection
+* `FloatParam2` the *radius* of the targeting reticles 
+* `IntParam1` the number of flares that will be displayed while waiting for the strike
+* `IntParam2` unused
+* `StringParam1` is the VFX that will be used to mark the spot until the attack resolves. I'm using `vfxPrfPrtl_artillerySmokeSignal_loop` but you do you
+* `StringParam2`is the `vfxPrfPrtl_thumperImpact` that will be applied after the attack. 
+
+**Selection Overrides**
+
+* `FloatParam1` the *radius* of the targeting reticle
+* `FloatParam2` the max distance from the first selected point that can be chosen
+* `IntParam1` the minimum distance from the selected actor for the targeting circle
+* `IntParam2` the maxiumum distance from the selected actor for the targeting circle
 
 
 ## Modeling Dropships
@@ -348,7 +376,8 @@ Dropship Graphics
 - [ ] Integrate dropship replacement for in-mission
 - [ ] Add jump costs for additional dropships?
 - [ ] Implement zoom out for camera
-- [ ] Implement running lights - refactor customdEF to red/green lights
+- [ ] Implement state-based displacements
+- [X] Implement running lights - refactor customdEF to red/green lights
 
 Visuals
 - [ ]  Replace event text that relies upon argo
@@ -380,6 +409,7 @@ Gameplay
 
 - [X] Implement Dropship Command: Artillery Strikes
 - [X] Implement Dropship Command: Aerospace Strafe
+- [ ] Implement Dropship Command: Variable weapon types for strafes (currently hardcoded to energy only)
 - [] Implement Dropship Command: Aerospace Sensor Lock
 - [] Implement Dropship Command: Satellite View
 - [] Implement Dropship Command: Unit Drop
