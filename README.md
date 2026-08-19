@@ -258,7 +258,84 @@ An
 
 ## Modeling Dropships
 
-TBD
+UDS Dropships do not require any complex UABE import logic. Each dropship uses a prefab that can be built entirely in Unity Editor, with a few tweaks in-game. Some prefab components use naming standards equivalent to the vanilla ones. These are necessary for proper loading by the game, but beyond these few constraints you have a high degree of freedom in the design. When a CustomDropshipDef calls for your prefab, UDS code will instantiate your prefab. It then shifts some components that can not be recreated (like decals) onto your model from the base Leopard and Argo meshes. These will be used for both the SimGame screen, and the Combat loading (aka Briefing) screen. 
+
+:warning: At this time, combat missions that involve 'your' dropship will still be the base Leopard from HBS. This may be replaced in the future, but for now consider it a friendly taxi service.
+
+### Basics
+
+The heirarchy below is what I use in my Union prefab, and should work as a good baseline for yours. I strongly suggest naming the prefab with a *_uds_* in the name to differentiate it from all other uses. Because these are special purpose, we don't want overzealous modders trying to load them as vehicles or turrets. 
+```
+/uds_union                                  = Top level folder for the project, not actually used.
+  / chrPrfVhcl_uds_union                    = The name of the prefab that will be loade, the actual root hierarchy in game
+    / camoholder                            = Invisible GO used to hold camo patterns 
+    / chrMdlVhcl_uds_union                  = The root of the meshes displayed in game. Additional meshes can go below here.
+      / attach_points                       = Container for attach points, which are special objects used by UDS at runtime.
+        / ap_decal_root                     = Container for decal references. Should only have a Transform component.
+          / ap_decal                        = The location where you want your single Company logo to go on the dropship
+          / ap_decal_test_sphere            = A typically invisible GO used during decal sizing and positioning
+        / ap_engine                         = Container for engine references. Should only have a Transform component.
+          / ap_engine_jets_X                = GO used for particle effects for engine trails. Can have as many as you like.
+          / ap_engine_lights                = GO used fo the general blue glow of the engine. Singular.
+```
+
+Your main mesh goes on the `chrMdlVhcl_uds_union` level and below. It doesn't have bones, so a simple MeshRenderer is sufficient. Make sure to set a single material on the gameobject. You can freely add other meshes below this point, and they will be included in the runtime rendering.
+
+*Scene Layer*: Every object that renders needs to be on layer 20, the layer HBS uses for the dropships. UDS will try to set this automatically for your instantiated prefabs, but you can also set it in your scene for redundancy. If you aren't seeing meshes in game, try setting your layer to 20. 
+
+*Attach Points*: Attach points are simply GameObjects that the UDS code needs references to before it can finalize layouts. At the moment, this is limited to engines and decals. Decals are complex enough they are talked about below, but engines are simple. 
+
+1. Create a GameObject for each engine 'jet' you want shown during planet transition scenes. Use a consistent naming pattern, and mark these in the `attachesEngines` array in the customDropshipDef. 
+1. Create a *single* GameObject to use as the source of a general blue & white glow from the engine. Set this as `attachEngineGlow` in the customDropshipDef. 
+
+Do both of these and UDS will take care of the rest, creating the necessary ParticleEmitters at runtime.
+
+*Spot and Running Lights*: HBS Dropships uses Spot and Running lights. These are simple Unity `Light` components. Create and color them where you like, and they will render in game. If you want your running lights to blink, create a simple animation for them (see the Animation secton below).
+
+### Decals
+
+Decals are 2D textures that are pushed onto 3D surfaces. HBS uses them for the company logos. Only one is allowed per dropship, because instantiating new Decal components doesn't work for me. Decals are a bit tricky to get right however, due to their nature. Start by creating the heirarchy described above:
+
+```
+/ap_decal_root
+  / ap_decal
+  / ap_decal_test_sphere
+```
+
+Create `ap_decal_root` and `ap_decal` as Empty GameObjects,and `ap_decal_test_sphere` as a 3D / Sphere object. Use a striking color for the sphere's material (I picked orange). Make sure both `ap_decal` and `ap_decal_test_sphere` occupy the same transform, then select both and move them where you want the decal on your mesh. Make sure the point is slightly 'outside' the mesh; the decal will project as a box into the mesh and can overlap if you make the scale too high. 
+
+Once you have the position correct, select only `ap_decal` and set the transform scales to 12, 12, 12. The X and Z values determine the size of the 2D texture. The Y value determines how far the 'box' projects for the decal. When you load into the game, make sure to also have BTDebug and open the inspector (Alt+i). 
+
+Make you have have BTDebug enabled as a mod. Load up the game, show your dropship. You should see the decal 'stretched' over the sphere. In BTDebug, search for "UDS" and you should see your dropship. Choose the `BattleTech Decal (1)` GO under the hierarchy:
+
+![Example Camoholder GameObject](doc/modeling_decal_ingame_heirarchy.png)
+
+1. Start adjusting `localScale` until you're mostly happy with how it overlaps the sphere
+1. Adjust `localEulerAngles`  until you're happy with the rotation relative to your dropship
+1. Disable the `ap_decal_test_sphere` GameObject. This will let the decal overlay on your mesh.
+1. Perform final adjustments on ap_decal transform until you're happy
+
+Once you are satisfied, copy `localPosition`, `localRotation`, and `localScale` onto your Unity scene's `ap_decal` GO as `position`, `rotation`, and `scale`. Then rebuild your dropship prefab and relaunch the game. You should see the prefab properly aligned and scaled, and it will rotate with the entire mesh appropriately. 
+
+### Camoholder
+
+HBS uses a simple RGBA mask to display company colors on the dropship. As with other imports, this takes the form of a 'camo mask' independent of the main material. Unlike other models, for UDS the camo mask texture needs to be embedded in a material to be accessed. At runtime UDS will look for a GameObject called Camoholder, and if present copy the texture data from the material on that GO into the materials created at runtime. 
+
+So to get company colors you need:
+
+1. A `camoholder` game object
+2. That GO needs to have a `Mesh Renderer` component whose material is set to 
+3. A Unity material that contains your camo pattern mask. 
+
+![Example Camoholder GameObject](doc/modeling_camoholder_example.png)
+
+### Animation
+
+UDS will look through the prefab to find an `AnimationController` component. If one is found, it will be enabled at prefab load time. This allows you to model whatever animations you like, such as the running lights. UDS will only find the first (i.e. most top-level) animationcontroller, and doesn't support multiples at this time. 
+
+*Custom Animation Properties*: When a dropship is orbiting a planet (i.e. not moving/jumping) UDS will set the `isOrbiting` parameter to true on the AnimationController. This allows you to create custom animations that are only played during the orbit cycle. 
+
+Additional parameters may be added in the future as needs arise.
 
 ## DEV NOTES
 

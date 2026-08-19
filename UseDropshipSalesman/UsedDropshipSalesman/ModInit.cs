@@ -22,8 +22,7 @@ namespace UsedDropshipSalesman
     {
 
         public const string HarmonyPackage = "us.frostraptor.UsedDropshipSalesman";
-        public const string LogName = "used_dropship_salesman";
-        public const string LogLabel = "USEDDROPSHIP";
+        public const string ModLabel = "USEDDROPSHIP";
 
         internal static NullableLogger Log = NullableLogger.GetLogger("UsedDropshipSalesman", NullableLogger.TraceLogLevel);
         internal static string ModDir;
@@ -94,7 +93,7 @@ namespace UsedDropshipSalesman
             constraints["vehicle_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 3 };
             constraints["battle_armor_bays"] = new CustomHangarConstraint() { MaxAvailableUnits = 14 };
 
-            CustomHangarHelper.SetConstraints(constraints, Mod.LogLabel);
+            CustomHangarHelper.SetConstraints(constraints, Mod.ModLabel);
 
             // Load the dropship configs
             if (customResources != null && customResources.Count > 0)

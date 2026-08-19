@@ -18,6 +18,7 @@ namespace UsedDropshipSalesman
         // Visuals state
         internal static LeopardPrefabState SimGameLeopardState = null;
         internal static LeopardPrefabState BriefingLeopardState = null;
+        internal static Animator CustomAnimator = null;
 
         // Upgrades state
         internal static bool HasCustomUpgradeScreen = false;
@@ -48,6 +49,7 @@ namespace UsedDropshipSalesman
             {
                 // Reinitialize state
                 CurrentTravelStatus = SimGameTravelStatus.IN_SYSTEM;
+
             }
         }
 

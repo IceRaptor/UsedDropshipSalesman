@@ -27,19 +27,22 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Log("==== SimGameState_InitCompanyStats - entered.");
             __instance.companyStats.AddStatistic<String>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
 
-            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, null);
-            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
-            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
-            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
+            Mod.Log.Debug?.Log($"Adding button stats");
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, String.Empty);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, String.Empty);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, String.Empty);
+            __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, String.Empty);
 
+            Mod.Log.Debug?.Log($"Adding additional stats");
             __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE, 0);
             __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_BERTHS, 0);
+            Mod.Log.Debug?.Log($"Iterating customHangers");
             foreach (CustomHangarDef customHangarDef in CustomHangarHelper.listHangars)
             {
-                String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef.Description.Id);
+                String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef?.Description?.Id);
                 String customStat = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarLabel}";
                 Mod.Log.Debug?.Log($"Adding statistic for customHangar: {hangarLabel} as: {customStat}");
-                __instance.companyStats.AddStatistic<String>(customStat, null);
+                __instance.companyStats.AddStatistic<String>(customStat, String.Empty);
             }
 
             // Force there to be 3 full mechbays for all ships, and let CU constraints handle the rest
@@ -59,19 +62,23 @@ namespace UsedDropshipSalesman.Patches
                 __instance.CompanyStats.AddStatistic<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
                 __instance.CompanyStats.Set<string>(ModConsts.STAT_CURRENT_DROPSHIP, Mod.Config.FallbackDropship);
 
-                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, null);
-                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, null);
-                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, null);
-                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, null);
+                Mod.Log.Debug?.Log($"Adding button stats");
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_1_ABILITYDEF_ID, String.Empty);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID, String.Empty);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID, String.Empty);
+                __instance.companyStats.AddStatistic<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID, String.Empty);
 
+                Mod.Log.Debug?.Log($"Adding additional stats");
                 __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_DROP_TONNAGE, 0);
                 __instance.companyStats.AddStatistic<int>(ModConsts.STAT_ADDITIONAL_BERTHS, 0);
+
+                Mod.Log.Debug?.Log($"Iterating customHangers");
                 foreach (CustomHangarDef customHangarDef in CustomHangarHelper.listHangars)
                 {
-                    String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef.Description.Id);
+                    String hangarLabel = CustomHangarHelper.GetHangarLabel(customHangarDef?.Description?.Id);
                     String customStat = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarLabel}";
                     Mod.Log.Debug?.Log($"Adding statistic for customHangar: {hangarLabel} as: {customStat}");
-                    __instance.companyStats.AddStatistic<String>(customStat, null);
+                    __instance.companyStats.AddStatistic<String>(customStat, String.Empty);
                 }
 
                 // Save the dropship state
@@ -99,6 +106,12 @@ namespace UsedDropshipSalesman.Patches
 
             if (__instance == null) return;
 
+            if (ModState.CustomAnimator != null)
+            {
+                bool inOrbit = __instance.TravelState == SimGameTravelStatus.IN_SYSTEM;
+                Mod.Log.Trace?.Log($"Setting customAnimator params inOrbit: {inOrbit}");
+                ModState.CustomAnimator.SetBool("InOrbit", inOrbit);
+            }
 
             // Check for a difference in ships
             string currDropshipId = __instance.CompanyStats.GetValue<String>(ModConsts.STAT_CURRENT_DROPSHIP);

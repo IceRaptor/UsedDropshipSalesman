@@ -21,9 +21,14 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(typeof(Ability), "IsAvailable", MethodType.Getter)]
     static class Ability_IsAvailable_GETTER
     {
+
+        static void Prefix(Ability __instance, ref bool __result)
+        {
+            Mod.Log.Trace?.Log($"==== Ability_IsAvailable_GETTER:PRE- entered for ability: {__instance.Def?.Description?.Id}");
+        }
         static void Postfix(Ability __instance, ref bool __result)
         {
-            Mod.Log.Trace?.Log($"==== Ability_IsAvailable_GETTER:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
+            Mod.Log.Trace?.Log($"==== Ability_IsAvailable_GETTER:POST- entered for ability: {__instance.Def?.Description?.Id}");
 
             if (__instance.Def.Description.Id.Contains("_UDS_", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -42,9 +47,13 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(new Type[] { typeof(Team), typeof(Vector3) })]
     static class Ability_Activate_Team_Vector3
     {
+        static void Prefix(Ability __instance, Team team, Vector3 position)
+        {
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3:PRE- entered for ability: {__instance.Def?.Description?.Id}");
+        }
         static void Postfix(Ability __instance, Team team, Vector3 position)
         {
-            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3:POST- entered for ability: {__instance.Def?.Description?.Id}");
         }
     }
 
@@ -52,9 +61,13 @@ namespace UsedDropshipSalesman.Patches
     [HarmonyPatch(new Type[] { typeof(Team), typeof(Vector3), typeof(Vector3) })]
     static class Ability_Activate_Team_Vector3_Vector3
     {
+        static void Prefix(Ability __instance, Team team, Vector3 positionA, Vector3 positionB)
+        {
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3_Vector3:PRE- entered for ability: {__instance.Def?.Description?.Id}");
+        }
         static void Postfix(Ability __instance, Team team, Vector3 positionA, Vector3 positionB)
         {
-            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3_Vector3:Postfix- entered for ability: {__instance.Def?.Description?.Id}");
+            Mod.Log.Trace?.Log($"==== Ability_Activate_Team_Vector3_Vector3:POST- entered for ability: {__instance.Def?.Description?.Id}");
         }
     }
 
@@ -65,7 +78,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Prefix(Ability __instance, ref bool __runOriginal,  Team team, Vector3 targetPos, float radius)
         {
-            Mod.Log.Trace?.Log("==== Ability_ActivateArtilleryStrike:POSTFIX- entered.");
+            Mod.Log.Trace?.Log("==== Ability_ActivateArtilleryStrike:PRE- entered.");
 
             Mod.Log.Debug?.Log($"ActivateArtilleryStrike for team: {team}  targetPos: {targetPos}  radius: {radius}  " +
                 $"Combat == null: {__instance.Combat == null}  StackManager == null: {__instance.Combat?.StackManager == null}.");
@@ -97,7 +110,7 @@ namespace UsedDropshipSalesman.Patches
     {
         static void Prefix(Ability __instance, ref bool __runOriginal, Team team, Vector3 positionA, Vector3 positionB, float radius)
         {
-            Mod.Log.Trace?.Log("==== Ability_ActivateStrafe:POSTFIX- entered.");
+            Mod.Log.Trace?.Log("==== Ability_ActivateStrafe:PRE- entered.");
 
             Mod.Log.Debug?.Log($"Ability_ActivateStrafe for team: {team}  positionA: {positionA}  positionB: {positionB}  radius: {radius}  " +
                 $"Combat == null: {__instance.Combat == null}");

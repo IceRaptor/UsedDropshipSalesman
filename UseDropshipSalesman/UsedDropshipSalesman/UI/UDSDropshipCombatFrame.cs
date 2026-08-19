@@ -101,7 +101,15 @@ namespace UsedDropshipSalesman.UI
 
         private void OnActorSelected(MessageCenterMessage message)
         {
-            if (!ButtonTray.HasActiveButtons()) 
+            if (!Combat.TurnDirector.IsInterleaved)
+            {
+                Mod.Log.Trace?.Log("Non-Interleaved mode, disabling the UDS_DROPSHIP_BTN_ROOT");
+                this.gameObject.SetActive(false);
+                this.ButtonTrayGO.SetActive(false);
+                return;
+            }
+
+            if (!ButtonTray.HasActiveButtons())
             {
                 Mod.Log.Trace?.Log("No active buttons, disabling the UDS_DROPSHIP_BTN_ROOT");
                 this.gameObject.SetActive(false);
@@ -111,7 +119,12 @@ namespace UsedDropshipSalesman.UI
 
             ActorSelectedMessage actorSelectedMessage = message as ActorSelectedMessage;
             AbstractActor actor = Combat.FindActorByGUID(actorSelectedMessage.affectedObjectGuid);
-            if (actor != null && actor.team != null && actor.team.IsLocalPlayer && Combat.TurnDirector.IsInterleaved)
+
+            Mod.Log.Trace?.Log($"UDSDropshipCombatFrame::OnActorSelected - actorSelectedMessage.affectedObjectGuid: {actorSelectedMessage.affectedObjectGuid}  " +
+                $"actor: {actor?.DisplayName}  actorTeam: {actor?.team?.Name}  actorTeamGuid: {actor?.team?.GUID}  " +
+                $"localPlayerTeamGuid: {Combat.LocalPlayerTeamGuid} isInterleaved? {Combat?.TurnDirector?.IsInterleaved}");
+
+            if (actor != null && actor.team != null && actor.team.IsLocalPlayer)
             {
                 Mod.Log.Trace?.Log("Enabling the UDS_DROPSHIP_BTN_ROOT");
                 DropshipCommandLabelImage.color = ActiveColor;
@@ -122,7 +135,7 @@ namespace UsedDropshipSalesman.UI
             }
             else
             {
-                Mod.Log.Trace?.Log("Disabling the UDS_DROPSHIP_BTN_ROOT");
+                Mod.Log.Trace?.Log("Not the local player team, disabling the UDS_DROPSHIP_BTN_ROOT");
                 this.gameObject.SetActive(false);
                 this.ButtonTrayGO.SetActive(false);
             }

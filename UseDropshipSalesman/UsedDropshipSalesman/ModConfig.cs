@@ -72,12 +72,6 @@ namespace UsedDropshipSalesman
 
     public class ModConfig
     {
-
-        // If true, many logs will be printed
-        public bool Debug = false;
-        // If true, all logs will be printed
-        public bool Trace = false;
-
         public string FallbackDropship; // Used for an existing career with values; default to HBS_ARGO
         public Dictionary<string, string> CareerStartDropshipByPlanetName;
         public List<String> PersistentUpgrades; // TODO: Doc
@@ -88,7 +82,6 @@ namespace UsedDropshipSalesman
         public void LogConfig()
         {
             Mod.Log.Info?.Log("=== MOD CONFIG BEGIN ===");
-            Mod.Log.Info?.Log($"  DEBUG:{this.Debug} Trace:{this.Trace}");
 
             Mod.Log.Info?.Log("  ---- STARTING DROPSHIPS");
             Mod.Log.Info?.Log($"Fallback dropshipId: {this.FallbackDropship}");
@@ -165,8 +158,6 @@ namespace UsedDropshipSalesman
 
             Mod.Log.Debug?.Log(" == Configuration Initialized");
         }
-
-        
 
         private void ConvertColors()
         {

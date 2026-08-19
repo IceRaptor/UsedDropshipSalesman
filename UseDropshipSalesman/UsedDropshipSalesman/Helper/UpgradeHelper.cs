@@ -51,7 +51,7 @@ namespace UsedDropshipSalesman.Helper
                 constraints.Add(bay.bayId, new CustomHangarConstraint() { MaxAvailableUnits = currentMax });
             }
 
-            CustomHangarHelper.SetConstraints(constraints, Mod.LogName);
+            CustomHangarHelper.SetConstraints(constraints, Mod.ModLabel);
         }
 
         private static void DeDupeSGSShipUpgrades(SimGameState sgs)
@@ -248,9 +248,9 @@ namespace UsedDropshipSalesman.Helper
                     DropshipHangarBay dropshipHangarBay = newHangarConfigs[hangarId];
                     string additionalHangarsStatName = $"{ModConsts.STAT_ADDITIONAL_HANGARS_PREFIX}{hangarId}";
                     int additionalHangars = sgs.companyStats.GetValue<int>(additionalHangarsStatName);
-                    int newConstraintSize = dropshipHangarBay.baseBays = additionalHangars;
+                    int newConstraintSize = dropshipHangarBay.baseBays + additionalHangars;
                     if (newConstraintSize > dropshipHangarBay.maxBays) { newConstraintSize = dropshipHangarBay.maxBays; }
-                    Mod.Log.Debug?.Log($"New constraint siz for hangar: {hangarId} is {newConstraintSize} => " +
+                    Mod.Log.Debug?.Log($"New constraint size for hangar: {hangarId} is {newConstraintSize} => " +
                         $"base: {newHangarConfigs[hangarId].baseBays} + additional: {additionalHangars}");
 
                     if (currentUnitCountPerHangar[hangarId] > newConstraintSize) 

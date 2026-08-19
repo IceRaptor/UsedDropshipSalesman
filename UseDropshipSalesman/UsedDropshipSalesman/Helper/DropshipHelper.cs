@@ -1,6 +1,7 @@
 ﻿using BattleTech.Rendering;
 using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
+using CustomUnits;
 using HBS.Extensions;
 using MonoMod.Core.Platforms;
 using System;
@@ -32,10 +33,17 @@ namespace UsedDropshipSalesman.Helper
         public Material BodyMat;
         public SimpleCustomization CamoComp;
 
+        public Vector3 DecalStartPosition = Vector3.one;
+        public Vector3 DecalStartLocalPosition = Vector3.one;
+        public Quaternion DecalStartRotation = Quaternion.identity;
+        public Quaternion DecalStartLocalRotation = Quaternion.identity;
+        public Vector3 DecalStartLocalScale = Vector3.one;
+
         // Mutated state references 
         public List<ParticleSystem> DefaultAMECores = new();
         public List<Light> DefaultAMELights = new();
         public List<BTFlare> DefaultAMEFlares = new();
+
 
         public override string ToString()
         {
@@ -139,7 +147,7 @@ namespace UsedDropshipSalesman.Helper
             Mod.Log.Debug?.Log($"PREFAB_GO == null? {prefabGO == null}");
 
             Mod.Log.Debug?.Log($"Instantiating prefab: {config.CustomDropship.Visuals.PrefabPath}");
-            GameObject dropshipRootGO = new GameObject(dropshipRootName);
+            GameObject dropshipRootGO = new(dropshipRootName);
             dropshipRootGO.transform.parent = leopardPrefabState.ParentGO.transform;
             dropshipRootGO.transform.position = leopardPrefabState.ParentGO.transform.position;
             dropshipRootGO.transform.rotation = leopardPrefabState.ParentGO.transform.rotation;
@@ -166,13 +174,21 @@ namespace UsedDropshipSalesman.Helper
                 childMeshRenderer.gameObject.layer = ModConsts.HBS_LEOPARD_PREFAB_LAYER;
             }
 
+            // Find the Animator component, if applicable
+            Animator animator = dropshipGO.GetComponentInChildren<Animator>();
+            if (animator != null)
+            {
+                Mod.Log.Debug?.Log($"Identified animator component on GO: {animator.gameObject.name}");
+                ModState.CustomAnimator = animator;
+                animator.enabled = true;
+            }
+
             // Transfer the camo pattern texture
             Mod.Log.Debug?.Log("Updating camo holder texture."); 
             GameObject camoholderGO = dropshipGO.FindFirstChildNamed("camoholder");
             MeshRenderer camoMeshRenderer = camoholderGO.GetComponent<MeshRenderer>();
             leopardPrefabState.CamoComp.paintSchemeTex = (Texture2D)camoMeshRenderer.material.mainTexture;
             leopardPrefabState.CamoComp.UpdateHeraldry();
-
 
             leopardPrefabState.ArgoEngineComp.gameObject.SetActive(false);
             List<ParticleSystem> newEngineCores = new();
@@ -263,18 +279,24 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the decal
-            Mod.Log.Debug?.Log("Updating decal");
+            Mod.Log.Debug?.Log("Moving company decal");
             var ap_decal = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachDecal);
             if (ap_decal != null)
             {
-                var newDecal = UnityEngine.Object.Instantiate(leopardPrefabState.DecalGO);
-                newDecal.name = $"decal_{config.CustomDropship.Visuals.AttachDecal}";
-                newDecal.transform.parent = ap_decal.transform;
-                newDecal.transform.position = ap_decal.transform.position;
-                newDecal.transform.rotation = leopardPrefabState.DecalGO.transform.rotation;
-                newDecal.transform.localPosition = Vector3.zero;
-                newDecal.transform.localScale = Vector3.one;
-                newDecal.SetActive(true);
+                // We cannot instantiate a new decal, it doesn't seem to take. Instead, move the existing decal around.
+                // Decal notes = x,z scale influence 2d size, y scale influences 'depth'
+
+                // Parent off the attach-point's parent, not the actual attach point. This will ensure we can copy the positional and scale data from the attach_point
+                leopardPrefabState.DecalGO.transform.parent = ap_decal.transform.parent;
+                //leopardPrefabState.DecalGO.transform.position = ap_decal.transform.position;
+                leopardPrefabState.DecalGO.transform.localPosition = ap_decal.transform.localPosition;
+                //leopardPrefabState.DecalGO.transform.rotation = ap_decal.transform.rotation;
+                leopardPrefabState.DecalGO.transform.localRotation = ap_decal.transform.localRotation;
+                leopardPrefabState.DecalGO.transform.localScale = ap_decal.transform.localScale;
+
+                // Re-enable if we're configured to use it
+                leopardPrefabState.DecalGO.SetActive(true);
+
             }
             else
             {
@@ -335,6 +357,12 @@ namespace UsedDropshipSalesman.Helper
                 prefabState.ArgoEngineComp.engineCores = prefabState.DefaultAMECores.ToArray();
                 prefabState.ArgoEngineComp.engineLights = prefabState.DefaultAMELights.ToArray();
                 prefabState.ArgoEngineComp.engineFlares = prefabState.DefaultAMEFlares.ToArray();
+
+                // Reset the decal to the default values
+                prefabState.DecalGO.transform.parent = prefabState.ParentGO.transform;
+                prefabState.DecalGO.transform.localPosition = prefabState.DecalStartLocalPosition;
+                prefabState.DecalGO.transform.localRotation = prefabState.DecalStartLocalRotation;
+                prefabState.DecalGO.transform.localScale = prefabState.DecalStartLocalScale;
             }
             else
             {
@@ -415,6 +443,12 @@ namespace UsedDropshipSalesman.Helper
                 {
                     // Should be the decal attachment
                     state.DecalGO ??= childT.gameObject;
+                    // Capture it's original state, since we have to move it around
+                    state.DecalStartPosition = childT.transform.position;
+                    state.DecalStartLocalPosition = childT.transform.localPosition;
+                    state.DecalStartRotation = childT.transform.rotation;
+                    state.DecalStartLocalRotation = childT.transform.localRotation;
+                    state.DecalStartLocalScale = childT.transform.localScale;
                 }
             }
 
@@ -448,47 +482,5 @@ namespace UsedDropshipSalesman.Helper
             abm.RequestBundle(config.CustomDropship.Visuals.AssetBundleId, onLoaded);
         }
 
-        //public static void LoadAllAssetBundles(SimGameState sgs)
-        //{
-        //    Mod.Log.Info?.Log("Identifying prefabs to load");
-        //    var prefabsToLoad = new Dictionary<string, string>();
-        //    foreach (KeyValuePair<String, DropshipConfig> kvp in Mod.Config.Dropships)
-        //    {
-        //        DropshipVisuals prefabConfig = kvp.Value.CustomDropship.Visuals;
-        //        Mod.Log.Info?.Log($" Loading dropship: {kvp.Key} assetBundle: {prefabConfig.AssetBundleId} " +
-        //            $"prefabPath:{prefabConfig.PrefabPath}");
-
-        //        if (prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_LEOPARD, StringComparison.InvariantCultureIgnoreCase) ||
-        //            prefabConfig.AssetBundleId.Equals(ModConsts.HBS_PREFAB_ARGO, StringComparison.InvariantCultureIgnoreCase))
-        //        {
-        //            Mod.Log.Info?.Log($"  Dropship configured to use HBS assets, skipping load.");
-        //            continue;
-        //        }
-
-        //        if (!prefabsToLoad.ContainsKey(prefabConfig.AssetBundleId))
-        //        {
-        //            prefabsToLoad.Add(prefabConfig.AssetBundleId, prefabConfig.PrefabPath);
-        //        }
-        //    }
-
-        //    List<Action<AssetBundle>> callbacks = new List<Action<AssetBundle>>();
-        //    foreach (KeyValuePair<string, string> kvp in prefabsToLoad)
-        //    {
-        //        var abm = sgs.DataManager.AssetBundleManager;
-        //        var onLoaded = delegate(AssetBundle ab)
-        //        {
-        //            Mod.Log.Debug?.Log($" -- Loaded assetBundleId: {ab.name}");
-
-        //            var assetBundle = abm.GetLoadedAssetBundle(ab.name);
-        //            Mod.Log.Trace?.Log($" -- All assets in bundle: {ab.name}");
-        //            foreach (string n in assetBundle.GetAllAssetNames())
-        //            {
-        //                Mod.Log.Trace?.Log($"  ---- {n}");
-        //            }
-        //        };
-        //        callbacks.Add(onLoaded);
-        //        abm.RequestBundle(kvp.Key, onLoaded);
-        //    }
-        //}
     }
 }

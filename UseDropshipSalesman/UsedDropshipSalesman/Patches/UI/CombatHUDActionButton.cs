@@ -182,7 +182,7 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         static void Postfix(CombatHUDActionButton __instance, string teamGUID, Vector3 targetPosition)
         {
-            Mod.Log.Trace?.Log("==== Ability_ActivateSpecialAbility:POSTFIX- entered.");
+            Mod.Log.Trace?.Log("==== CombatHUDActionButton_ActivateSpecialAbility:POSTFIX- entered.");
             Mod.Log.Debug?.Log($"ActivateCommandAbility for teamGUID: {teamGUID}  targetPos: {targetPosition}");
 
             if (!String.IsNullOrEmpty(__instance?.Ability?.Def?.Description?.Id) && __instance.Ability.Def.Description.Id.Contains("_UDS_"))
@@ -191,7 +191,7 @@ namespace UsedDropshipSalesman.Patches.UI
                 //      but we don't want this messing up other added command abilities so make it transient for this call
                 Team team = __instance.Combat.Teams.Find((Team x) => x.GUID == teamGUID);
 
-                Mod.Log.Debug?.Log($"Adding ability {__instance.Ability.Def.Description.Id} to team command ability and ActivatedTeamAbility");
+                Mod.Log.Debug?.Log($"Adding ability '{__instance.Ability.Def.Description.Id}' (vector3) to team command ability and ActivatedTeamAbility");
                 team.CommandAbilities.Add(__instance.Ability);
                 ModState.ActivatedTeamAbility = __instance.Ability;
 
@@ -218,7 +218,7 @@ namespace UsedDropshipSalesman.Patches.UI
     {
         static void Postfix(CombatHUDActionButton __instance, string teamGUID, Vector3 positionA, Vector3 positionB)
         {
-            Mod.Log.Trace?.Log("==== Ability_ActivateSpecialAbility:POSTFIX- entered.");
+            Mod.Log.Trace?.Log("==== CombatHUDActionButton_ActivateSpecialAbility_2:POSTFIX- entered.");
             Mod.Log.Debug?.Log($"ActivateCommandAbility for teamGUID: {teamGUID}  positionA: {positionA}  positionB: {positionB}");
 
             if (!String.IsNullOrEmpty(__instance?.Ability?.Def?.Description?.Id) && __instance.Ability.Def.Description.Id.Contains("_UDS_"))
@@ -227,7 +227,7 @@ namespace UsedDropshipSalesman.Patches.UI
                 //      but we don't want this messing up other added command abilities so make it transient for this call
                 Team team = __instance.Combat.Teams.Find((Team x) => x.GUID == teamGUID);
 
-                Mod.Log.Debug?.Log($"Adding ability {__instance.Ability.Def.Description.Id} to team command ability and ActivatedTeamAbility");
+                Mod.Log.Debug?.Log($"Adding ability '{__instance.Ability.Def.Description.Id}' (vector3,vector3) to team command ability and ActivatedTeamAbility");
                 team.CommandAbilities.Add(__instance.Ability);
                 ModState.ActivatedTeamAbility = __instance.Ability;
 
