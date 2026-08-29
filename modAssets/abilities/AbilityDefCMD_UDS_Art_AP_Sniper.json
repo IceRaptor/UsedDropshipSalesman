@@ -12,7 +12,6 @@
 	"SpecialRules" : "Artillery",
 	"Targeting" : "CommandTargetSinglePoint",
 	"FloatParam1" : 25.0,
-	"IntParam1" : 100,
 	"IntParam1" : 1,
 	"IntParam2": 600,
 	"NumberOfUses" : 2,
