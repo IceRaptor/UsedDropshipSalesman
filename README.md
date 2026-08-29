@@ -226,6 +226,7 @@ All are configured as AbilityDefs, and are highly customizable. You can freely c
 * `WeaponResource`: As per ActorResource, sequences that rely on a unit will define the pilotDef they want to use in this value. Keep in mind that many pilot abilities will not be useful to these temporary units, as don't have an actual turn.
 * `ActivationCooldown`: The cooldown for the action, in *turns* (not phases). 
 * `NumberOfUses`: The total number of uses allowed within the combat mission. Once the uses are consumed, the button should become unavailable.
+* `ActivationETA`: The number of phases (not turns) between the time the ability is activated, and the effect resolves.
 
 :information_source: Note that while some of sequences are similar to Strategic Operations, we don't rely upon that mod for this functionality. We've used the base HBS sequences instead, to give some flexibility to modders. StratOps should work perfectly fine alongside this mod, if you prefer to use their airstrikes instead.
 
@@ -268,13 +269,12 @@ A UDS Airstroke sequences allows a player to choose two target locations, then a
 *Configuration* for the sequence is listed below. Note HBS chose to overload the AbilityDef and use the same values for two different purposes. They configure the actual strike, but also how the strike is selected. The first values given are for the strike, the second set are the same values used for selection. 
 
 * `ActorResource` must be a turretDef
-* `Targeting` MUST be `CommandTargetSinglePoint`
+* `Targeting` MUST be `CommandTargetTwoPoints`
 * `FloatParam1` the *radius* for target selection
 * `FloatParam2` the *radius* of the targeting reticles 
 * `IntParam1` the number of flares that will be displayed while waiting for the strike
 * `IntParam2` unused
 * `StringParam1` is the VFX that will be used to mark the spot until the attack resolves. I'm using `vfxPrfPrtl_artillerySmokeSignal_loop` but you do you
-* `StringParam2`is the `vfxPrfPrtl_thumperImpact` that will be applied after the attack. 
 
 **Selection Overrides**
 

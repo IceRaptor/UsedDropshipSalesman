@@ -171,7 +171,8 @@ namespace UsedDropshipSalesman.Sequence
                 }
             }
             Vector3 preStartPos = EndPos - StartPos * 2f;
-            AllTargets.Sort((AbstractActor x, AbstractActor y) => Vector3.Distance(y.CurrentPosition, preStartPos).CompareTo(Vector3.Distance(x.CurrentPosition, preStartPos)));
+            AllTargets.Sort(
+                (AbstractActor x, AbstractActor y) => Vector3.Distance(y.CurrentPosition, preStartPos).CompareTo(Vector3.Distance(x.CurrentPosition, preStartPos)));
         }
 
         private bool IsTarget(AbstractActor actor)
