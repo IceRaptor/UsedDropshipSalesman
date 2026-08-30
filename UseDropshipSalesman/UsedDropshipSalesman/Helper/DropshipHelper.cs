@@ -2,6 +2,7 @@
 using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using CustomUnits;
+using FluffyUnderware.DevTools.Extensions;
 using HBS.Extensions;
 using MonoMod.Core.Platforms;
 using System;
@@ -106,14 +107,25 @@ namespace UsedDropshipSalesman.Helper
             string dropshipRootName = ModConsts.DROPSHIP_GO_PREFIX_SIMGAME + config.CustomDropship.Visuals.AssetBundleId;
             LeopardPrefabState leopardPrefabState = ModState.SimGameLeopardState;
 
-            // Try to find an existing instance - possible since SimGame gets torn down on mission
-            GameObject existingGO = leopardPrefabState.ParentGO.FindFirstChildNamed(dropshipRootName);
-            if (existingGO != null)
+            //// Try to find an existing instance - possible since SimGame gets torn down on mission
+            //GameObject existingGO = leopardPrefabState.ParentGO.FindFirstChildNamed(dropshipRootName);
+            //if (existingGO != null)
+            //{
+            //    Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
+            //    existingGO.SetActive(true);
+            //    return;
+            //}
+
+            // TODO: Disable existing instances of UDS prefabs
+            Transform leopardChildT= leopardPrefabState.ParentGO.transform;
+            foreach (Transform childT in leopardChildT)
             {
-                Mod.Log.Debug?.Log($"Dropship {dropshipRootName} GO already created, setting active.");
-                existingGO.SetActive(true);
-                return;
+                if (!String.IsNullOrEmpty(childT.name) && childT.name.StartsWith(ModConsts.DROPSHIP_GO_PREFIX_SIMGAME))
+                {
+                    childT.gameObject.Destroy();
+                }
             }
+
 
             Mod.Log.Info?.Log($"Overlaying prefab: {config.CustomDropship.Visuals.PrefabPath} onto the SimGame leopard");
             OverlayMeshes(config, leopardPrefabState, dropshipRootName);
