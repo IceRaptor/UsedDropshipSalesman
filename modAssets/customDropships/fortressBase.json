@@ -1,0 +1,218 @@
+{
+  "Description": {
+    "Id": "fortressBase",
+    "Name": "Fortress"
+  },
+  "Visuals": {
+    "assetBundleId": "chrprfvhcl_uds_fortress",
+    "prefabPath": "assets/character/vehicle/prefabs/uds/chrprfvhcl_uds_fortress.prefab",
+    "attachEngineGlow": "ap_engine_lights_1",
+    "attachDecal": "ap_decal",
+    "attachesEngines": [ "ap_engine_jets_1", "ap_engine_jets_2", "ap_engine_jets_3", "ap_engine_jets_4", "ap_engine_jets_5", "ap_engine_jets_6" ],
+    "attachesSpotLights": [],
+    "attachesRunningLights": []
+  },
+  "Costs": {
+    "purchase": 30000,
+    "upkeep": 45000,
+    "drop": 10000
+  },
+  "Berths" : {
+    "BasePilots" : 8,
+    "MaxPilots" : 16
+  },
+  "Requirements": {
+    "eventTag": "uds_require_dropship_fortress",
+    "factionReputation": 100,
+    "mustBeAllied": false,
+    "planetTags": [ "planet_industry_electronics", "planet_pop_large" ]
+  },
+  "HangarBays": [
+    { "bayId" : "BASE_HANGER", "baseBays": 4, "maxBays": 12 },
+    { "bayId" : "vehicle_bays", "baseBays": 4, "maxBays" : 12 },
+    { "bayId" : "battle_armor_bays", "baseBays": 0, "maxBays" : 0 }
+  ],
+  "DropBays": {
+    "labels": [ "Bay Alpha", "Bay Beta", "Bay Gamma" ],
+    "baseTonnage": 400,
+    "maxTonnage": 1200,
+    "slots": [
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
+      [ "default_mech_slot", "default_mech_slot", "default_mech_slot", "default_mech_slot" ],
+      [ "default_vehicle_slot", "default_vehicle_slot", "default_vehicle_slot", "default_vehicle_slot" ]
+    ]
+  },
+  "Upgrades": [
+    {
+      "categoryId": "core_systems",
+      "headerText": "Core Systems",
+      "icon": "lv_brass-eye",
+      "systems": [
+        {
+          "systemId": "structure",
+          "headerText": "Dropship Structure",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_structure_1",
+            "argoUpgrade_uds_fortress_structure_2",
+            "argoUpgrade_uds_fortress_structure_3"
+          ]
+        },
+        {
+          "systemId": "main_engine",
+          "headerText": "Main Engines",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_thrust_1",
+            "argoUpgrade_uds_fortress_thrust_2",
+            "argoUpgrade_uds_fortress_thrust_3"
+          ]
+        },
+        {
+          "systemId": "power_plant",
+          "headerText": "Power Plant",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_power_1",
+            "argoUpgrade_uds_fortress_power_2",
+            "argoUpgrade_uds_fortress_power_3",
+            "argoUpgrade_uds_fortress_power_4"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "combat",
+      "headerText": "Combat",
+      "icon": "uixSvgIcon_shipUpgrade_typeCombat",
+      "systems": [
+        {
+          "systemId": "drop_tonnage",
+          "headerText": "Drop Tonnage",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_combat_drop_tonnage_1",
+            "argoUpgrade_uds_fortress_combat_drop_tonnage_2",
+            "argoUpgrade_uds_fortress_combat_drop_tonnage_3"
+          ]
+        },
+       {
+          "systemId": "artillery_1",
+          "headerText": "Longtom Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_artillery_1_1",
+            "argoUpgrade_uds_fortress_artillery_1_2",
+            "argoUpgrade_uds_fortress_artillery_1_3"
+          ]
+        },
+        {
+          "systemId": "artillery_2",
+          "headerText": "Sniper Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_artillery_2_1",
+            "argoUpgrade_uds_fortress_artillery_2_2",
+            "argoUpgrade_uds_fortress_artillery_2_3"
+          ]
+        },
+        {
+          "systemId": "artillery_3",
+          "headerText": "Thumper Artillery",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_artillery_3_1",
+            "argoUpgrade_uds_fortress_artillery_3_2",
+            "argoUpgrade_uds_fortress_artillery_3_3"          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "maintenance",
+      "headerText": "Maintenance",
+      "icon": "uixSvgIcon_shipUpgrade_typeSystemSupport",
+      "systems": [
+        {
+          "systemId": "maintenance_hangars",
+          "headerText": "Mech Hangar Expansion",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_mech_hangars_1",
+            "argoUpgrade_uds_fortress_mech_hangars_2"
+          ]
+        },
+        {
+          "systemId": "maintenance_hangars",
+          "headerText": "Vehicle Hangar Expansion",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_vehicle_hangars_1",
+            "argoUpgrade_uds_fortress_vehicle_hangars_2"
+          ]
+        },
+        {
+          "systemId": "maintenance_repair",
+          "headerText": "Unit Repair",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_repair_cranes",
+            "argoUpgrade_uds_fortress_repair_elevator",
+            "argoUpgrade_uds_generic_repair_exoskeletons_1",
+            "argoUpgrade_uds_generic_repair_exoskeletons_2",
+            "argoUpgrade_uds_generic_repair_expert_system"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "personnel",
+      "headerText": "Personnel",
+      "icon": "uixSvgIcon_shipUpgrade_typePersonnel",
+      "systems": [
+        {
+          "systemId": "personnel_crew_berths",
+          "headerText": "Crew Berths",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_crew_berths_1",
+            "argoUpgrade_uds_fortress_crew_berths_2"
+          ]
+        },
+        {
+          "systemId": "med_bays",
+          "headerText": "Med Bays",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_medbay_1",
+            "argoUpgrade_uds_fortress_medbay_2",
+            "argoUpgrade_uds_fortress_medbay_3",
+            "argoUpgrade_uds_generic_medbay_expert_system"
+          ]
+        },
+        {
+          "systemId": "personnel_morale",
+          "headerText": "Ameneties",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_fortress_morale_gym",
+            "argoUpgrade_uds_fortress_morale_library",
+            "argoUpgrade_uds_fortress_morale_lounge"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 {
-    "FallbackDropship" : "union_base",
+    "FallbackDropship" : "unionBase",
     "CareerStartDropshipByPlanetName" : {
-        "Ichlangis" : "leopard_base",
-        "Brinton" : "leopard_tank_variant",
-        "Bromhead" : "union_base",
-        "Hurik" : "overlord_base",
+        "Ichlangis" : "leopardBase",
+        "Brinton" : "leopardTank",
+        "Bromhead" : "unionBase",
+        "Hurik" : "overlordBase",
         "Pilpala" : "argo"
 
     },

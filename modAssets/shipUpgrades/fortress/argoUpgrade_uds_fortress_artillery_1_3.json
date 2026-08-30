@@ -21,13 +21,20 @@
         "tagSetSourceFile" : ""
     },
     "Requirements" : [
-        
+        {
+            "ExclusionTags" : {
+                "items" : [
+                    "uds_fortress_artillery_1_locked"
+                ]
+            }
+        }
     ],
     "TechCost" : 5,
     "PurchaseCost" : 50000,
     "AdditionalCost" : 0,
     "Tags" : {
         "items" : [
+            "uds_fortress_artillery_1_locked"
         ],
         "tagSetSourceFile" : ""
     },
