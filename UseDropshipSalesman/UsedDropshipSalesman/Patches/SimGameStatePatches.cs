@@ -277,14 +277,17 @@ namespace UsedDropshipSalesman.Patches
 
             __runOriginal = false;
 
-            var gpb = GenericPopupBuilder.Create("Choose Dropship", "Choose a dropship from the buttons below.");
+
+            StringBuilder bodyText = new("Choose a dropship from the options below:<br><br><align=left>");
             foreach (KeyValuePair<string, DropshipConfig> kvp in Mod.Config.Dropships)
             {
-                gpb.AddButton($"{kvp.Value.CustomDropship.Description.Name}",
-                    delegate () { SetCurrentDropship(kvp.Value.CustomDropship.Description.Id); }
-                    );
+                bodyText.Append($"  <b>'{kvp.Value.CustomDropship.Description.Id}'</b> name: '{kvp.Value.CustomDropship.Description.Name}'<br>");
             }
-            gpb.Render();
+            bodyText.Append("<br><align=center>Enter the EXACT dropship_id below, then pass one game day.");
+            var gpb = GenericPopupBuilder.Create("DEBUG: Choose Dropship", bodyText.ToString())
+                .CancelOnEscape()
+                .AddInput("DropshipID", delegate (string dropshipId) { SetCurrentDropship(dropshipId); }, "", false, false)
+                .Render();
         }
         private static void SetCurrentDropship(string dropshipId)
         {
