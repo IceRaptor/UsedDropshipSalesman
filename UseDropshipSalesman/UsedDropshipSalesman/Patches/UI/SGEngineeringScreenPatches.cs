@@ -28,16 +28,37 @@ namespace UsedDropshipSalesman.Patches.UI
             }
 
             Mod.Log.Debug?.Log("--- Ship upgrades: Available");
+
+            List<ShipModuleUpgrade> excludedUpgrades = new();
             foreach (var smu in __instance.AvailableUpgrades)
             {
                 Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}' requires: [{smu.RequiredModules}]");
+                // Check for exclusion tags
+                foreach (RequirementDef requirement in smu.Requirements)
+                {
+                    if (requirement.ExclusionTags != null && requirement.ExclusionTags.Count > 0)
+                    {
+                        foreach (String excludedTag in requirement.ExclusionTags)
+                        {
+                            Mod.Log.Debug?.Log($"Evaluating exclusionTag: '{excludedTag}' against companyTags.");
+                            if (__instance.simState.companyTags.Contains(excludedTag))
+                            {
+                                Mod.Log.Debug?.Log($" -- CompanyTags contained excluded tag: {excludedTag}, disabling upgrade.");
+                                excludedUpgrades.Add(smu);
+                            }
+                        }
+                    }
+                }
             }
+            __instance.UnavailableUpgrades.AddRange(excludedUpgrades);
+            __instance.AvailableUpgrades.RemoveAll(smu => excludedUpgrades.Contains(smu));
 
             Mod.Log.Debug?.Log("--- Ship upgrades: Unavailable");
             foreach (var smu in __instance.UnavailableUpgrades)
             {
                 Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}' requires: [{smu.RequiredModules}]");
             }
+
 
             // Refresh argo upgrade colors
             var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
