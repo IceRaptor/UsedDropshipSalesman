@@ -1,21 +1,21 @@
 {
 	"Description" : {
-		"Id" : "AbilityDefCMD_UDS_Art_HE_Sniper",
-		"Name" : "Sniper HE",
-		"Details" : "High Explosive artillery strike from the Sniper attached to your Dropship.",
+		"Id" : "AbilityDefCMD_UDS_Art_Thumper_Cluster",
+		"Name" : "Thumper Cluster",
+		"Details" : "Cluster artillery strike from the Thumper attached to your Dropship.",
 		"Icon" : "uixSvgIcon_artillery"
 	},
 	"ActivationTime" : "NotSet",
 	"Resource" : "NotSet",
-	"ActivationCooldown" : 3,
+	"ActivationCooldown" : 2,
 	"ActivationETA" : 2,
 	"SpecialRules" : "Artillery",
 	"Targeting" : "CommandTargetSinglePoint",
-	"FloatParam1" : 50.0,
+	"FloatParam1" : 35.0,
 	"IntParam1" : 1,
 	"IntParam2": 600,
 	"NumberOfUses" : 2,
-    "ActorResource" : "turretdef_UDS_Art_HE_Longtom",
+    "ActorResource" : "turretdef_UDS_Art_Cluster_Thumper",
 	"WeaponResource" : "pilot_d10_sharpshooter",
     "StringParam1" : "vfxPrfPrtl_artillerySmokeSignal_loop",
     "StringParam2" : "vfxPrfPrtl_thumperImpact"
