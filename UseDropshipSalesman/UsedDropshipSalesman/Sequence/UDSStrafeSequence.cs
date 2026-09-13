@@ -185,7 +185,22 @@ namespace UsedDropshipSalesman.Sequence
 
         private void GetWeaponsForStrafe()
         {
-            StrafeWeapons = Attacker.Weapons.FindAll((Weapon x) => x.WeaponCategoryValue.IsEnergy);
+
+            StrafeWeapons = new();
+            Mod.Log.Debug?.Log("Validating attacker weapons for strafe.");
+            foreach (Weapon weapon in Attacker.Weapons)
+            {
+                Mod.Log.Debug?.Log($" -- Weapon: {weapon.Name} has weaponCategory.ID: {weapon.WeaponCategoryValue.ID}");
+                if (Mod.Config.StrafeAllowedWeaponCategoryIDs.Contains(weapon.WeaponCategoryValue.ID))
+                {
+                    Mod.Log.Debug?.Log($" -- WeaponCategoryID matched a configured value, adding.");
+                }
+                else
+                {
+                    Mod.Log.Debug?.Log($" -- WeaponCategoryID did not match, skipping.");
+                }
+            }
+                
             if (StrafeWeapons.Count == 0)
             {
                 CombatGameState.gameInfoLogger.LogError("ERROR!! No weapons found for strafing run.");

@@ -14,6 +14,7 @@
         "argoUpgrade_uds_generic_repair_exoskeletons_2",
         "argoUpgrade_uds_generic_repair_expert_system"
     ],
+    "StrafeAllowedWeaponCategoryIDs" : [ 1, 2, 3, 669, 670 ],
     "Colors" : {
         "Upgrades": {
             "Purchased"             : [ [ 0.253, 1.0, 0.0, 0.5 ],   [ 0.253, 1.0, 0.0, 1.0 ] ],
@@ -21,12 +22,5 @@
             "Unavailable"           : [ [ 1.0, 0.235, 0.0, 0.196 ], [ 1.0, 0.235, 0.0, 0.5 ] ],
             "Innate"                : [ [ 0.0, 0.65, 1.0, 0.5 ],    [ 1.0, 1.0, 1.0, 1.0 ] ]
         }
-    },
-    "LocalizedText" : {
-        "FT_IED_DEFAULT" : "Explosive IED",
-        "FT_IED_HE" : "High Explosive IED",
-        "FT_IED_INFERNO" : "Inferno IED",
-        "FT_IED_VBIED" : "Vibration IED",
-        "TURRET_DEATH" : "{0} DESTROYED"
     }
 }
