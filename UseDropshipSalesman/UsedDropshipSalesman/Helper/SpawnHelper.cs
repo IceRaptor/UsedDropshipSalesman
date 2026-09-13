@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomAmmoCategoriesPatches;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -41,7 +42,7 @@ namespace UsedDropshipSalesman.Helper
             Vehicle vehicle = ActorFactory.CreateVehicle(vehicleDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
             if (vehicle == null)
             {
-                Mod.Log.Error?.Log($"Failed to spawn vehicleDefId: {vehicleDefId} / pilotDefId: pilot_d10_sharpshooter !");
+                Mod.Log.Error?.Log($"Failed to spawn vehicleDefId: {vehicleDefId} / pilotDefId: {pilotDefId} !");
             }
             else
             {
@@ -49,7 +50,9 @@ namespace UsedDropshipSalesman.Helper
             }
 
             vehicle.Init(Vector3.zero, 0f, false);
+            vehicle.Tags(false).Add(ModConsts.TAG_MECH_AFFINITY_DO_NOT_PROCESS);
             Mod.Log.Debug?.Log($"Initted vehicle");
+
             vehicle.InitGameRep(null);
             Mod.Log.Debug?.Log($"Initted gameRep");
 
@@ -85,15 +88,17 @@ namespace UsedDropshipSalesman.Helper
             Turret turret = ActorFactory.CreateTurret(turretDef, pilotDef, team.EncounterTags, team.Combat, team.GetNextSupportUnitGuid(), "", null);
             if (turret == null)
             {
-                Mod.Log.Error?.Log($"Failed to spawn vehicleDefId: {turretDefId} / pilotDefId: pilot_d10_sharpshooter !");
+                Mod.Log.Error?.Log($"Failed to spawn turretDefId: {turretDefId} / pilotDefId: {pilotDefId} !");
             }
             else
             {
-                Mod.Log.Debug?.Log($"Created vehicle");
+                Mod.Log.Debug?.Log($"Created turret");
             }
 
             turret.Init(Vector3.zero, 0f, false);
+            turret.Tags(false).Add(ModConsts.TAG_MECH_AFFINITY_DO_NOT_PROCESS);
             Mod.Log.Debug?.Log($"Initted turret");
+
             turret.InitGameRep(null);
             Mod.Log.Debug?.Log($"Initted gameRep");
 
