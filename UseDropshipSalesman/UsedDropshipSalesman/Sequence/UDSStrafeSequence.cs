@@ -194,6 +194,7 @@ namespace UsedDropshipSalesman.Sequence
                 if (Mod.Config.StrafeAllowedWeaponCategoryIDs.Contains(weapon.WeaponCategoryValue.ID))
                 {
                     Mod.Log.Debug?.Log($" -- WeaponCategoryID matched a configured value, adding.");
+                    StrafeWeapons.Add(weapon);
                 }
                 else
                 {
