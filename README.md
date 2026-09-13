@@ -409,7 +409,7 @@ Gameplay
 
 - [X] Implement Dropship Command: Artillery Strikes
 - [X] Implement Dropship Command: Aerospace Strafe
-- [ ] Implement Dropship Command: Variable weapon types for strafes (currently hardcoded to energy only)
+- [X] Implement Dropship Command: Variable weapon types for strafes (currently hardcoded to energy only)
 - [] Implement Dropship Command: Aerospace Sensor Lock
 - [] Implement Dropship Command: Satellite View
 - [] Implement Dropship Command: Unit Drop
@@ -421,9 +421,9 @@ StratOps integration
 - [ ] Implement tag-based restrictions for events
 
 BiggerDrops Features
-- [ ] Kill-BD: Implement drop tonnage (defaultMaxTonnage)
-- [ ] Kill-BD: Implement custom drop sizes (by type) - is this a CU issue?
-- [ ] Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop) - is this a CU issue?
+- [X] Kill-BD: Implement drop tonnage (defaultMaxTonnage)
+- [X] Kill-BD: Implement custom drop sizes (by type) - is this a CU issue?
+- [X] Kill-BD: Respect flashpoint and 4 unit drop limitations (respectFourDropLimit, limitFlashpointDrop) - is this a CU issue?
 
 ### Ideas
 
