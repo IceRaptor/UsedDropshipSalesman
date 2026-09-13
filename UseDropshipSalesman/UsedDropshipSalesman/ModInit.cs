@@ -27,7 +27,8 @@ namespace UsedDropshipSalesman
         internal static NullableLogger Log = NullableLogger.GetLogger("UsedDropshipSalesman", NullableLogger.TraceLogLevel);
         internal static string ModDir;
         internal static ModConfig Config;
-        public static UDSSaveData ModSaveData = new UDSSaveData();
+        internal static ModText LocalizedText;
+        public static UDSSaveData ModSaveData = new();
 
         //public static readonly Random Random = new Random();
 
@@ -70,6 +71,21 @@ namespace UsedDropshipSalesman
             {
                 Log.Info?.Log($"INFO: No errors reading settings file.");
             }
+
+            // Read localization
+            string localizationPath = Path.Combine(ModDir, "./localization.json");
+            try
+            {
+                string jsonS = File.ReadAllText(localizationPath);
+                Mod.LocalizedText = JsonConvert.DeserializeObject<ModText>(jsonS);
+                Mod.Log.Info?.Log("Successfully read mod localization files.");
+            }
+            catch (Exception e)
+            {
+                Mod.LocalizedText = new ModText();
+                Mod.Log.Error?.Log($"Failed to read localizations from: {localizationPath} due to error!", e);
+            }
+            Mod.LocalizedText.InitUnset();
 
             // Initialize the custom save block
             JsonSaveBlock<UDSSaveData> udsSaveDataBlock = new()

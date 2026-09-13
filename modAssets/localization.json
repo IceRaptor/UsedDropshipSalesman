@@ -1,0 +1,25 @@
+{
+    "UpgradeDescs_Stats" : {
+        "UDS_COMBAT_BTN_1_ABILITYDEF_ID" : "Dropship Command 1",
+        "UDS_COMBAT_BTN_2_ABILITYDEF_ID" : "Dropship Command 2",
+        "UDS_COMBAT_BTN_3_ABILITYDEF_ID" : "Dropship Command 3",
+        "UDS_COMBAT_BTN_4_ABILITYDEF_ID" : "Dropship Command 4"
+    },
+    "UpgradeDescs_Abilities" : {
+        "AbilityDefCMD_UDS_Art_Longtom_AP" : "Grants an artillery strike from a Longtom artillery piece. Each unit in the target area will suffer 3 strikes from an AC/20 to random locations.",
+        "AbilityDefCMD_UDS_Art_Longtom_Cluster" : "Grants an artillery strike from a Longtom artillery piece. Each unit in the target area will suffer 6 strikes from an SRM6 to random locations.",
+        "AbilityDefCMD_UDS_Art_Longtom_HE" : "Grants an artillery strike from a Longtom artillery piece. Each unit in the target area will suffer 5 strikes from an AC/10 to random locations.",
+
+        "AbilityDefCMD_UDS_Art_Sniper_AP" : "Grants an artillery strike from a Sniper artillery piece. Each unit in the target area will suffer 1 strikes from an AC/20 and 2 from an AC/10 to random locations.",
+        "AbilityDefCMD_UDS_Art_Sniper_Cluster" : "Grants an artillery strike from a Sniper artillery piece. Each unit in the target area will suffer 4 strikes from an SRM4 to random locations.",
+        "AbilityDefCMD_UDS_Art_Sniper_HE" : "Grants an artillery strike from a Sniper artillery piece. Each unit in the target area will suffer 5 strikes from an AC/5 to random locations.",
+
+        "AbilityDefCMD_UDS_Art_Thumper_AP" : "Grants an artillery strike from a Thumper artillery piece. Each unit in the target area will suffer 1 strikes from an AC/10 and 2 from an AC/5 to random locations.",
+        "AbilityDefCMD_UDS_Art_Thumper_Cluster" : "Grants an artillery strike from a Thumper artillery piece. Each unit in the target area will suffer 6 strikes from an SRM4 to random locations.",
+        "AbilityDefCMD_UDS_Art_Thumper_HE" : "Grants an artillery strike from a Thumper artillery piece. Each unit in the target area will suffer 5 strikes from an AC/2 to random locations.",
+
+        "AbilityDefCMD_UDS_Strafe_Light" : "Grants a strafing run from a Centurion aerofighter. Will attack each targeted unit with 3 medium lasers.",
+        "AbilityDefCMD_UDS_Strafe_Medium" : "Grants a strafing run from an Lightning aerofighter. Will attack each targeted unit with 1 AC/20 and 4 medium lasers",
+        "AbilityDefCMD_UDS_Strafe_Heavy" : "Grants a strafing run from an Eagle aerofighter. Will attack each targeted unit with 3 large lasers and 4 medium lasers."
+    }
+}

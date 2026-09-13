@@ -76,6 +76,7 @@ namespace UsedDropshipSalesman
         public Dictionary<string, string> CareerStartDropshipByPlanetName;
         public List<String> PersistentUpgrades; // TODO: Doc
         public ColorConfig Colors;
+        public List<int> StrafeAllowedWeaponCategoryIDs;
 
         public Dictionary<String, DropshipConfig> Dropships = new Dictionary<String, DropshipConfig>();
 
@@ -101,6 +102,9 @@ namespace UsedDropshipSalesman
             Mod.Log.Info?.Log($" available: {this.Colors?.Upgrades?.AvailableColor}  onHover: {this.Colors?.Upgrades?.AvailableHoverColor}");
             Mod.Log.Info?.Log($" unavailable: {this.Colors?.Upgrades?.UnavailableColor}  onHover: {this.Colors?.Upgrades?.UnavailableHoverColor}");
 
+            Mod.Log.Info?.Log(" ---- STRAFE");
+            Mod.Log.Info?.Log($"StrafeAllowedWeaponCategoryIDs: [ {String.Join(",", this.StrafeAllowedWeaponCategoryIDs)}]");
+
             Mod.Log.Info?.Log("\n  --- DROPSHIPS CONFIG ---");
             foreach (KeyValuePair<string, DropshipConfig> kvp in Dropships)
             {
@@ -112,8 +116,6 @@ namespace UsedDropshipSalesman
                 Mod.Log.Info?.Log($" attachDecal            : {customDropship.Visuals.AttachDecal}");
                 Mod.Log.Info?.Log($" attachEngineGlow       : {customDropship.Visuals.AttachEngineGlow}");
                 Mod.Log.Info?.Log($" attachesEngines        : {(customDropship.Visuals.AttachesEngines != null ? String.Join(",", customDropship.Visuals.AttachesEngines) : "None" )}");
-                Mod.Log.Info?.Log($" attachesSpotLights     : {(customDropship.Visuals.AttachesSpotLights != null ? String.Join(",", customDropship.Visuals.AttachesSpotLights) : "None" )}");
-                Mod.Log.Info?.Log($" attachesRunningLights  : {(customDropship.Visuals.AttachesRunningLights != null ? String.Join(",", customDropship.Visuals.AttachesRunningLights) : "None" )}");
                 Mod.Log.Info?.Log("  ---- COSTS");
                 Mod.Log.Info?.Log($" purchase: {customDropship.Costs.Purchase}  upkeep: {customDropship.Costs.Upkeep}  drop: {customDropship.Costs.Drop}");
                 Mod.Log.Info?.Log("  ---- REQUIREMENTS");

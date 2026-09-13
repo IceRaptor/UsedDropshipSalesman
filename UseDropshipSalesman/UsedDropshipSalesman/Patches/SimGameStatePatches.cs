@@ -7,6 +7,7 @@ using CustomUnits;
 using CustomUnits.CustomHangars;
 using HBS.Collections;
 using HBS.Extensions;
+using Localize;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -398,21 +399,6 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
-    //// Total maintenance cost for the ship
-    //[HarmonyPatch(typeof(SimGameState), "HasShipUpgrade")]
-    //[HarmonyPatch(new Type[] { typeof(TagSet), typeof(List<string>)})]
-    //static class SimGameState_HasShipUpgrade_TagSet
-    //{
-    //    static void Postfix(SimGameState __instance, bool __result, TagSet idList, List<string> upgradesToCheck = null)
-    //    {
-    //        if (__instance == null) { return; }
-    //        if (Mod.ModSaveData == null) { return; } // This can be invoked before the save is hydrated, so short-circuit
-
-    //        Mod.Log.Trace?.Log("==== SimGameState_HasShipUpgrade(TagSet, List)- entered");
-    //        Mod.Log.Debug?.Log($"SimGameState_HasShipUpgrade(TagSet, List): {__result} for idList: [{idList}] and upgradesToCheck: [{String.Join(",", upgradesToCheck)}]");
-    //    }
-    //}
-
     [HarmonyPatch(typeof(SimGameState), "StartContract")]
     static class SimGameState_StartContract
     {
@@ -425,6 +411,53 @@ namespace UsedDropshipSalesman.Patches
             ModState.CombatButton_2_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_2_ABILITYDEF_ID);
             ModState.CombatButton_3_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_3_ABILITYDEF_ID);
             ModState.CombatButton_4_AbilityDefId = __instance.companyStats.GetValue<String>(ModConsts.STAT_COMBAT_BTN_4_ABILITYDEF_ID);
+            Mod.Log.Info?.Log($"Synced CombatButton AbilitryDefs:" +
+                $"combatButton1: {ModState.CombatButton_1_AbilityDefId}  combatButton2: {ModState.CombatButton_2_AbilityDefId}  " +
+                $"combatButton3: {ModState.CombatButton_3_AbilityDefId}  combatButton4: {ModState.CombatButton_4_AbilityDefId}  ");
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameState), "BuildSimGameStatsResults")]
+    static class SimGameState_BuildSimGameStatsResults
+    {
+        static void Postfix(SimGameState __instance, ref List<ResultDescriptionEntry> __result)
+        {
+            Mod.Log.Trace?.Log("==== SimGameState_BuildSimGameStatsResults:Postfix - entered.");
+
+            // Scan for any stat descs that could not be interpolated
+            List<ResultDescriptionEntry> newEntries = new();
+            Mod.Log.Debug?.Log("Iterating ResultDescriptionEntry objects:");
+            foreach (ResultDescriptionEntry rde in __result)
+            {
+                Mod.Log.Debug?.Log($" -- StatName: '{rde.statName}'  Text: '{rde.Text}'");
+                // Check for missing strings
+                String rdeText = rde.Text.SafeToString();
+                if (rdeText.Contains("[[DM.SimGameStatDescDefs[MissingStatDescDef], ERROR:") && rde.statName.StartsWith("UDS_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Lookup the button description 
+                    string statText = Mod.LocalizedText.UpgradeDescs_Stats.ContainsKey(rde.statName) ? Mod.LocalizedText.UpgradeDescs_Stats[rde.statName] : rde.statName;
+
+                    string newText = "ERROR / UNKNOWN";
+                    // Look for an abilityDef
+                    if (rdeText.Contains("AbilityDefCMD_UDS"))
+                    {
+                        string abilityDefId = rdeText.Substring(rdeText.IndexOf("AbilityDefCMD_UDS")).Trim();
+                        Mod.Log.Debug?.Log($"Resolving abilityDef: '{abilityDefId}'");
+                        newText = Mod.LocalizedText.UpgradeDescs_Abilities.ContainsKey(abilityDefId) ? Mod.LocalizedText.UpgradeDescs_Abilities[abilityDefId] : "UNKNOWN ABILITY DEF";
+                    }
+
+                    newEntries.Add(new ResultDescriptionEntry(newText, rde.Context, null));
+                }
+                else
+                {
+                    newEntries.Add(rde);
+                }
+            }
+
+            //  -- StatName: 'UDS_COMBAT_BTN_1_ABILITYDEF_ID'  Text: '• [[DM.SimGameStatDescDefs[MissingStatDescDef], ERROR: SimGameStat UDS_COMBAT_BTN_1_ABILITYDEF_ID]] AbilityDefCMD_UDS_Strafe_Light
+             
+            __result.Clear();
+            __result.AddRange(newEntries);
             Mod.Log.Info?.Log($"Synced CombatButton AbilitryDefs:" +
                 $"combatButton1: {ModState.CombatButton_1_AbilityDefId}  combatButton2: {ModState.CombatButton_2_AbilityDefId}  " +
                 $"combatButton3: {ModState.CombatButton_3_AbilityDefId}  combatButton4: {ModState.CombatButton_4_AbilityDefId}  ");

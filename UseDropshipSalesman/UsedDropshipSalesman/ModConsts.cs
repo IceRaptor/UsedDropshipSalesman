@@ -18,6 +18,7 @@ namespace UsedDropshipSalesman
         public const string STAT_COMBAT_BTN_3_ABILITYDEF_ID = "UDS_COMBAT_BTN_3_ABILITYDEF_ID";
         public const string STAT_COMBAT_BTN_4_ABILITYDEF_ID = "UDS_COMBAT_BTN_4_ABILITYDEF_ID";
 
+        public const string TAG_MECH_AFFINITY_DO_NOT_PROCESS = "MaDoNotProcess";
         public const string HBS_PREFAB_LEOPARD = "HBS_LEOPARD";
         public const string HBS_PREFAB_ARGO = "HBS_ARGO";
         public const string FALLBACK_DROPSHIP_ID = "argo";
