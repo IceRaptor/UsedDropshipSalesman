@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_hamilcar_crew_berths_2",
+        "Name" : "Crew Berths Refit",
+        "Details" : "Most of the crew berths are setup for merchant crews, if we rebuild the layout we can accomodate military personnel used to tight quarters",
+        "Icon" : "uixSvgIcon_shipUpgrade_gym"
+    },
+    "Illustration" : "uixTxrSpot_Gym",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_DariusDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_hamilcar_crew_berths_1",
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 10,
+    "PurchaseCost" : 25000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_BERTHS",
+			"value" : 2,
+			"valueConstant" : ""
+		}
+    ]
+}

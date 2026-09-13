@@ -1,0 +1,42 @@
+{
+    "Description" : {
+        "Cost" : 0,
+        "Rarity" : 0,
+        "Purchasable" : true,
+        "UIName" : "",
+        "Id" : "argoUpgrade_uds_hamilcar_crew_berths_3",
+        "Name" : "Crew Berths Expansion",
+        "Details" : "If we sacrifice a cargo berth at the rear of the ship, we can carve out a few more bunks for crew.",
+        "Icon" : "uixSvgIcon_shipUpgrade_gym"
+    },
+    "Illustration" : "uixTxrSpot_Gym",
+    "Location" : "SHIP",
+    "shipUpgradeCategoryID" : "RECREATION",
+    "AssignedCastDefId": "castDef_DariusDefault",
+    "AssignedCastDescription": "",
+    "RequiredModules" : {
+        "items" : [
+            "argoUpgrade_uds_hamilcar_crew_berths_2",
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Requirements" : [
+
+    ],
+    "TechCost" : 5,
+    "PurchaseCost" : 25000,
+    "AdditionalCost" : 500,
+    "Tags" : {
+        "items" : [
+        ],
+        "tagSetSourceFile" : ""
+    },
+    "Stats" : [
+		{
+			"typeString" : "System.Int32",
+			"name" : "UDS_ADDITIONAL_BERTHS",
+			"value" : 4,
+			"valueConstant" : ""
+		}
+    ]
+}
