@@ -8,9 +8,7 @@
     "prefabPath": "assets/character/vehicle/prefabs/uds/chrprfvhcl_uds_overlord.prefab",
     "attachEngineGlow": "ap_engine_lights_1",
     "attachDecal": "ap_decal",
-    "attachesEngines": [ "ap_engine_jets_1", "ap_engine_jets_2", "ap_engine_jets_3", "ap_engine_jets_4", "ap_engine_jets_5", "ap_engine_jets_6" ],
-    "attachesSpotLights": [],
-    "attachesRunningLights": []
+    "attachesEngines": [ "ap_engine_jets_1", "ap_engine_jets_2", "ap_engine_jets_3", "ap_engine_jets_4", "ap_engine_jets_5", "ap_engine_jets_6" ]
   },
   "Costs": {
     "purchase": 50000,
