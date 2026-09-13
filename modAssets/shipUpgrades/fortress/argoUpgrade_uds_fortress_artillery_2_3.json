@@ -35,7 +35,7 @@
 		{
 			"typeString" : "System.String",
 			"name" : "UDS_COMBAT_BTN_2_ABILITYDEF_ID",
-			"value" : "AbilityDefCMD_UDS_Art_Cluster_Sniper",
+			"value" : "AbilityDefCMD_UDS_Art_Sniper_Cluster",
 			"valueConstant" : ""
 		}
     ]

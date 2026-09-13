@@ -34,7 +34,7 @@
 		{
 			"typeString" : "System.String",
 			"name" : "UDS_COMBAT_BTN_1_ABILITYDEF_ID",
-			"value" : "AbilityDefCMD_UDS_Art_HE_Longtom",
+			"value" : "AbilityDefCMD_UDS_Art_Longtom_HE",
 			"valueConstant" : ""
 		}
     ]

@@ -34,7 +34,7 @@
 		{
 			"typeString" : "System.String",
 			"name" : "UDS_COMBAT_BTN_3_ABILITYDEF_ID",
-			"value" : "AbilityDefCMD_UDS_Art_HE_Thumper",
+			"value" : "AbilityDefCMD_UDS_Art_Thumper_HE",
 			"valueConstant" : ""
 		}
     ]
