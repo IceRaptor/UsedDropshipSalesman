@@ -233,23 +233,6 @@ namespace UsedDropshipSalesman.Helper
             leopardPrefabState.ArgoEngineComp.engineLights = newEngineLights.ToArray();
             leopardPrefabState.ArgoEngineComp.engineFlares = newEngineFlares.ToArray();
 
-            // For spot lights, instantiate them
-            Mod.Log.Debug?.Log("Updating spot lights");
-            foreach (String attach_name in config.CustomDropship.Visuals.AttachesSpotLights)
-            {
-                var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
-                Mod.Log.Debug?.Log($"I should be instantiating a spotlight at attach: {attach_name} with GO != null? {attach_GO != null}");
-            }
-
-            // For running lights, instantiate them
-            Mod.Log.Debug?.Log("Updating running lights");
-            foreach (String attach_name in config.CustomDropship.Visuals.AttachesRunningLights)
-            {
-                var attach_GO = dropshipRootGO.FindFirstChildNamed(attach_name);
-                Mod.Log.Debug?.Log($"I should be instantiating a running light at attach: {attach_name} with GO != null? {attach_GO != null}");
-
-            }
-
             // Move the engine glow
             Mod.Log.Debug?.Log("Updating engine glow");
             var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachEngineGlow);
@@ -271,7 +254,7 @@ namespace UsedDropshipSalesman.Helper
             }
 
             // Move the decal
-            Mod.Log.Debug?.Log("Moving company decal");
+            Mod.Log.Debug?.Log($"Moving company decal to: {config.CustomDropship.Visuals.AttachDecal}");
             var ap_decal = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachDecal);
             if (ap_decal != null)
             {
@@ -297,6 +280,8 @@ namespace UsedDropshipSalesman.Helper
 
             leopardPrefabState.ArgoEngineComp.gameObject.SetActive(true);
             dropshipRootGO.SetActive(true);
+
+            Mod.Log.Info?.Log("Overlay complete.");
         }
 
         internal static void ToggleSimLeopardVisiblity(bool show = false)

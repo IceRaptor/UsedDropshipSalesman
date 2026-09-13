@@ -91,10 +91,6 @@ namespace UsedDropshipSalesman.Defs
         public String AttachEngineGlow;
         public String AttachDecal;
         public List<String> AttachesEngines;
-
-        // TODO:TBD
-        public List<String> AttachesSpotLights;
-        public List<String> AttachesRunningLights;
     }
 
     public record DropshipRequirements
