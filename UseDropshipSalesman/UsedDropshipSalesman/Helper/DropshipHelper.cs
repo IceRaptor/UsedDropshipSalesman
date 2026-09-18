@@ -32,8 +32,10 @@ namespace UsedDropshipSalesman.Helper
         public ArgoMainEngine ArgoEngineComp;
         public MeshRenderer BodyMRComp;
         public Material BodyMat;
+        public ArgoController BodyArgoController;
         public SimpleCustomization CamoComp;
 
+        public Vector3 GlowStartLocalPosition = Vector3.one;
         public Vector3 DecalStartPosition = Vector3.one;
         public Vector3 DecalStartLocalPosition = Vector3.one;
         public Quaternion DecalStartRotation = Quaternion.identity;
@@ -59,6 +61,7 @@ namespace UsedDropshipSalesman.Helper
                 $"DecalGO.name: {(DecalGO == null ? "NULL" : DecalGO?.name)}  " +
                 $"ArgoEngineComp is null? {ArgoEngineComp == null}  BodyMRComp is null? {BodyMRComp == null} " +
                 $"BodyMat is null? {BodyMat == null}  CamoComp is null? {CamoComp == null} " +
+                $"BodyArgoController is null? {BodyArgoController == null} " +
                 $"DefaultAMECores == null? {DefaultAMECores == null}  DefaultAMECores.Size: {(DefaultAMECores != null ? DefaultAMECores?.Count : 0)} " +
                 $"DefaultAMELights == null? {DefaultAMELights == null}  DefaultAMELights.Size: {(DefaultAMELights != null ? DefaultAMELights?.Count: 0)} " +
                 $"DefaultAMEFlares == null? {DefaultAMEFlares == null}  DefaultAMEFlares.Size: {(DefaultAMEFlares != null ? DefaultAMEFlares?.Count : 0)} ";
@@ -131,8 +134,10 @@ namespace UsedDropshipSalesman.Helper
 
         private static void OverlayMeshes(DropshipConfig config, LeopardPrefabState leopardPrefabState, string dropshipRootName)
         {
-
             var abm = ModState.DataManagerUnityInstance.DataManager.AssetBundleManager;
+
+            // Before updating the ship meshes, disable the ArgoController to prevent NREs at BattleTech.ArgoController.Update
+            leopardPrefabState.BodyArgoController.isLoading = true;
 
             var prefabGO = abm.GetAssetFromBundle<GameObject>(config.CustomDropship.Visuals.PrefabPath, config.CustomDropship.Visuals.AssetBundleId);
             Mod.Log.Debug?.Log($"  AssetBundleId: {config.CustomDropship.Visuals.AssetBundleId}  prefabPath: {config.CustomDropship.Visuals.PrefabPath}");
@@ -182,14 +187,13 @@ namespace UsedDropshipSalesman.Helper
             leopardPrefabState.CamoComp.paintSchemeTex = (Texture2D)camoMeshRenderer.material.mainTexture;
             leopardPrefabState.CamoComp.UpdateHeraldry();
 
+
+            // Update the engines
             leopardPrefabState.ArgoEngineComp.gameObject.SetActive(false);
+
             List<ParticleSystem> newEngineCores = new();
             List<Light> newEngineLights = new();
             List<BTFlare> newEngineFlares = new();
-
-            // Instance the engine jets and flares 
-            // TODO: Get this from configuration
-            // TODO: Rename prefab attaches to engine_points?
             Mod.Log.Debug?.Log("Updating engine attaches");
             foreach (String ap_name in config.CustomDropship.Visuals.AttachesEngines)
             {
@@ -227,8 +231,6 @@ namespace UsedDropshipSalesman.Helper
 
                 Mod.Log.Trace?.Log($"Instantiated duplicate engine_jet {newEngineJet.name} at {attach_point.name} with position: {attach_point.transform.position}");
             }
-
-            // Empty the ArgoMainEngine controller values that we're going to mutate
             leopardPrefabState.ArgoEngineComp.engineCores = newEngineCores.ToArray();
             leopardPrefabState.ArgoEngineComp.engineLights = newEngineLights.ToArray();
             leopardPrefabState.ArgoEngineComp.engineFlares = newEngineFlares.ToArray();
@@ -238,47 +240,44 @@ namespace UsedDropshipSalesman.Helper
             var ap_engineGlow = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachEngineGlow);
             if (ap_engineGlow != null)
             {
-                var newGlow = UnityEngine.Object.Instantiate(leopardPrefabState.EngineGlowGO);
-                newGlow.name = $"engine_glow_{config.CustomDropship.Visuals.AttachEngineGlow}";
-                newGlow.transform.parent = ap_engineGlow.transform;
-                newGlow.transform.position = ap_engineGlow.transform.position;
-                newGlow.transform.rotation = leopardPrefabState.EngineGlowGO.transform.rotation;
-                newGlow.transform.localPosition = Vector3.zero;
-                newGlow.transform.localScale = Vector3.one;
-                newGlow.SetActive(true);
-                leopardPrefabState.ArgoEngineComp.engineSpread = newGlow.GetComponent<ParticleSystem>();
+                leopardPrefabState.EngineGlowGO.transform.parent = ap_engineGlow.transform;
+                leopardPrefabState.EngineGlowGO.transform.localPosition = Vector3.zero;
             }
             else
             {
                 Mod.Log.Warning?.Log($"Configuration error - engine_glow attach_point: {config.CustomDropship.Visuals.AttachEngineGlow} could not be found in the prefab!");
             }
+            
+            leopardPrefabState.ArgoEngineComp.gameObject.SetActive(true);
 
             // Move the decal
-            Mod.Log.Debug?.Log($"Moving company decal to: {config.CustomDropship.Visuals.AttachDecal}");
+            Mod.Log.Debug?.Log($"Moving company decal to: '{config?.CustomDropship?.Visuals?.AttachDecal}'");
             var ap_decal = dropshipGO.FindFirstChildNamed(config.CustomDropship.Visuals.AttachDecal);
+            Mod.Log.Trace?.Log($"ap_decal == null ? {ap_decal == null}  ap_decal.transform == null ? {ap_decal?.transform == null}");
             if (ap_decal != null)
             {
                 // We cannot instantiate a new decal, it doesn't seem to take. Instead, move the existing decal around.
                 // Decal notes = x,z scale influence 2d size, y scale influences 'depth'
+                Mod.Log.Trace?.Log($"leopardPrefabState == null ? {leopardPrefabState == null}  lps.DecalGO == null ? {leopardPrefabState?.DecalGO == null}");
 
                 // Parent off the attach-point's parent, not the actual attach point. This will ensure we can copy the positional and scale data from the attach_point
                 leopardPrefabState.DecalGO.transform.parent = ap_decal.transform.parent;
-                //leopardPrefabState.DecalGO.transform.position = ap_decal.transform.position;
                 leopardPrefabState.DecalGO.transform.localPosition = ap_decal.transform.localPosition;
-                //leopardPrefabState.DecalGO.transform.rotation = ap_decal.transform.rotation;
                 leopardPrefabState.DecalGO.transform.localRotation = ap_decal.transform.localRotation;
                 leopardPrefabState.DecalGO.transform.localScale = ap_decal.transform.localScale;
 
-                // Re-enable if we're configured to use it
-                leopardPrefabState.DecalGO.SetActive(true);
+                // Re-enable if we're configured to use it. This will force a heraldry redraw which we need
 
+                leopardPrefabState.DecalGO.SetActive(true);
+                Mod.Log.Info?.Log("Updated DecalGO positions");
             }
             else
             {
-                Mod.Log.Warning?.Log($"Configuration error - attach_decal attach_point: {config.CustomDropship.Visuals.AttachDecal} could not be found in the prefab!");
+                Mod.Log.Warning?.Log($"Configuration error - attach_decal attach_point: {config?.CustomDropship?.Visuals?.AttachDecal} could not be found in the prefab!");
             }
 
-            leopardPrefabState.ArgoEngineComp.gameObject.SetActive(true);
+
+            leopardPrefabState.BodyArgoController.isLoading = false;
             dropshipRootGO.SetActive(true);
 
             Mod.Log.Info?.Log("Overlay complete.");
@@ -298,6 +297,11 @@ namespace UsedDropshipSalesman.Helper
             {
                 if (!String.IsNullOrEmpty(childT.name) && childT.name.StartsWith(ModConsts.DROPSHIP_GO_PREFIX_SIMGAME))
                 {
+                    // Before destroying the object, re-parent any objects that need to move back to the leopard.
+                    // EngineGlow & Decal are examples of this
+                    ModState.SimGameLeopardState.DecalGO.transform.parent = ModState.SimGameLeopardState.ParentGO.transform;
+                    ModState.SimGameLeopardState.EngineGlowGO.transform.parent = ModState.SimGameLeopardState.ParentGO.transform;
+
                     childT.gameObject.Destroy();
                 }
             }
@@ -326,17 +330,6 @@ namespace UsedDropshipSalesman.Helper
             }
             Mod.Log.Debug?.Log($"PrefabState = {prefabState}");
 
-            // Hide the body
-            prefabState.BodyMRComp.enabled = show;
-            // TODO: Why am I disabling the singular glow?
-            prefabState.EngineGlowGO.SetActive(show);
-            prefabState.EngineFlare1GO.SetActive(show);
-            prefabState.EngineFlare2GO.SetActive(show);
-            prefabState.EngineJet1GO.SetActive(show);
-            prefabState.EngineJet2GO.SetActive(show);
-            prefabState.RunningLightsRootGO.SetActive(show);
-            prefabState.DecalGO.SetActive(show);
-
             Mod.Log.Debug?.Log($"Updating engine lights");
             if (show)
             {
@@ -345,18 +338,23 @@ namespace UsedDropshipSalesman.Helper
                 prefabState.ArgoEngineComp.engineLights = prefabState.DefaultAMELights.ToArray();
                 prefabState.ArgoEngineComp.engineFlares = prefabState.DefaultAMEFlares.ToArray();
 
+                // Reset the glow
+                prefabState.EngineGlowGO.transform.localPosition = prefabState.GlowStartLocalPosition;
+
                 // Reset the decal to the default values
-                prefabState.DecalGO.transform.parent = prefabState.ParentGO.transform;
                 prefabState.DecalGO.transform.localPosition = prefabState.DecalStartLocalPosition;
                 prefabState.DecalGO.transform.localRotation = prefabState.DecalStartLocalRotation;
                 prefabState.DecalGO.transform.localScale = prefabState.DecalStartLocalScale;
             }
-            else
-            {
-                prefabState.ArgoEngineComp.engineCores = Array.Empty<ParticleSystem>();
-                prefabState.ArgoEngineComp.engineLights = Array.Empty<Light>();
-                prefabState.ArgoEngineComp.engineFlares = Array.Empty<BTFlare>();
-            }
+
+            // Show/hide  the body
+            prefabState.BodyMRComp.enabled = show;
+            prefabState.EngineFlare1GO.SetActive(show);
+            prefabState.EngineFlare2GO.SetActive(show);
+            prefabState.EngineJet1GO.SetActive(show);
+            prefabState.EngineJet2GO.SetActive(show);
+            prefabState.RunningLightsRootGO.SetActive(show);
+            prefabState.DecalGO.SetActive(show);
 
             Mod.Log.Debug?.Log($"Done updating leopard visibility");
         }
@@ -385,6 +383,7 @@ namespace UsedDropshipSalesman.Helper
             {
                 ParentGO = leopardPrefabGO,
                 BodyMRComp = leopardPrefabGO.GetComponent<MeshRenderer>(),
+                BodyArgoController = leopardPrefabGO.GetComponent<ArgoController>(),
                 CamoComp = leopardPrefabGO.GetComponent<SimpleCustomization>()
             };
             state.BodyMat = state.BodyMRComp.material;
@@ -394,7 +393,8 @@ namespace UsedDropshipSalesman.Helper
                 if (childT.name.Equals("engineSpread (1)", StringComparison.InvariantCultureIgnoreCase))
                 {
                     state.EngineGlowGO ??= childT.gameObject;
-                    childT.gameObject.SetActive(false);
+                    state.GlowStartLocalPosition = childT.localPosition;
+                    childT.gameObject.SetActive(true);
                 }
                 else if (childT.name.StartsWith("Point Light", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -453,7 +453,7 @@ namespace UsedDropshipSalesman.Helper
         {
             Mod.Log.Info?.Log($"Loading assetBundle for dropship: {config.CustomDropship.Description.Id}");
             var abm = ModState.DataManagerUnityInstance.DataManager.AssetBundleManager;
-            var onLoaded = delegate (AssetBundle ab)
+            void onLoaded(AssetBundle ab)
             {
                 Mod.Log.Debug?.Log($" -- Loaded assetBundleId: {ab.name}");
 
@@ -465,7 +465,7 @@ namespace UsedDropshipSalesman.Helper
                 }
 
                 callback(config);
-            };
+            }
             abm.RequestBundle(config.CustomDropship.Visuals.AssetBundleId, onLoaded);
         }
 

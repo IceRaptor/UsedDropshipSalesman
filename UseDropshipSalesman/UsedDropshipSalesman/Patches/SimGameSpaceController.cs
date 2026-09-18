@@ -5,6 +5,7 @@ using CustomAmmoCategoriesPatches;
 using ErosionBrushPlugin;
 using FluffyUnderware.DevTools;
 using FluffyUnderware.DevTools.Extensions;
+using HBS.Animation;
 using HBS.Extensions;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,61 @@ namespace UsedDropshipSalesman.Patches
         }
     }
 
+
+    [HarmonyPatch(typeof(SimGameSpaceController), "LateUpdate")]
+    static class SimGameSpaceController_LateUpdate
+    {
+        // LateUpdate is very performance sensitive - avoid any logging
+        static void Postfix(SimGameSpaceController __instance)
+        {
+
+            // This is a fix for a bug where loading a save while traveling always reverts back to the Argo. I think it's because
+            //  the argo animator forces the argo to be active, and we have to side-step that.
+            if (__instance.argo.gameObject.activeSelf && Mod.ModSaveData.prefabDonorIsLeopard)
+            {
+                // We have a mismatch; flip the prefab back to the leopard
+                __instance.argo.gameObject.SetActive(false);
+                __instance.leopard.gameObject.SetActive(true);
+                __instance.argoAnimator.SetTrigger("setleopard");
+                __instance.argoAnimator.SetBool("argo", value: false);
+            }
+
+            if (__instance.leopard.gameObject.activeSelf && !Mod.ModSaveData.prefabDonorIsLeopard)
+            {
+                // We have a mismatch; flip the prefab back to the argo
+                __instance.argo.gameObject.SetActive(true);
+                __instance.leopard.gameObject.SetActive(false);
+                __instance.argoAnimator.SetTrigger("setargo");
+                __instance.argoAnimator.SetBool("argo", value: true);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(SimGameSpaceController), "SetShipTransitStates")]
+    static class SimGameSpaceController_SetShipTransitStates
+    {
+        static void Prefix(ref bool inTransit, SimGameSpaceController __instance, ref bool __runOriginal)
+        {
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_SetShipTransitStates:PRE - entered");
+
+            Mod.Log.Trace?.Log($"  argoGO activeSelf? {__instance.argo.gameObject.activeSelf}  activeInHierarchy? {__instance.argo.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  leopardGO activeSelf? {__instance.leopard.gameObject.activeSelf}  activeInHierarchy? {__instance.leopard.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  sim travelState: {__instance.sim.TravelState}");
+
+            __runOriginal = false;
+        }
+
+        static void Postfix(ref bool inTransit, SimGameSpaceController __instance)
+        {
+            Mod.Log.Trace?.Log("==== SimGameSpaceController_SetShipTransitStates:POST - entered");
+
+            Mod.Log.Trace?.Log($"  argoGO activeSelf? {__instance.argo.gameObject.activeSelf}  activeInHierarchy? {__instance.argo.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  leopardGO activeSelf? {__instance.leopard.gameObject.activeSelf}  activeInHierarchy? {__instance.leopard.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  sim travelState: {__instance.sim.TravelState}");
+        }
+
+    }
+
     [HarmonyPatch(typeof(SimGameSpaceController), "CurrentShipController", MethodType.Getter)]
     [HarmonyPatch()]
     static class SimGameSpaceController_CurrentShipController
@@ -77,6 +133,10 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Debug?.Log($" EngineController id: {__result.name}  parent.id: {__result?.gameObject?.transform?.parent?.gameObject?.name}  " +
                 $"currentState: {__result.currentState}  currentEngineState: {__result.currentEngineState}  dropshipType: {__result.dropshipType}  " +
                 $"currShip: {__instance.currentShip}  simCurrShip: {__instance.sim.CurDropship}");
+
+            Mod.Log.Trace?.Log($"  argoGO activeSelf? {__instance.argo.gameObject.activeSelf}  activeInHierarchy? {__instance.argo.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  leopardGO activeSelf? {__instance.leopard.gameObject.activeSelf}  activeInHierarchy? {__instance.leopard.gameObject.activeInHierarchy}");
+            Mod.Log.Trace?.Log($"  sim travelState: {__instance.sim.TravelState}");
         }
     }
 
@@ -114,15 +174,17 @@ namespace UsedDropshipSalesman.Patches
 
             __instance.argo.gameObject.SetActive(false);
             __instance.leopard.gameObject.SetActive(false);
-
-            if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
+            
+           if (config.CustomDropship.Visuals.AssetBundleId == ModConsts.HBS_PREFAB_LEOPARD)
            {
                 Mod.Log.Debug?.Log($"Setting visuals to HBS_LEOPARD");
                 // Use the default Leopard meshes with custom upgrades
                 DropshipHelper.ToggleSimLeopardVisiblity(true);
                 __instance.leopard.gameObject.SetActive(true);
 
-                __instance.argoAnimator.SetTrigger("setleopard");
+                Mod.ModSaveData.prefabDonorIsLeopard = true;
+
+               __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
 
                 EngineeringScreenUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
@@ -134,6 +196,8 @@ namespace UsedDropshipSalesman.Patches
                 DropshipHelper.ToggleSimLeopardVisiblity(false);
                 __instance.argo.gameObject.SetActive(true);
 
+                Mod.ModSaveData.prefabDonorIsLeopard = false;
+
                 __instance.argoAnimator.SetTrigger("setargo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
@@ -143,11 +207,19 @@ namespace UsedDropshipSalesman.Patches
             {
                 Mod.Log.Debug?.Log($"Setting visuals to CUSTOM");
                 // Use a custom mesh with custom upgrades
-                __instance.leopard.gameObject.SetActive(true);
                 DropshipHelper.ToggleSimLeopardVisiblity(false);
+                __instance.leopard.gameObject.SetActive(true);
+
+                Mod.ModSaveData.prefabDonorIsLeopard = true;
 
                 __instance.argoAnimator.SetTrigger("setleopard");
                 __instance.argoAnimator.SetBool("argo", value: false);
+
+                if (ModState.CustomAnimator != null)
+                {
+                    Mod.Log.Trace?.Log($"Setting customAnimator params inOrbit: {ModConsts.MOD_ANIMATOR_PARAM_IN_ORBIT}");
+                    ModState.CustomAnimator.SetBool(ModConsts.MOD_ANIMATOR_PARAM_IN_ORBIT, true);
+                }
 
                 Mod.Log.Debug?.Log($"Before overlaying meshes");
                 DropshipHelper.OverlaySimGameDropshipMeshes(currentDropshipId, config);
@@ -156,10 +228,7 @@ namespace UsedDropshipSalesman.Patches
                 EngineeringScreenUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
             }
 
-
-
         }
-
 
     }
 }

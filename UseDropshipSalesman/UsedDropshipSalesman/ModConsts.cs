@@ -23,6 +23,8 @@ namespace UsedDropshipSalesman
         public const string HBS_PREFAB_ARGO = "HBS_ARGO";
         public const string FALLBACK_DROPSHIP_ID = "argo";
 
+        public const string MOD_ANIMATOR_PARAM_IN_ORBIT = "InOrbit";
+
         public const string DROPSHIP_GO_PREFIX_SIMGAME = "UDS_DROPSHIP_ROOT_SG_";
         public const string DROPSHIP_GO_PREFIX_BRIEFING = "UDS_DROPSHIP_ROOT_BRF_";
         public const string UPGRADE_PANEL_CATEGORY_PREFIX = "UDS_UPGRADE_PANEL_CATEGORY_";

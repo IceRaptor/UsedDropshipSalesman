@@ -110,8 +110,8 @@ namespace UsedDropshipSalesman.Patches
             if (ModState.CustomAnimator != null)
             {
                 bool inOrbit = __instance.TravelState == SimGameTravelStatus.IN_SYSTEM;
-                Mod.Log.Trace?.Log($"Setting customAnimator params inOrbit: {inOrbit}");
-                ModState.CustomAnimator.SetBool("InOrbit", inOrbit);
+                Mod.Log.Trace?.Log($"Setting customAnimator params inOrbit: {ModConsts.MOD_ANIMATOR_PARAM_IN_ORBIT}");
+                ModState.CustomAnimator.SetBool(ModConsts.MOD_ANIMATOR_PARAM_IN_ORBIT, inOrbit);
             }
 
             // Check for a difference in ships
@@ -132,8 +132,11 @@ namespace UsedDropshipSalesman.Patches
                     return; 
                 } // Dialog will fire and try again tomorrow
 
+                // Stop the engines before making any changes 
+                __instance.SpaceController.argo.engine.StopEngine(true);
+                __instance.SpaceController.argo.isLoading = true;
+
                 Mod.Log.Info?.Log($"Reverting dropship: {oldConfig.CustomDropship.Description.Id}");
-                // THIS IS WHAT BREAKS MECHBAY
                 UpgradeHelper.RevertUpgrades(oldConfig, SimGameState_Debug.sim);
 
                 Mod.Log.Info?.Log($"Applying upgrades for new dropship: {newConfig.CustomDropship.Description.Id}");
@@ -146,14 +149,12 @@ namespace UsedDropshipSalesman.Patches
 
                 Mod.ModSaveData.CurrentDropshipId = currDropshipId;
 
-                // This should update the visuals
+                // This should update the visuals. Make sure to disable the engine first to prevent the travel bug
                 __instance.SpaceController.SetShip(DropshipType.Argo);
-
-                // Refresh rooms - WHY AM I DOING THIS?
-                //__instance.RoomManager.RefreshDisplay();
 
                 // Pause after the upgrade
                 __instance.RoomManager.ShipRoom.TimePlayPause.ToggleTime();
+                __instance.SpaceController.argo.isLoading = false;
             }
             else
             {
@@ -239,8 +240,6 @@ namespace UsedDropshipSalesman.Patches
 
             __instance.CurDropship = __state;
             Mod.Log.Trace?.Log($"state: {__state} sgs.currentDropship: {__instance.CurDropship}");
-
-
         }
     }
 

@@ -10,13 +10,13 @@ namespace UsedDropshipSalesman.Data
     {
         public Dictionary<String, List<String>> PurchasedUpgrades = new Dictionary<String, List<String>>();
         public String CurrentDropshipId = ModConsts.FALLBACK_DROPSHIP_ID;
+        public bool prefabDonorIsLeopard = true;
         public List<String> PurchasedPersistentUpgrades = new List<String>();
-
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($"CurrentDropship: {CurrentDropshipId} ");
+            sb.Append($"CurrentDropship: {CurrentDropshipId}  prefabDonorIsLeopard: {prefabDonorIsLeopard}");
             sb.Append($"Persistent Upgrades: [{String.Join(",", PurchasedPersistentUpgrades)}] ");
             foreach (KeyValuePair<String, List<String>> kvp in PurchasedUpgrades)
             {

@@ -8,31 +8,126 @@ using UsedDropshipSalesman.Helper;
 
 namespace UsedDropshipSalesman.Patches
 {
-
-    [HarmonyPatch(typeof(SGNavigationList), "RefreshButtonStates")]
-    static class SGNavigationList_RefreshButtonStates
+    [HarmonyPatch(typeof(SGTravelManager), MethodType.Constructor, new Type[] { typeof(SimGameTravelStatus) })]
+    static class SGTravelManager_Ctor_SimGameTravelStatus
     {
-        static void Postfix(SimGameState simState, SGNavigationList __instance)
+        static void Postfix(SimGameTravelStatus startState, SGTravelManager __instance)
         {
-            Mod.Log.Trace?.Log("==== SGNavigationList_RefreshButtonStates - entered.");
+            Mod.Log.Trace?.Log("==== SGTravelManager_Ctor_SimGameTravelStatus - entered.");
 
-            if (simState == null || __instance.argoButton == null) return;
-            if (simState.CompanyStats == null || !simState.CompanyStats.ContainsStatistic(ModConsts.STAT_CURRENT_DROPSHIP) || Mod.ModSaveData == null) return;
+            Mod.Log.Info?.Log($"Starting state is: {startState}");
+            ModState.CurrentTravelStatus = startState;
 
-            //var currentDropshipId = simState.CompanyStats.GetValue<string>(ModConsts.STAT_CURRENT_DROPSHIP);
-            var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
-            Mod.Log.Debug?.Log($"Current dropship is: '{currentDropshipId}'");
-            Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);
-            if (config == null)
-            {
-                Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
-                return;
-            }
-
-            Mod.Log.Debug?.Log($"Argo button currently set to: {__instance.argoButton?.Text?.text}, setting label to: {config.CustomDropship.Description.Name}");
-            __instance.argoButton.text.SetText(config.CustomDropship.Description.Name);
+            // Force the travel scenes to pause on transitions
+            __instance.pauseAtTravelSteps = true;
 
         }
     }
 
+    [HarmonyPatch(typeof(SGTravelManager), "AtJumpPoint_OnEnter")]
+    static class SGTravelManager_AtJumpPoint_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_AtJumpPoint_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "InSystem_OnEnter")]
+    static class SGTravelManager_InSystem_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_InSystem_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "TransitionAnimating_OnEnter")]
+    static class SGTravelManager_TransitionAnimating_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_TransitionAnimating_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "TransitFromJump_OnEnter")]
+    static class SGTravelManager_TransitFromJump_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_TransitFromJump_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "TransitFromJump_OnExit")]
+    static class SGTravelManager_TransitFromJump_OnExit
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_TransitFromJump_OnExit - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "TransitToJump_OnEnter")]
+    static class SGTravelManager_TransitToJump_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_TransitToJump_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "Unknown_OnEnter")]
+    static class SGTravelManager_Unknown_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_Unknown_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "WarmingEngines_OnEnter")]
+    static class SGTravelManager_WarmingEngines_OnEnter
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_WarmingEngines_OnEnter - entered.");
+
+            Mod.Log.Info?.Log($"Transitioning from animation: {__instance.PreTransitionState} to: {__instance.PostTransitionState}");
+            ModState.CurrentTravelStatus = __instance.PostTransitionState;
+        }
+    }
+
+    [HarmonyPatch(typeof(SGTravelManager), "HandleNextTravelStep")]
+    static class SGTravelManager_HandleNextTravelStep
+    {
+        static void Postfix(SGTravelManager __instance)
+        {
+            Mod.Log.Trace?.Log("==== SGTravelManager_HandleNextTravelStep - entered.");
+
+            __instance.pauseAtTravelSteps = true;
+        }
+    }
 }
