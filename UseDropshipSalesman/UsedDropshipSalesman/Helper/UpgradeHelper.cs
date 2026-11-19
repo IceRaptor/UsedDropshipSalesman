@@ -164,8 +164,12 @@ namespace UsedDropshipSalesman.Helper
                 SimGameStat[] stats = smu.Stats;
                 foreach (SimGameStat companyStat in stats)
                 {
-                    Mod.Log.Debug?.Log($" -- Removing statistic: {companyStat.name}");
-                    sim.CompanyStats.RemoveStatistic(companyStat.name);
+                    Mod.Log.Debug?.Log($" -- Resetting statistic: {companyStat.name}");
+                    //sim.CompanyStats.RemoveStatistic(companyStat.name);
+                    // Vanilla logic is to remove the stats when we revert the shipUpgradeDef, but this *removes* it. Which means it can't be set again. 
+                    // Isntead, use a Reset to revert to the default value instead
+                    Statistic stat = sim.CompanyStats.GetStatistic(companyStat.name);
+                    stat.Reset();
                 }
             }
             

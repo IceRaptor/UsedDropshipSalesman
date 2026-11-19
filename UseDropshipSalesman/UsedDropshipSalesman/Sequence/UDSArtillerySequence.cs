@@ -172,10 +172,6 @@ namespace UsedDropshipSalesman.Sequence
 
         private void PlaySoundEffect()
         {
-            //float cameraShakeIntensity = 10f *
-            //    (ArtilleryWeapon.DamagePerShot * (float)ArtilleryWeapon.ShotsWhenFired) *
-            //    base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageRelativeMod +
-            //    base.Combat.Constants.CombatUIConstants.ScreenShakeRangedDamageAbsoluteMod;
             float cameraShakeIntensity = 2000f; // Based off AC20
             Mod.Log.Trace?.Log($"UDSArtillerySequence cameraShakeIntensity of: {cameraShakeIntensity}");
             CameraControl.Instance.AddCameraShake(cameraShakeIntensity, 2f, TargetPos);

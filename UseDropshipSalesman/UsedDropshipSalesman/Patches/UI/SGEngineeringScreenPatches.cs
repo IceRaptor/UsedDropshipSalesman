@@ -59,7 +59,6 @@ namespace UsedDropshipSalesman.Patches.UI
                 Mod.Log.Debug?.Log($"  -- id: '{smu.Description.Id}'  name: '{smu.Description.Name}' requires: [{smu.RequiredModules}]");
             }
 
-
             // Refresh argo upgrade colors
             var currentDropshipId = Mod.ModSaveData.CurrentDropshipId;
             Mod.Config.Dropships.TryGetValue(currentDropshipId, out DropshipConfig config);

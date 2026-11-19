@@ -201,7 +201,9 @@ namespace UsedDropshipSalesman.Patches
                 __instance.argoAnimator.SetTrigger("setargo");
                 __instance.argoAnimator.SetBool("argo", value: true);
 
-                EngineeringScreenUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                //EngineeringScreenUIHelper.ResetUpgradePanel(__instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+                EngineeringScreenUIHelper.OverlayCustomUpgrades(config.CustomDropship.Upgrades, __instance.sim.RoomManager.EngineeringRoom.engineeringScreen);
+
             }
             else
             {

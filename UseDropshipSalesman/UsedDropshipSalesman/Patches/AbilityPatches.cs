@@ -88,17 +88,25 @@ namespace UsedDropshipSalesman.Patches
             {
                 __runOriginal = false;
 
-                Turret turret = SpawnHelper.CreateTurretForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
-                UDSArtillerySequence eventSequence = new(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
-
-                TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
-                __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
-
-                if (__instance.Def.IntParam1 > 0)
+                if (String.Equals(__instance.Def.StringParam1, "UDS_ACTION_SATELLITE_VIEW_SEQUENCE"))
                 {
-                    SpawnHelper.SpawnFlares(__instance.Combat, __instance.Def, targetPos, targetPos, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
+                    UDSSatelliteViewSequence eventSequence = new(__instance.Combat, targetPos, radius, __instance.Def.StringParam2);
+                    TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
+                    __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
                 }
+                else
+                {
+                    Turret turret = SpawnHelper.CreateTurretForSequence(__instance.Combat, __instance.Def.ActorResource, __instance.Def.WeaponResource);
+                    UDSArtillerySequence eventSequence = new(__instance.Combat, team.GUID, turret, __instance.Def.StringParam2, targetPos, radius);
 
+                    TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
+                    __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
+
+                    if (__instance.Def.IntParam1 > 0)
+                    {
+                        SpawnHelper.SpawnFlares(__instance.Combat, __instance.Def, targetPos, targetPos, __instance.Def.StringParam1, __instance.Def.IntParam1, __instance.Def.ActivationETA);
+                    }
+                }
             }
 
         }

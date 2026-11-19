@@ -78,7 +78,8 @@ namespace UsedDropshipSalesman
         public ColorConfig Colors;
         public List<int> StrafeAllowedWeaponCategoryIDs;
 
-        public Dictionary<String, DropshipConfig> Dropships = new Dictionary<String, DropshipConfig>();
+        public Dictionary<String, DropshipConfig> Dropships = new();
+        public Dictionary<String, CustomCommandActionEffectsDef> CommandActionEffects = new();
 
         public void LogConfig()
         {
@@ -149,8 +150,24 @@ namespace UsedDropshipSalesman
                 }
             }
 
+            Mod.Log.Info?.Log("\n  --- COMMAND ACTION CONFIGCONFIG ---");
+            foreach (KeyValuePair<string, CustomCommandActionEffectsDef> kvp in this.CommandActionEffects)
+            {
+                CustomCommandActionEffectsDef actionsEffectDef = kvp.Value;
+                Mod.Log.Info?.Log($"\n  CommandActionEffectId: {kvp.Key}");
+                Mod.Log.Info?.Log($"  description.id: '{actionsEffectDef.Description.Id}'  description.name: '{actionsEffectDef.Description.Name}'  description.effectSuffix: '{actionsEffectDef.Description.EffectSuffix}'");
+                Mod.Log.Info?.Log($" ----- EFFECT -----");
+                foreach (EffectData effectData in actionsEffectDef.Effects)
+                {
+                    Mod.Log.Info?.Log($"  description.id: '{effectData.Description.Id}'  description.name: '{effectData.Description.Name}'");
+                    Mod.Log.Info?.Log($"  effectType: {effectData.effectType}");
+                }
+
+            }
+
             Mod.Log.Info?.Log("=== MOD CONFIG END ===");
         }
+        
 
         public void Init()
         {

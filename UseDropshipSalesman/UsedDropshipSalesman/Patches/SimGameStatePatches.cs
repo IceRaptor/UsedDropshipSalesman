@@ -188,7 +188,7 @@ namespace UsedDropshipSalesman.Patches
                 Mod.Log.Error?.Log($"Cannot find dropship with id: {currentDropshipId} - this should not happen!");
                 return;
             }
-            EngineeringScreenUIHelper.RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
+            EngineeringScreenUIHelper.  RefreshUpgradeIcons(__instance.RoomManager.EngineeringRoom.engineeringScreen, config);
 
             // Sync constraints
             bool refreshConstraints = false;

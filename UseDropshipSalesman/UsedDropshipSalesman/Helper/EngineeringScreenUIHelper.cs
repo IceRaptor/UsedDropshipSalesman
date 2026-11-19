@@ -87,6 +87,7 @@ namespace UsedDropshipSalesman.Helper
                 }
             }
 
+            Mod.Log.Debug?.Log($"Processing icons dropship: {config.CustomDropship.Description.Name}");
             foreach (GameObject categoryGO in customCategoryGO)
             {
                 Mod.Log.Debug?.Log($"Processing icons for category: {categoryGO.name}");

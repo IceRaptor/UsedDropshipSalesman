@@ -7,6 +7,7 @@ namespace UsedDropshipSalesman
     internal static class ModConsts
     {
         public const string CUSTOM_RESOURCE_DROPSHIP_CONFIG = "CustomDropshipDef";
+        public const string CUSTOM_RESOURCE_COMMAND_ACTION_EFFECTS = "CustomCommandActionEffectsDef";
 
         public const string STAT_CURRENT_DROPSHIP = "UDS_CURRENT_DROPSHIP";
         public const string STAT_ADDITIONAL_DROP_TONNAGE = "UDS_ADDTIONAL_DROP_TONNAGE";

@@ -111,11 +111,12 @@ namespace UsedDropshipSalesman
 
             CustomHangarHelper.SetConstraints(constraints, Mod.ModLabel);
 
-            // Load the dropship configs
+            // Load the dropship and action configs
             if (customResources != null && customResources.Count > 0)
             {
 
-                bool hasResources = customResources.TryGetValue(ModConsts.CUSTOM_RESOURCE_DROPSHIP_CONFIG, out Dictionary<string, VersionManifestEntry> dropshipConfigEntries);
+                Mod.Log.Debug?.Log(" --- LOADING CUSTOM DROPSHIPS ---");
+                customResources.TryGetValue(ModConsts.CUSTOM_RESOURCE_DROPSHIP_CONFIG, out Dictionary<string, VersionManifestEntry> dropshipConfigEntries);
                 foreach (KeyValuePair<string, VersionManifestEntry> kvp in dropshipConfigEntries)
                 {
                     Mod.Log.Debug?.Log($"Loading customDropshipDef: {kvp.Key} from path: {kvp.Value.FilePath}");
@@ -129,7 +130,7 @@ namespace UsedDropshipSalesman
                         if (isValid)
                         {
                             Mod.Log.Debug?.Log($"Adding dropshipDef with ID: {dropshipDef.Description.Id} to available dropships.");
-                            DropshipConfig newConfig = new DropshipConfig() { CustomDropship = dropshipDef };
+                            DropshipConfig newConfig = new() { CustomDropship = dropshipDef };
                             Mod.Config.Dropships.Add(dropshipDef.Description.Id, newConfig);
 
                         }
@@ -147,11 +148,39 @@ namespace UsedDropshipSalesman
                         Mod.Log.Warning?.Log("Failed read custom resource!", ex);
                     }
                 }
+                Mod.Log.Debug?.Log(" --- DONE ---");
+
+                Mod.Log.Debug?.Log(" --- LOADING CUSTOM COMMAND ACTIONS ---");
+                customResources.TryGetValue(ModConsts.CUSTOM_RESOURCE_COMMAND_ACTION_EFFECTS, out Dictionary<string, VersionManifestEntry> actionConfigEntries);
+                foreach (KeyValuePair<string, VersionManifestEntry> kvp in actionConfigEntries)
+                {
+                    Mod.Log.Debug?.Log($"Loading CustomCommandActionEffectsDef: {kvp.Key} from path: {kvp.Value.FilePath}");
+                    try
+                    {
+                        string fileContent = File.ReadAllText(kvp.Value.FilePath);
+                        Mod.Log.Trace?.Log($"Deserializing context to CustomCommandActionEffectsDef:\n'{fileContent}'");
+                        CustomCommandActionEffectsDef commandActionDef = JsonConvert.DeserializeObject<CustomCommandActionEffectsDef>(fileContent);
+
+                        bool isValid = commandActionDef.Validate();
+                        if (isValid)
+                        {
+                            Mod.Log.Debug?.Log($"Adding customCommandActionEffectsDef with ID: {commandActionDef.Description.Id} to available commandActions.");
+                            Mod.Config.CommandActionEffects.Add(commandActionDef.Description.Id, commandActionDef);
+
+                        }
+                        else
+                        {
+                            Mod.Log.Warning?.Log($"customCommandActionEffectsDef {commandActionDef?.Description?.Id} failed validation, skipping.!");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Mod.Log.Warning?.Log("Failed read custom resource!", ex);
+                    }
+                }
+                Mod.Log.Debug?.Log(" --- DONE ---");
+
             }
         }
-
-
-
-
     }
 }
