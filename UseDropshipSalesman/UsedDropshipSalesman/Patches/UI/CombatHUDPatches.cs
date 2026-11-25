@@ -59,6 +59,7 @@ namespace UsedDropshipSalesman.Patches.UI
             udsRootGO.SetActive(false);
             UDSDropshipCombatFrame combatFrame = udsRootGO.AddComponent<UDSDropshipCombatFrame>();
             combatFrame.Init(Combat, __instance, __instance.PhaseTrack);
+            ModState.UDSCombatFrame = combatFrame;
         }
     }
 

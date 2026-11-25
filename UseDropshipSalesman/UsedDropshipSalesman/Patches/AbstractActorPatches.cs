@@ -22,9 +22,25 @@ namespace UsedDropshipSalesman.Patches
             Mod.Log.Trace?.Log("==== AbstractActor_ActivateAbility:POSTFIX- entered.");
 
             Mod.Log.Debug?.Log($"ActivateAbility for pilotedActor: {pilotedActor?.DisplayName} using ability: {abilityName} vs target: {targetGUID}  at posA: {posA} posB: {posB}");
-
         }
 
+    }
+
+    [HarmonyPatch(typeof(AbstractActor), "OnActivationBegin")]
+    static class AbstractActor_OnActivationBegin
+    {
+        static void Postfix(AbstractActor __instance)
+        {
+            Mod.Log.Trace?.Log("==== AbstractActor_OnActivationBegin:POSTFIX- entered.");
+            if (__instance.IsForcedVisible)
+            {
+                // We skip disabling the ForcedVisible flag when a UDSSatelliteView sequence completes. Instead apply it here
+                __instance.IsForcedVisible = false;
+                PilotableActorRepresentation par = __instance.GameRep as PilotableActorRepresentation;
+                par?.ClearForcedPlayerVisibilityLevel(__instance.Combat.GetAllCombatants());
+            }
+
+        }
     }
 
     [HarmonyPatch(typeof(Pilot), "ActivateAbility")]
@@ -39,4 +55,5 @@ namespace UsedDropshipSalesman.Patches
         }
 
     }
+
 }

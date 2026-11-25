@@ -91,8 +91,7 @@ namespace UsedDropshipSalesman.Patches
                 if (String.Equals(__instance.Def.StringParam1, "UDS_ACTION_SATELLITE_VIEW_SEQUENCE"))
                 {
                     UDSSatelliteViewSequence eventSequence = new(__instance.Combat, targetPos, radius, __instance.Def.StringParam2);
-                    TurnEvent tEvent = new(GUIDFactory.GetGUID(), __instance.Combat, __instance.Def.ActivationETA, null, eventSequence, __instance.Def, showInPhaseTrack: true);
-                    __instance.Combat.TurnDirector.AddTurnEvent(tEvent);
+                    __instance.Combat.MessageCenter.PublishMessage(new AddParallelSequenceToStackMessage(eventSequence));
                 }
                 else
                 {

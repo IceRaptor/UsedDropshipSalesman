@@ -6,6 +6,7 @@ using JwTweaks.Features;
 using ModTek.Public;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,8 +51,6 @@ namespace UsedDropshipSalesman
                 Mod.Config = new ModConfig();
             }
 
-            //Log = new DeferringLogger(modDirectory, LogName, LogLabel, Config.Debug, Config.Trace);
-
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
             Log.Info?.Log($"AssemblyVersion: {fvi.FileVersion}");
@@ -61,7 +60,6 @@ namespace UsedDropshipSalesman
 
             Log.Debug?.Log($"ModDir is:{modDirectory}");
             Log.Debug?.Log($"mod.json settings are:({settingsJSON})");
-            Mod.Config.LogConfig();
 
             if (settingsE != null)
             {
@@ -145,7 +143,7 @@ namespace UsedDropshipSalesman
                     }
                     catch (Exception ex)
                     {
-                        Mod.Log.Warning?.Log("Failed read custom resource!", ex);
+                        Mod.Log.Warning?.Log("Failed to read custom dropship!", ex);
                     }
                 }
                 Mod.Log.Debug?.Log(" --- DONE ---");
@@ -160,6 +158,12 @@ namespace UsedDropshipSalesman
                         string fileContent = File.ReadAllText(kvp.Value.FilePath);
                         Mod.Log.Trace?.Log($"Deserializing context to CustomCommandActionEffectsDef:\n'{fileContent}'");
                         CustomCommandActionEffectsDef commandActionDef = JsonConvert.DeserializeObject<CustomCommandActionEffectsDef>(fileContent);
+                        foreach (JObject jObject in commandActionDef.EffectsData)
+                        {
+                            EffectData effectData = new();
+                            effectData.FromJSON(jObject.ToString());
+                            commandActionDef.Effects.Add(effectData);
+                        }
 
                         bool isValid = commandActionDef.Validate();
                         if (isValid)
@@ -175,12 +179,15 @@ namespace UsedDropshipSalesman
                     }
                     catch (Exception ex)
                     {
-                        Mod.Log.Warning?.Log("Failed read custom resource!", ex);
+                        Mod.Log.Warning?.Log("Failed to read custom command action!", ex);
                     }
                 }
                 Mod.Log.Debug?.Log(" --- DONE ---");
 
             }
+
+            // Make sure to log the config after everything loads and is defaulted
+            Mod.Config.LogConfig();
         }
     }
 }

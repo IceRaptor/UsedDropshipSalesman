@@ -67,8 +67,7 @@ namespace UsedDropshipSalesman.UI
 
             LocalizableText lt = TextTrayGO.GetComponent<LocalizableText>();
             lt.fontSize = 18;
-            // TODO: Make localized
-            lt.text = "Dropship Command";
+            lt.text = Mod.LocalizedText.UI_Elements[ModText.LT_UI_COMBAT_COMMAND_BLOCK_LABEL];
 
             // Build the tray for buttons
             ButtonTrayGO = new("UDS_DROPSHIP_BTN_TRAY");

@@ -1,8 +1,12 @@
 ﻿using BattleTech.UI;
+using CustomUnits;
+using FogOfWar;
+using HBS;
 using HBS.Collections;
 using HBS.Logging;
 using HBS.Util;
 using Localize;
+using ShaderControl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +34,8 @@ namespace UsedDropshipSalesman.Sequence
 
         private float timeSinceLastTargetChanged;
 
-        private const float TimeDuringReveal = 2f;
-        private const float TimeBetweenTargets = 1.5f;
+        private const float TimeDuringReveal = 1f;
+        private const float TimeBetweenTargets = 1f;
 
         public Team LocalPlayerTeam { get; private set; }
 
@@ -40,7 +44,7 @@ namespace UsedDropshipSalesman.Sequence
         public float Radius { get; private set; }
 
         public CustomCommandActionEffectsDef ActionEffectsDef { get; private set;  }
-
+        
         public List<AbstractActor> Targets { get; private set; }
 
         public override bool IsValidMultiSequenceChild => false;
@@ -77,11 +81,19 @@ namespace UsedDropshipSalesman.Sequence
             {
                 case SequenceState.RevealRadius:
                     CollectTargets();
+                    // Focus camera on targetPos
                     SetCamera(CameraControl.Instance
                         .ShowRandomizedFocalCam(TargetPos, CameraControl.Instance.MinTerrainHeight, CameraControl.Instance.MaxTerrainHeight * 0.5f, 3f),
                         base.SequenceGUID
                         );
+
+                    // Show probe effect
+                    RadarPingIndicator.Instance.Ping(TargetPos);
+                    WwiseManager.PostEvent(AudioEventList_ui.ui_target_sensor_lock_hard, WwiseManager.GlobalAudioObject);
+
+                    // Show the space
                     this.RevealRadius(TargetPos, Radius, $"{this.SequenceGUID}");
+
                     Mod.Log.Trace?.Log($"UDSSatelliteSequence::RevealRadius");
                     break;
                 case SequenceState.HighlightTargets:
@@ -91,8 +103,6 @@ namespace UsedDropshipSalesman.Sequence
                     Mod.Log.Trace?.Log($"UDSSatelliteSequence::Incoming");
                     break;
                 case SequenceState.Finished:
-                    ClearCamera();
-                    base.Combat.FlagECMStateNeedsRefreshing();
                     Mod.Log.Trace?.Log($"UDSSatelliteSequence::Finished");
                     break;
             }
@@ -123,6 +133,10 @@ namespace UsedDropshipSalesman.Sequence
                         Targets.Remove(targetActor);
                         SetCamera(CameraControl.Instance.ShowActorCam(targetActor, targetActor.CurrentRotation, TimeBetweenTargets), base.SequenceGUID);
                         ApplyEffects(targetActor);
+                        if (targetActor.GameRep is PilotableActorRepresentation par)
+                        {
+                            par.SetForcedPlayerVisibilityLevel(VisibilityLevel.LOSFull);
+                        }
                         timeSinceLastTargetChanged = 0f;
                     }
                     break;
@@ -134,7 +148,7 @@ namespace UsedDropshipSalesman.Sequence
         private void ApplyEffects(AbstractActor targetActor)
         {
             // TODO: Apply all effects here
-            if (ActionEffectsDef == null || ActionEffectsDef.Effects == null || ActionEffectsDef.Effects.Length == 0)
+            if (ActionEffectsDef == null || ActionEffectsDef.Effects == null || ActionEffectsDef.Effects.Count == 0)
             { 
                 return;
             }
@@ -143,6 +157,7 @@ namespace UsedDropshipSalesman.Sequence
             {
                 try
                 {
+                    Mod.Log.Debug?.Log($"Applying effect: {effectData.Description.Id} to target: {targetActor.DisplayName} from action: {ActionEffectsDef.Description.Id}");
                     base.Combat.EffectManager.CreateEffect(effectData,
                         $"{base.SequenceGUID}_{ActionEffectsDef.Description.EffectSuffix}",
                         base.SequenceGUID, LocalPlayerTeam, targetActor, default(WeaponHitInfo), -1);
@@ -165,13 +180,45 @@ namespace UsedDropshipSalesman.Sequence
                 float distance = Vector3.Distance(TargetPos, actor.currentPosition);
                 if (distance < Radius)
                 {
-                    Mod.Log.Debug?.Log($"Actor {actor?.DisplayName} is within radius of satellite vision, adding to targets.");
+                    Mod.Log.Debug?.Log($"Actor {actor?.DisplayName} is INSIDE satellite view, adding to targets.");
                     Targets.Add(actor);
                 }
                 else
                 {
-                    Mod.Log.Debug?.Log($"Actor {actor?.DisplayName} is outside radius of satellite vision, skipping.");
+                    Mod.Log.Debug?.Log($"Actor {actor?.DisplayName} is not in satellite view, skipping.");
                 }
+            }
+        }
+
+        // Override MultiSequence.OnComplete to not call ClearShownList().
+        //   We instead leave the forced visibility flag in place and will clear it when the actor moved
+        public override void OnComplete()
+        {
+
+            // DEBUG: Look at all combatants and print effects on them
+            foreach (ICombatant combatant in base.Combat.GetAllCombatants())
+            {
+                if (combatant is AbstractActor actor && !actor.IsDead)
+                {
+                    Mod.Log.Debug?.Log($" === Effects for actor: {actor.DisplayName}  isForcedVisible: {actor.IsForcedVisible}");
+                    Mod.Log.Debug?.Log($"  SpottingVisibilityAbsolute: {actor.SpottingVisibilityAbsolute}  " +
+                        $"SpotterDistanceMultiplier: {actor.SpotterDistanceMultiplier}  " +
+                        $"SensorSignatureModifier: {actor.SensorSignatureModifier}");
+                    List<BattleTech.Effect> actorEffects = base.Combat.EffectManager.GetAllEffectsTargeting(actor);
+                    foreach (BattleTech.Effect effect in actorEffects)
+                    {
+                        Mod.Log.Debug?.Log($"    -- Effect: '{effect?.id}'  " +
+                            $"ED.Name:  '{effect?.effectData?.Description?.Name}'  " +
+                            $"ED.ID  '{effect?.effectData?.Description?.Id}'");
+                    }
+                }
+            }
+
+            ClearCamera();
+            ClearFocalPoint();
+            if (base.CompletedCallback != null)
+            {
+                base.CompletedCallback();
             }
         }
 
@@ -179,7 +226,6 @@ namespace UsedDropshipSalesman.Sequence
         {
             base.OnAdded();
             SetState(SequenceState.RevealRadius);           
-            WwiseManager.PostEvent(AudioEventList_activeProbe.activeProbe_play, WwiseManager.GlobalAudioObject);
         }
 
         public override void OnUpdate()

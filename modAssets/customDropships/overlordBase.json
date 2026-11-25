@@ -96,7 +96,18 @@
             "argoUpgrade_uds_union_combat_drop_tonnage_2",
             "argoUpgrade_uds_union_combat_drop_tonnage_3"
           ]
-        },        {
+        },
+        {
+          "systemId": "electronics_bay",
+          "headerText": "Electronics Bay",
+          "innateUpgrades": [
+          ],
+          "optionalUpgrades": [
+            "argoUpgrade_uds_overlord_satellite_view"
+          ]
+        },
+
+        {
           "systemId": "aerospace_bay_1",
           "headerText": "Aerospace Bay 1",
           "innateUpgrades": [

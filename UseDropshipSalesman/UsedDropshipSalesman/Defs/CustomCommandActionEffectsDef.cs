@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,14 @@ namespace UsedDropshipSalesman.Defs
         public UDSActionDescription Description { get; set; }
 
         [JsonRequired]
-        public EffectData[] Effects { get; set; }
+        public JObject[] EffectsData { get; set; }
+
+        public List<EffectData> Effects { get; set; }
+
+        public CustomCommandActionEffectsDef()
+        {
+            Effects = new();
+        }
 
         public bool Validate()
         {
@@ -32,7 +40,7 @@ namespace UsedDropshipSalesman.Defs
             }
             Mod.Log.Debug?.Log($"Validating CustomCommandActionEffectsDef with id: {this.Description.Id}");
 
-            if (this.Effects == null)
+            if (this.Effects == null || this.Effects.Count == 0)
             {
                 Mod.Log.Debug?.Log("Effects are not defined!");
                 isValid = false;

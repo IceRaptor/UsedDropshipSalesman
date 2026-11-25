@@ -1,4 +1,17 @@
 {
+    "UI_Elements" : {
+        "COMBAT_COMMAND_BLOCK_LABEL" : "Dropship Command",
+        "WORK_ORDER_ENTRY_DESC" : "{0}",
+        "UPGRADE_BLOCKED_REASON_SHIP_UPGRADE" : "Pending ship upgrade",
+        "UPGRADE_BLOCKED_REASON_HANGAR_LIMIT" : "New dropship hangar {0} limit is {1}, there are {2} units active or readying.",
+        "UPGRADE_BLOCKED_REASON_BERTH_LIMIT" :  "New dropship berth limit is {0}, but there are {1} active pilots.",
+        "UPGRADE_FAILED_PREAMBLE" : "Your dropship cannot be changed until you resolve the following issues:\n",
+        "UPGRADE_FAILED_DESC" : "\n\nCancel active ship upgrades or readying mechs in the timeline view from the main screen. Store active units or cancel reading actions to reduce the hangar count to match the new dropship. Dismiss pilots that exceed the berth limit on the new dropship. \nDo not navigate away from the current star system until you resolve these actions. This dialog will repeat each day until the conditions are cleared.\n<b>You cannot cancel the dropship upgrade.</b>",
+        "UPGRADE_FAILED_LABEL" : "Dropship Upgrade Failed",
+        "AAR_LANDING_FEES_DESC" : "Dropship Landing Fees",
+        "CAPTAINS_QUARTERS_DROPSHIP_OPERATING_COSTS" : "{0} Upkeep Costs",
+        "CAPTAINS_QUARTERS_SHIP_UPGRADE_PREFIX" : "SHIPUPGRADE: {0}"
+    },
     "UpgradeDescs_Stats" : {
         "UDS_COMBAT_BTN_1_ABILITYDEF_ID" : "Dropship Command 1",
         "UDS_COMBAT_BTN_2_ABILITYDEF_ID" : "Dropship Command 2",

@@ -2,7 +2,7 @@
     "Name": "UsedDropshipSalesman",
     "Enabled": true,
     "Hidden": true,
-    "Version": "0.9",
+    "Version": "0.9.9",
     "Description": "Allows for a progression of dropship types.",
     "Author": "IceRaptor",
     "Website": "https://github.com/IceRaptor/UsedDropshipSalesman",
@@ -12,12 +12,13 @@
     "DependsOn" : [ "Custom Ammo Categories", "CustomUnits", "JwTweaks" ],
     "ConflictsWith" : [ "BiggerDrops" ],
     "CustomResourceTypes": [
-        "CustomDropshipDef"
+        "CustomDropshipDef", "CustomCommandActionEffectsDef"
     ],
     "Manifest" : [
         { "Type": "AssetBundle", "Path": "assetbundles" },
         { "Type": "AbilityDef", "Path": "abilities" },
         { "Type": "CustomDropshipDef", "Path": "customDropships" },
+        { "Type": "CustomCommandActionEffectsDef", "Path" : "customEffects" },
         { "Type": "ShipModuleUpgrade", "Path": "shipUpgrades" },
         { "Type": "SVGAsset", "Path": "icons" },
         { "Type": "TurretDef", "Path": "turrets" },

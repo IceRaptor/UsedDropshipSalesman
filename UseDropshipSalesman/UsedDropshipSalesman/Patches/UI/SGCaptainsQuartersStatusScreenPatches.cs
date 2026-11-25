@@ -3,6 +3,7 @@ using BattleTech.UI.TMProWrapper;
 using BestHTTP.SocketIO;
 using FluffyUnderware.DevTools;
 using HBS.Extensions;
+using Localize;
 using SVGImporter;
 using System;
 using System.Collections;
@@ -50,8 +51,11 @@ namespace UsedDropshipSalesman.Patches.UI
 
                     if (String.Equals(key, "Argo Operating Costs", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        // TODO: Localize
-                        keyText.text = $"{config.CustomDropship.Description.Name} Upkeep Costs";
+                        string costsText= new Text(
+                            Mod.LocalizedText.UI_Elements[ModText.LT_UI_CAPTAINS_QUARTERS_DROPSHIP_OPERATING_COSTS],
+                            new object[] { config.CustomDropship.Description.Name })
+                            .ToString();
+                        keyText.text = costsText;
                         continue;
                     }
                     
@@ -60,8 +64,12 @@ namespace UsedDropshipSalesman.Patches.UI
                         if (String.Equals(smu?.Description?.Name, key, StringComparison.InvariantCultureIgnoreCase))
                         {
                             // Found a ship module upgrade, prefix it
-                            // TODO: Localize
-                            keyText.text = "SHIPUPGRADE: " + key;
+                            string costsText = new Text(
+                                Mod.LocalizedText.UI_Elements[ModText.LT_UI_CAPTAINS_QUARTERS_SHIP_UPGRADE_PREFIX],
+                                new object[] { key })
+                                .ToString();
+
+                            keyText.text = costsText;
                         }
                     }
 

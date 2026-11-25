@@ -1,4 +1,5 @@
 ﻿using GraphCoroutines;
+using Localize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,10 @@ namespace UsedDropshipSalesman.Patches
             if (__instance == null) return;
             if (!String.IsNullOrEmpty(__instance.Description) && __instance.Description.StartsWith("Argo Upgrade: "))
             {
-                // TODO: LOCALIZE
                 string upgradeName = __instance.Description.Substring(14);
-                string newDesc = $"Ship Upgrade: {upgradeName}";
+                string newDesc = new Text(
+                    Mod.LocalizedText.UI_Elements[ModText.LT_UI_WORK_ORDER_ENTRY_DESC],
+                    new object[] { upgradeName }).ToString();
                 Mod.Log.Info?.Log($"Updating description from: '{__instance.Description}' to: '{newDesc}'");
                 __instance.Description = newDesc;
             }
@@ -33,12 +35,12 @@ namespace UsedDropshipSalesman.Patches
             if (__instance == null) return;
             if (!String.IsNullOrEmpty(__instance.Description) && __instance.Description.StartsWith("Argo Upgrade: "))
             {
-                // TODO: LOCALIZE
                 string upgradeName = __instance.Description.Substring(14);
-                string newDesc = $"Ship Upgrade: {upgradeName}";
+                string newDesc = new Text(
+                    Mod.LocalizedText.UI_Elements[ModText.LT_UI_WORK_ORDER_ENTRY_DESC],
+                    new object[] { upgradeName }).ToString();
                 Mod.Log.Info?.Log($"Updating description from: '{__instance.Description}' to: '{newDesc}'");
                 __instance.Description = newDesc;
-
             }
         }
     }

@@ -106,11 +106,12 @@ namespace UsedDropshipSalesman
             Mod.Log.Info?.Log(" ---- STRAFE");
             Mod.Log.Info?.Log($"StrafeAllowedWeaponCategoryIDs: [ {String.Join(",", this.StrafeAllowedWeaponCategoryIDs)}]");
 
-            Mod.Log.Info?.Log("\n  --- DROPSHIPS CONFIG ---");
+            Mod.Log.Info?.Log("");
+            Mod.Log.Info?.Log("  --- DROPSHIPS CONFIG ---");
             foreach (KeyValuePair<string, DropshipConfig> kvp in Dropships)
             {
                 CustomDropshipDef customDropship = kvp.Value.CustomDropship;
-                Mod.Log.Info?.Log($"\n  DropshipID: {kvp.Key}");
+                Mod.Log.Info?.Log($"  DropshipID: {kvp.Key}");
                 Mod.Log.Info?.Log("  ---- PREFAB");
                 Mod.Log.Info?.Log($" assetBundleID          : {customDropship.Visuals.AssetBundleId}");
                 Mod.Log.Info?.Log($" prefabPath             : {customDropship.Visuals.AssetBundleId}");
@@ -150,21 +151,29 @@ namespace UsedDropshipSalesman
                 }
             }
 
-            Mod.Log.Info?.Log("\n  --- COMMAND ACTION CONFIGCONFIG ---");
+            Mod.Log.Info?.Log("");
+            Mod.Log.Info?.Log("  --- COMMAND ACTION CONFIG ---");
             foreach (KeyValuePair<string, CustomCommandActionEffectsDef> kvp in this.CommandActionEffects)
             {
                 CustomCommandActionEffectsDef actionsEffectDef = kvp.Value;
-                Mod.Log.Info?.Log($"\n  CommandActionEffectId: {kvp.Key}");
-                Mod.Log.Info?.Log($"  description.id: '{actionsEffectDef.Description.Id}'  description.name: '{actionsEffectDef.Description.Name}'  description.effectSuffix: '{actionsEffectDef.Description.EffectSuffix}'");
-                Mod.Log.Info?.Log($" ----- EFFECT -----");
+                Mod.Log.Info?.Log($"  CommandActionEffectId: {kvp.Key}");
+                Mod.Log.Info?.Log($"  Description.Id: '{actionsEffectDef.Description.Id}'  Description.Name: '{actionsEffectDef.Description.Name}'");
+                Mod.Log.Info?.Log($"description.EffectSuffix: '{actionsEffectDef.Description.EffectSuffix}'");
+                Mod.Log.Info?.Log($"   ----- EFFECTS -----");
                 foreach (EffectData effectData in actionsEffectDef.Effects)
                 {
-                    Mod.Log.Info?.Log($"  description.id: '{effectData.Description.Id}'  description.name: '{effectData.Description.Name}'");
-                    Mod.Log.Info?.Log($"  effectType: {effectData.effectType}");
+                    Mod.Log.Info?.Log($"    Description.Id: '{effectData.Description.Id}'  Description.Name: '{effectData.Description.Name}'  Description.Details: '{effectData.Description.Details}'");
+                    Mod.Log.Info?.Log($"    effectType: {effectData.effectType}");
+                    if (effectData.effectType == EffectType.StatisticEffect)
+                    {
+                        Mod.Log.Info?.Log($"    statisticEffect => statName: {effectData.statisticData.statName} " +
+                            $"modType: {effectData.statisticData.modType}  modValue: {effectData.statisticData.modValue}");
+                    }
+                    Mod.Log.Info?.Log("");
                 }
-
             }
 
+            Mod.Log.Info?.Log("");
             Mod.Log.Info?.Log("=== MOD CONFIG END ===");
         }
         

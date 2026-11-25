@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace UsedDropshipSalesman.Sequence
 {
-    internal class UDSStrafeSequence : MultiSequence
+    internal class UDSReconStrafeSequence : MultiSequence
     {
         private enum SequenceState
         {
@@ -63,7 +63,7 @@ namespace UsedDropshipSalesman.Sequence
 
         public override bool IsComplete => state == SequenceState.Finished;
 
-        public UDSStrafeSequence(AbstractActor attacker, Vector3 positionA, Vector3 positionB, float radius)
+        public UDSReconStrafeSequence(AbstractActor attacker, Vector3 positionA, Vector3 positionB, float radius)
             : base(attacker.Combat)
         {
             Attacker = attacker;

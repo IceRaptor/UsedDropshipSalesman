@@ -434,7 +434,8 @@ namespace UsedDropshipSalesman.Patches
                 if (rdeText.Contains("[[DM.SimGameStatDescDefs[MissingStatDescDef], ERROR:") && rde.statName.StartsWith("UDS_", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Lookup the button description 
-                    string statText = Mod.LocalizedText.UpgradeDescs_Stats.ContainsKey(rde.statName) ? Mod.LocalizedText.UpgradeDescs_Stats[rde.statName] : rde.statName;
+                    string statText = Mod.LocalizedText.UpgradeDescs_Stats.ContainsKey(rde.statName)
+                        ? Mod.LocalizedText.UpgradeDescs_Stats[rde.statName] : rde.statName;
 
                     string newText = "ERROR / UNKNOWN";
                     // Look for an abilityDef

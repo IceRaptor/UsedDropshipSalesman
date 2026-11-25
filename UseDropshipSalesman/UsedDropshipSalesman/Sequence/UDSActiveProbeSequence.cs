@@ -282,13 +282,16 @@ namespace UsedDropshipSalesman.Sequence
         {
             base.OnAdded();
             SetState(SequenceState.ShowingEffects);
-            probeParticles = base.Combat.DataManager
-                .PooledInstantiate(base.Combat.Constants.VFXNames.active_probe_effect, BattleTechResourceType.Prefab, TargetPos)
-                .GetComponent<ParticleSystem>();
-            probeParticles.gameObject.transform.position = TargetPos;
-            probeParticles.Clear(withChildren: true);
-            probeParticles.Play(withChildren: true);
-            WwiseManager.PostEvent(AudioEventList_activeProbe.activeProbe_play, WwiseManager.GlobalAudioObject);
+
+            RadarPingIndicator.Instance.Ping(TargetPos);
+            WwiseManager.PostEvent(AudioEventList_ui.ui_target_sensor_lock_hard, WwiseManager.GlobalAudioObject);
+            //probeParticles = base.Combat.DataManager
+            //    .PooledInstantiate(base.Combat.Constants.VFXNames.active_probe_effect, BattleTechResourceType.Prefab, TargetPos)
+            //    .GetComponent<ParticleSystem>();
+            //probeParticles.gameObject.transform.position = TargetPos;
+            //probeParticles.Clear(withChildren: true);
+            //probeParticles.Play(withChildren: true);
+            //WwiseManager.PostEvent(AudioEventList_activeProbe.activeProbe_play, WwiseManager.GlobalAudioObject);
         }
 
         public override void OnUpdate()

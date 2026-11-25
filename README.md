@@ -57,9 +57,7 @@ These options are provided under *Mods/UsedDropshipSalesman/settings.json*.
 
 ### Dropship Configuration
 
-Dropship variants are configured through a ModTek custom resource named `CustomDropshipDef`. Each file in *Mods/UsedDropshipSalesman/customDropships* is a single dropship variant. Each CustomDropshipDef defines gameplay specifics of a dropship, 
-but also associates it with prefabs that are displayed on screen. It's expected that you'll have more than one *Dropship Variant* pointing to the same prefabs, each variant reflecting a specific role for that chassis. 
-UDS ships with a standard Leopard (`leopard_base`) and a vehicle-centric Leopard (`leopard_tank_variant`) but both use the HBS provided Leopard visuals. Through the rest of this file, 
+Dropship variants are configured through a ModTek custom resource named `CustomDropshipDef`. Each file in *Mods/UsedDropshipSalesman/customDropships* is a single dropship variant. Each CustomDropshipDef defines gameplay specifics of a dropship, but also associates it with prefabs that are displayed on screen. It's expected that you'll have more than one *Dropship Variant* pointing to the same prefabs, each variant reflecting a specific role for that chassis. UDS ships with a standard Leopard (`leopard_base`) and a vehicle-centric Leopard (`leopard_tank_variant`) but both use the HBS provided Leopard visuals. Through the rest of this file, 
 assume 'dropship variant' refers to a specific CustomDropshipDef (i.e. either `leopard_base` or `leopard_tank_variant`), NOT the prefab and the common association of the terms.
 
 :no_entry: Each CustomDropshipDef MUST have a unique `Description.Id` value. UDS relies upon this key to identify the custom resource. Multiple files with the same Id are likely to cause odd, hard to detect errors. You've been warned.
@@ -214,8 +212,8 @@ This mod re-purposes several vanilla 'Command Actions' but twists them heavily, 
 
 * Artillery Strike
 * Aerospace Strafe
+* ~Satellite View~ :warning: Not yet implemented
 * ~Active Probe Sweep~ :warning: Not yet implemented
-* ~Satellite Snapshot~ :warning: Not yet implemented
 * ~Unit Drop~ :warning: Not yet implemented
 
 All are configured as AbilityDefs, and are highly customizable. You can freely create new abilityDefs to provide variations on a theme, and each type has specific configuration rules discussed below. Values general to all abilities include:
@@ -262,9 +260,7 @@ As an example, if you have an SRM_6 on the turretDef associated with the attack,
 
 *Aerospace Strafe*
 
-A UDS Airstroke sequences allows a player to choose two target locations, then after a small delay a single aerospace fighter will move between those points and attack any targets along that path. For each target, the attacking unit will make a normal attack roll for each weapon that it's carrying. Individual weapons can miss, and the aerofighter can run out of ammo, just like a normal unit could. 
-
-:information_note: At this time, only energy weapons are supported on strafes. This will be fixed in the future.
+A UDS Airstrike sequences allows a player to choose two target locations, then after a small delay a single aerospace fighter will move between those points and attack any targets along that path. For each target, the attacking unit will make a normal attack roll for each weapon that it's carrying. Individual weapons can miss, and the aerofighter can run out of ammo, just like a normal unit could. 
 
 *Configuration* for the sequence is listed below. Note HBS chose to overload the AbilityDef and use the same values for two different purposes. They configure the actual strike, but also how the strike is selected. The first values given are for the strike, the second set are the same values used for selection. 
 
@@ -282,6 +278,102 @@ A UDS Airstroke sequences allows a player to choose two target locations, then a
 * `FloatParam2` the max distance from the first selected point that can be chosen
 * `IntParam1` the minimum distance from the selected actor for the targeting circle
 * `IntParam2` the maxiumum distance from the selected actor for the targeting circle
+
+**Mod Configuration**
+
+The `StrafeAllowedWeaponCategoryIDs` value in `settings.json` defines the Weapon Category IDs that can be used during a strafing run. This is an array of numeric ids. If the weaponCategory matches for a given weapon, it will be fired on the strafing run. 
+
+*Satellite View*
+
+A UDS SatelliteView sequence allows a player to choose a target location. After a short delay, the given area will have it's fog-of-war revealed and enemy units within it will display their models. Players will not be able to see the details of the revealed units, only the in-game representation (i.e. model) for each.  Additionally a set of Effects can be applied to any reveled units. See the ``Command Abilities Effects`` section below.
+
+*Configuration* for the sequence is listed below. Note HBS chose to overload the AbilityDef and use the same values for two different purposes. They configure the actual strike, but also how the strike is selected. The first values given are for the strike, the second set are the same values used for selection. 
+
+* `ActorResource` must be an empty string
+* `WeaponResource` must be an empty string
+* `Targeting` MUST be `CommandTargetSinglePoint`
+* `FloatParam1` the *radius* for target selection
+* `FloatParam2` unused
+* `IntParam1` unused
+* `IntParam2` unused
+* `StringParam1` must be `UDS_ACTION_SATELLITE_VIEW_SEQUENCE`
+* `StringParam2` must be either an empty string, or a valid `CustomCommandActionEffectsDef` definition. 
+
+**Selection Overrides**
+
+* `FloatParam1` the *radius* of the targeting reticle 
+* `IntParam1` the minimum distance from the selected actor for the targeting circle
+* `IntParam2` the maxiumum distance from the selected actor for the targeting circle
+
+#### Command Abilities Effects
+
+Some command actions (notably SatelliteView) allow effects to be applied to targets as part of their sequence. These effects must be defined via a `CustomCommandActionEffectsDef`, and be placed in the `/customEffects` path of the mod. Multiple effects can be defined in the `CustomCommandActionEffectsDef`. The structure of a `CustomCommandActionEffectsDef` is a simple description block coupled with an array of EffectData values. An example is provided below:
+
+```
+{
+    "Description": {
+        "Id": "udsSatelliteViewEffects",
+        "Name" : "Satellite View Sequence Effects",
+        "EffectSuffix" : "SatelliteView"
+    },
+    "EffectsData" : [
+      {
+        "Description": {
+          "Id": "SatelliteTrackingEffectVisiblity",
+          "Name": "SATELLITE TRACKING",
+          "Details": "+100% VISIBILITY",
+          "Icon": "uixSvgIcon_genericDiamond"
+        },
+        "durationData": {
+          "duration": 2,
+          "ticksOnEndOfRound": true,
+          "stackLimit": 1
+        },
+        "targetingData": {
+          "effectTriggerType": "OnActivation",
+          "effectTargetType": "SingleTarget"
+        },
+        "effectType": "StatisticEffect",
+        "statisticData": {
+          "statName": "SpottingVisibilityAbsolute",
+          "operation": "Float_Add",
+          "modValue": "1000.0",
+          "modType": "System.Single"
+        },
+        "nature": "Debuff"
+      },
+      {
+        "Description": {
+          "Id": "SatelliteTrackingEffectSignature",
+          "Name": "SATELLITE SCAN",
+          "Details": "+50% SIGNATURE",
+          "Icon": "uixSvgIcon_genericDiamond"
+        },
+        "durationData": {
+          "duration": 2,
+          "ticksOnEndOfRound": true,
+          "stackLimit": 1
+        },
+        "targetingData": {
+          "effectTriggerType": "OnActivation",
+          "effectTargetType": "SingleTarget"
+        },
+        "effectType": "StatisticEffect",
+        "statisticData": {
+          "statName": "SensorSignatureModifier",
+          "operation": "Float_Add",
+          "modValue": "4.0",
+          "modType": "System.Single"
+        },
+        "nature": "Debuff"
+      }
+    ]
+}
+```
+
+Note that `Description.EffectSuffix` is a required value that will be appended to event IDs when they are created. This allows you to quickly search for them in battletech.log by name.
+
+Each `EffectData` block is the basic HBS object. It's not exhaustively described here, as the assumption is you understand how it works reasonably well. You can place whatever EffectDatas you want into the block, and the command sequence will try to apply the effect. Only basic effects as shown above has been tested; more esoteric combinations may fail to work entirely.
 
 
 ## Modeling Dropships

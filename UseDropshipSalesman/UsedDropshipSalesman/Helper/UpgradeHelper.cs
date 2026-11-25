@@ -3,6 +3,7 @@ using BattleTech.Save.SaveGameStructure;
 using BattleTech.UI;
 using CustomUnits;
 using CustomUnits.CustomHangars;
+using Localize;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -204,9 +205,7 @@ namespace UsedDropshipSalesman.Helper
             if (sgs.CurrentUpgradeEntry != null)
             {
                 Mod.Log.Info?.Log($"Active argo upgrade, must cancel upgrade");
-                // TODO: LOCALIZE 
-                blockedReasons.Add("Pending Ship Upgrade");
-
+                blockedReasons.Add(Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_BLOCKED_REASON_SHIP_UPGRADE]);
                 hasBlockingIssues = true;
             }
 
@@ -260,8 +259,11 @@ namespace UsedDropshipSalesman.Helper
                     if (currentUnitCountPerHangar[hangarId] > newConstraintSize) 
                     {
                         Mod.Log.Info?.Log($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {currentUnitCountPerHangar[hangarId]} units active or readying.");
-                        // TODO: LOCALIZE 
-                        blockedReasons.Add($"New dropship hangar {CustomHangarHelper.GetHangarLabel(hangarId)} limit is {newConstraintSize}, there are {currentUnitCountPerHangar[hangarId]} units active or readying.");
+                        string hangarLimitWarning = new Text(
+                            Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_BLOCKED_REASON_HANGAR_LIMIT],
+                                new object[] { CustomHangarHelper.GetHangarLabel(hangarId), newConstraintSize, currentUnitCountPerHangar[hangarId] })
+                            .ToString();
+                        blockedReasons.Add(hangarLimitWarning);
                         hasBlockingIssues = true;
                     }
                 }
@@ -280,30 +282,30 @@ namespace UsedDropshipSalesman.Helper
             Mod.Log.Debug?.Log($"New dropship has {sgs.GetMaxMechWarriors()} berths for {currentPilotCount} pilots");
             if (currentPilotCount > sgs.GetMaxMechWarriors())
             {
+
+                string berthLimitWarning = new Text(
+                    Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_BLOCKED_REASON_BERTH_LIMIT],
+                        new object[] { sgs.GetMaxMechWarriors(), currentPilotCount })
+                    .ToString();
                 blockedReasons.Add($"New dropship berth limit is {sgs.GetMaxMechWarriors()}, but there are {currentPilotCount} active pilots.");
                 hasBlockingIssues = true;
             }
 
             if (hasBlockingIssues)
             {
-                // TODO: LOCALIZE 
-                string upgradeFailureText = "Your dropship cannot be changed until you resolve the following issues:\n";
+                string upgradeFailureText = Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_FAILED_PREAMBLE];
                 foreach (string reason in blockedReasons)
                 {
                     upgradeFailureText += "\n - " + reason;
                 }
-                upgradeFailureText += "\n\nCancel active ship upgrades or readying mechs in the timeline view from the main screen. " +
-                    "Store active units or cancel reading actions to reduce the hangar count to match the new dropship. " +
-                    "Dismiss pilots that exceed the berth limit on the new dropship. " +
-                    "\nDo not navigate away from the current star system until you resolve these actions. " + 
-                    "This dialog will repeat each day until the conditions are cleared.\n<b>You cannot cancel the dropship upgrade.</b>";
-                GenericPopup gp = GenericPopupBuilder.Create("Dropship Upgrade Failed", upgradeFailureText)
-                        //.AddButton(localButtonAccept, acceptAction, true, null)                        
-                        .AddButton("OKAY", null, true, null)
-                        .Render();
+                upgradeFailureText += Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_FAILED_DESC];
+                GenericPopup gp = GenericPopupBuilder
+                    .Create(Mod.LocalizedText.UI_Elements[ModText.LT_UI_UDS_UPGRADE_FAILED_LABEL], upgradeFailureText)
+                    .AddButton("OKAY", null, true, null)
+                    .Render();
 
-                    TextMeshProUGUI contentText = gp._contentText;
-                    contentText.alignment = TextAlignmentOptions.Left;
+                TextMeshProUGUI contentText = gp._contentText;
+                contentText.alignment = TextAlignmentOptions.Left;
             }
 
             return hasBlockingIssues;

@@ -1,0 +1,59 @@
+{
+    "Description": {
+        "Id": "udsSatelliteViewEffects",
+        "Name" : "Satellite View Sequence Effects",
+        "EffectSuffix" : "SatelliteView"
+    },
+    "EffectsData" : [
+      {
+        "Description": {
+          "Id": "SatelliteTrackingEffectVisiblity",
+          "Name": "SATELLITE TRACKING",
+          "Details": "+100% VISIBILITY",
+          "Icon": "uixSvgIcon_genericDiamond"
+        },
+        "durationData": {
+          "duration": 2,
+          "ticksOnEndOfRound": true,
+          "stackLimit": 1
+        },
+        "targetingData": {
+          "effectTriggerType": "OnActivation",
+          "effectTargetType": "SingleTarget"
+        },
+        "effectType": "StatisticEffect",
+        "statisticData": {
+          "statName": "SpottingVisibilityAbsolute",
+          "operation": "Float_Add",
+          "modValue": "1000.0",
+          "modType": "System.Single"
+        },
+        "nature": "Debuff"
+      },
+      {
+        "Description": {
+          "Id": "SatelliteTrackingEffectSignature",
+          "Name": "SATELLITE SCAN",
+          "Details": "+50% SIGNATURE",
+          "Icon": "uixSvgIcon_genericDiamond"
+        },
+        "durationData": {
+          "duration": 2,
+          "ticksOnEndOfRound": true,
+          "stackLimit": 1
+        },
+        "targetingData": {
+          "effectTriggerType": "OnActivation",
+          "effectTargetType": "SingleTarget"
+        },
+        "effectType": "StatisticEffect",
+        "statisticData": {
+          "statName": "SensorSignatureModifier",
+          "operation": "Float_Add",
+          "modValue": "4.0",
+          "modType": "System.Single"
+        },
+        "nature": "Debuff"
+      }
+    ]
+}
